@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <SDL3/SDL.h>
+
 #include "game/creature.h"
 #include "game/gametypes.h"
 #include "game/vehicle.h"
@@ -13,6 +15,7 @@
 #include "gameplay/airindicator.h"
 #include "gameplay/bosscut.h"
 #include "gameplay/bosshealth.h"
+#include "gameplay/bosspics.h"
 #include "gameplay/cheats.h"
 #include "gameplay/edges.h"
 #include "gameplay/firefly.h"
@@ -30,6 +33,7 @@
 #include "gameplay/submarine.h"
 #include "gameplay/timetrial.h"
 #include "gameplay/vehiclehints.h"
+#include "gfx/portrait.h"
 #include "nu3d/nugscn.h"
 #include "nu_port.h"
 #include "numath/numtx.h"
@@ -252,6 +256,40 @@ static void boss_health(void)
     CHECK(nw_profile.boss_health);
     nw_gameplay_swap();
     CHECK(!nw_profile.boss_health);
+}
+
+static void boss_pics(void)
+{
+    /* HUB.GSC's pads pcylinder57, 56, 55, 54, 53 */
+    CHECK(nw_boss_pics_room(9.53f, 5.50f) == 0);
+    CHECK(nw_boss_pics_room(9.54f, -5.50f) == 1);
+    CHECK(nw_boss_pics_room(0.00f, -11.01f) == 2);
+    CHECK(nw_boss_pics_room(-9.53f, -5.50f) == 3);
+    CHECK(nw_boss_pics_room(-9.53f, 5.50f) == 4);
+    CHECK(nw_boss_pics_room(0.0f, 10.0f) == -1);
+    CHECK(nw_boss_pics_room(0.0f, 0.0f) == -1);
+
+    NwPortraitVert v[4] = {
+        { { -1.0f, -1.0f, 0.0f }, { 0.0f, 0.0f } },
+        { { 1.0f, -1.0f, 0.0f }, { 0.0f, 0.0f } },
+        { { -1.0f, 1.0f, 0.0f }, { 0.0f, 0.0f } },
+        { { 1.0f, 1.0f, 0.0f }, { 0.0f, 0.0f } },
+    };
+    uint32_t tri[2][4] = { { 0, 1, 2, 0 }, { 1, 3, 2, 0 } };
+    NwPortraitSurface surf = { { 1.0f, 0.0f, 0.0f }, NULL, 0, 0, false };
+    NwPortraitMesh mesh = { v, tri, &surf, 4, 2, 1 };
+    NwPortraitLook look = { 0.0f, 0.0f, 0.5f, { 0.0f, 0.0f, 0.0f }, { 0, 0, 0xFF }, 1 };
+    uint8_t *px = nw_portrait_render(&mesh, &look, 32, 2);
+    CHECK(px != NULL);
+    if (px) {
+        const uint8_t *mid = &px[(16 * 32 + 16) * 4], *corner = &px[0];
+        CHECK(mid[0] == 0xFF && mid[3] > 0xC0 && mid[1] < 0x10);
+        CHECK(corner[0] == 0);
+        /* b is texel byte 1 */
+        const uint8_t *rim = &px[(16 * 32 + 24) * 4];
+        CHECK(rim[0] > 0x80 && rim[1] > 0x80 && rim[3] < 0x40);
+        SDL_free(px);
+    }
 }
 
 static void vehicle_hints(void)
@@ -3578,6 +3616,7 @@ int main(void)
     monkey_bar_anim();
     air_indicator();
     boss_health();
+    boss_pics();
     vehicle_hints();
     vehicle_hints_once();
     steadycam();

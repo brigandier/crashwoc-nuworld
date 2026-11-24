@@ -220,6 +220,7 @@ add_library(nuworld_gfx STATIC
   src/gfx/interp.c
   src/gfx/mtl.c
   src/gfx/packet.c
+  src/gfx/portrait.c
   src/gfx/tex.c
   src/gfx/vif.c
   src/gfx/vu1init.c)

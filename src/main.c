@@ -1043,7 +1043,7 @@ static void nw_boot_time_trial(void *user)
 #undef NW_BOOT_VALUE_ITEM
 
 /* Applied by the game thread at its next swap. */
-static void nw_boot_request(const NwSettings *s, bool hitboxes)
+static void nw_boot_request(const NwSettings *s, bool hitboxes, bool boss_pics)
 {
     nw_profile_request(&(NwProfile){ .movement = s->movement,
                                      .air_indicator = s->air_indicator,
@@ -1057,7 +1057,8 @@ static void nw_boot_request(const NwSettings *s, bool hitboxes)
                                      .first_boss_cut = s->first_boss_cut,
                                      .vehicle_hints = s->vehicle_hints,
                                      .bug_fixes = s->bug_fixes,
-                                     .hitboxes = hitboxes });
+                                     .hitboxes = hitboxes,
+                                     .boss_pics = boss_pics });
 }
 
 static void nw_boot_camera(void *user)
@@ -1229,7 +1230,8 @@ static int nw_boot(const char *data_dir, int hardware_speed, float aspect, NwPla
                                        .hub_gem = settings.hub_gem,
                                        .first_boss_cut = settings.first_boss_cut,
                                        .vehicle_hints = settings.vehicle_hints,
-                                       .bug_fixes = settings.bug_fixes });
+                                       .bug_fixes = settings.bug_fixes,
+                                       .boss_pics = true });
     }
     nw_wide_set(nw_video_start(&platform, &settings), settings.hud);
     nw_debug_panel("Settings", "Audio", nw_boot_audio, &settings, false);
@@ -1275,13 +1277,14 @@ static int nw_boot(const char *data_dir, int hardware_speed, float aspect, NwPla
     }
     nw_debug_panel("Debug", "Load Level", nw_boot_levels, NULL, false);
     nw_debug_panel("Debug", "Play Cutscene", nw_boot_cutscenes, NULL, false);
-    bool hitboxes = false, hitboxes_shown = false;
+    bool hitboxes = false, hitboxes_shown = false, boss_pics = true, boss_pics_shown = true;
     if (!nw_run_retail()) {
         nw_debug_action("Debug", "Start Minigame", SDL_SCANCODE_UNKNOWN, nw_boot_minigame, NULL);
     }
     nw_debug_toggle("Debug", "WOMBAT cheat", &settings.wombat);
     if (!nw_run_retail()) {
         nw_debug_toggle("Debug", "Hitboxes", &hitboxes);
+        nw_debug_toggle("Debug", "Boss pictures in the hub", &boss_pics);
     }
     nw_backend_debug_menu();
     {
@@ -1360,17 +1363,19 @@ static int nw_boot(const char *data_dir, int hardware_speed, float aspect, NwPla
                  settings.first_boss_cut != applied.first_boss_cut ||
                  settings.vehicle_hints != applied.vehicle_hints ||
                  settings.bug_fixes != applied.bug_fixes)) {
-                nw_boot_request(&settings, hitboxes);
+                nw_boot_request(&settings, hitboxes, boss_pics);
                 hitboxes_shown = hitboxes;
+                boss_pics_shown = boss_pics;
             }
             nw_video_apply(&settings, &applied);
             applied = settings;
             unsaved = true;
             changed = SDL_GetTicks();
         }
-        if (hitboxes != hitboxes_shown) {
-            nw_boot_request(&settings, hitboxes);
+        if (hitboxes != hitboxes_shown || boss_pics != boss_pics_shown) {
+            nw_boot_request(&settings, hitboxes, boss_pics);
             hitboxes_shown = hitboxes;
+            boss_pics_shown = boss_pics;
         }
         if (unsaved && SDL_GetTicks() - changed >= NW_SETTINGS_SAVE_MS) {
             nw_boot_store(data_dir, &settings, fog_kept);
