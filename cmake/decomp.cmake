@@ -155,6 +155,7 @@ set(nw_game_sources ${nw_dataimage} src/gfx/dma.c src/gfx/fx2.c src/gfx/nulight.
   src/port/autosave.c src/port/cloudfx.c src/port/crate.c src/port/font3d.c src/port/menu.c src/port/nameentry.c src/port/names.c src/port/savemenu.c src/port/nubridge.c src/port/terrain.c
   src/port/text.c src/port/trace.c src/port/wide.c
   src/gameplay/ai.c src/gameplay/air.c src/gameplay/airindicator.c src/gameplay/atlasphere.c src/gameplay/bosscut.c src/gameplay/bosshealth.c
+  src/gameplay/bosspics.c
   src/gameplay/camera.c src/gameplay/chase.c src/gameplay/cheats.c src/gameplay/crash.c src/gameplay/creature.c src/gameplay/credits.c src/gameplay/cut.c src/gameplay/debris.c
   src/gameplay/edbits.c src/gameplay/edges.c src/gameplay/firefly.c src/gameplay/fixes.c
   src/gameplay/game.c src/gameplay/game_obj.c src/gameplay/gems.c src/gameplay/gameplay.c src/gameplay/gcutscn.c src/gameplay/ground.c src/gameplay/hazards.c

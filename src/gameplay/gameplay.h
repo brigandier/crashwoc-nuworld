@@ -265,6 +265,7 @@ typedef struct NwProfile {
     bool vehicle_hints;
     bool bug_fixes;
     bool hitboxes;      /* not saved */
+    bool boss_pics;     /* not saved */
 } NwProfile;
 
 extern NwProfile nw_profile;

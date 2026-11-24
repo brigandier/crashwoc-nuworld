@@ -4,6 +4,7 @@
 #include "game/creature.h"
 #include "game/game.retail.h"
 #include "gameplay/bosscut.h"
+#include "gameplay/bosspics.h"
 #include "gameplay/fixes.h"
 #include "gameplay/gems.h"
 #include "gameplay/hubgem.h"
@@ -44,6 +45,7 @@ void InitObjectTable(void)
     InitObjectTable__retail();
     nw_gems_objects();
     nw_hubgem_level();
+    nw_boss_pics_level();
 }
 
 void DrawTransporters(void)

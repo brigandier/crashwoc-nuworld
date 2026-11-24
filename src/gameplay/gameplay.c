@@ -5,6 +5,7 @@
 #include <SDL3/SDL.h>
 
 #include "gameplay/air.h"
+#include "gameplay/bosspics.h"
 #include "gameplay/cheats.h"
 #include "gameplay/ground.h"
 #include "gameplay/jeep.h"
@@ -136,11 +137,13 @@ static void nw_profile_poll(void)
         nw_profile.vehicle_hints = p.vehicle_hints;
         nw_profile.bug_fixes = p.bug_fixes;
         nw_profile.hitboxes = p.hitboxes;
+        nw_profile.boss_pics = p.boss_pics;
         nw_monkey_bars_apply();
         nw_air_apply();
         nw_ground_apply();
         nw_sub_apply();
         nw_jeep_apply();
+        nw_boss_pics_apply();
     }
 }
 
