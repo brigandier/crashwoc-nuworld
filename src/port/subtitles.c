@@ -13,6 +13,7 @@
 #include "numath/numtx.h"
 #include "platform/log.h"
 #include "port/font3d.h"
+#include "port/menu.h"
 
 extern struct game_s Game;
 extern s32 Level, cutmovie, new_level, new_mode;
@@ -76,6 +77,7 @@ static void nw_subtitles_draw(void)
     if (text && pNuCam) {
         static const char *last;
         static NwSubtitleLayout layout;
+        static char first_line[NW_SUBTITLE_LINE_SIZE + 4];
         if (text != last) {
             last = text;
             if (!nw_subtitles_layout(text, &layout)) {
@@ -83,6 +85,11 @@ static void nw_subtitles_draw(void)
                 SDL_strlcpy(layout.line[0], "TEXT ERROR", sizeof(layout.line[0]));
                 layout.count = 1;
                 layout.scale = 0.34f;
+            }
+            if (layout.speaker_length) {
+                /* Text3D ignores its colour controls when measuring and centring the line. */
+                SDL_snprintf(first_line, sizeof(first_line), "#b%.*s#o%s",
+                    layout.speaker_length, layout.line[0], layout.line[0] + layout.speaker_length);
             }
         }
         struct numtx_s camera = pNuCam->mtx;
@@ -94,12 +101,14 @@ static void nw_subtitles_draw(void)
         /* Vehicle health and objectives occupy the bottom of gameplay's HUD. */
         float bottom = cutmovie < 0 && Level != 0x25 && Level != 0x26 && Level != 0x28 ? -0.50f : -0.88f;
         if (cutmovie < 0) {
-            bottom = SDL_max(bottom, nw_subtitles_hud_top + 0.10f);
+            float hud_top = SDL_max(nw_subtitles_hud_top, nw_menu_autosave_hud_top());
+            bottom = SDL_max(bottom, hud_top + 0.10f);
         }
         float y = bottom + (layout.count - 1) * 0.10f;
         bool punctuation = nw_font3d_subtitle_punctuation(true);
         for (int i = 0; i < layout.count; i++) {
-            Text3D(layout.line[i], 0.0f, y, 1.0f, layout.scale, layout.scale, layout.scale, 0, 0);
+            char *line = i == 0 && layout.speaker_length ? first_line : layout.line[i];
+            Text3D(line, 0.0f, y, 1.0f, layout.scale, layout.scale, layout.scale, 0, 0);
             y -= 0.10f;
         }
         nw_font3d_subtitle_punctuation(punctuation);
@@ -121,6 +130,7 @@ void DrawFade(void)
 void DrawPanel(void)
 {
     nw_subtitles_hud_top = -1.0f;
+    nw_menu_autosave_hud_reset();
     DrawPanel__retail();
     if (cutmovie < 0 && new_level == -1 && new_mode == -1) {
         nw_subtitles_draw();

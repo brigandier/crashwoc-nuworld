@@ -1,4 +1,5 @@
 #include "platform/subtitles.h"
+#include "platform/text3d.h"
 
 #include <SDL3/SDL.h>
 
@@ -53,55 +54,6 @@ bool nw_subtitles_enabled(bool title)
 {
     int required = title ? NW_SUBTITLES_ON | NW_SUBTITLES_TITLE : NW_SUBTITLES_ON;
     return (SDL_GetAtomicInt(&nw_subtitles_flags) & required) == required;
-}
-
-/* Uppercase Latin-1 characters in the original Text3D glyph encoding. */
-static unsigned char nw_subtitle_glyph(Uint32 c)
-{
-    static const unsigned char accents[] = {
-        0xb7, 0xb5, 0xb6, 0xc7, 0x8e, 0, 0, 0x80,
-        0xd4, 0x90, 0xd2, 0xd3, 0xde, 0xd6, 0xd7, 0xd8,
-        0, 0xa5, 0xe3, 0xe0, 0xe2, 0xe5, 0x99, 0,
-        0, 0xeb, 0xe9, 0xea, 0x9a,
-    };
-    if (c >= 0x20 && c <= 0x7e && c != '#') {
-        return (unsigned char)c;
-    }
-    if (c >= 0xc0 && c - 0xc0 < SDL_arraysize(accents)) {
-        return accents[c - 0xc0];
-    }
-    switch (c) {
-        case 0xa1: return 0xad; /* ¡ */
-        case 0xbf: return 0xa8; /* ¿ */
-        case 0xba: return 0xf8; /* º */
-        default: return 0;
-    }
-}
-
-static bool nw_subtitles_upper(const char *text, char *out, size_t size)
-{
-    size_t n = 0;
-    while (*text) {
-        Uint32 c = SDL_StepUTF8(&text, NULL);
-        if (c == 0xdf) { /* Uppercase sharp S is SS in the original font. */
-            if (n + 2 >= size) {
-                return false;
-            }
-            out[n++] = 'S';
-            out[n++] = 'S';
-            continue;
-        }
-        if ((c >= 'a' && c <= 'z') || (c >= 0xe0 && c <= 0xfe && c != 0xf7)) {
-            c -= 0x20;
-        }
-        unsigned char glyph = nw_subtitle_glyph(c);
-        if (!glyph || n + 1 >= size) {
-            return false;
-        }
-        out[n++] = (char)glyph;
-    }
-    out[n] = '\0';
-    return n != 0;
 }
 
 static float nw_subtitles_width(const char *text, size_t n)
@@ -172,11 +124,13 @@ bool nw_subtitles_layout(const char *utf8, NwSubtitleLayout *out)
 {
     char text[512];
     SDL_zerop(out);
-    if (!utf8 || !nw_subtitles_upper(utf8, text, sizeof(text))) {
+    if (!nw_text3d_encode(utf8, text, sizeof(text))) {
         return false;
     }
     for (int cells = 52; cells <= 128; cells += 4) {
         if (nw_subtitles_wrap(text, (float)cells, out)) {
+            const char *colon = SDL_strchr(out->line[0], ':');
+            if (colon) out->speaker_length = (int)(colon - out->line[0]) + 1;
             const char *dialogue = SDL_strchr(utf8, ':');
             dialogue = dialogue ? dialogue + 1 : utf8;
             bool upper = false, lower = false;
