@@ -50,6 +50,8 @@ struct nw_embed_file {
 };
 extern const struct nw_embed_file nw_prompt_icons[];
 extern const size_t nw_prompt_icons_count;
+extern const unsigned char nw_autosave_png[];
+extern const size_t nw_autosave_png_size;
 
 #define NW_FONT3D_ICONS 64
 /* Icon scale over the cross model's extent (about two letters wide) and the letter cells it takes. */
@@ -65,6 +67,9 @@ static struct {
 } nw_font3d_icons[NW_FONT3D_ICONS];
 static int nw_font3d_nicons;
 static struct numtl_s *nw_font3d_grey[2]; /* forced table: the letters' special_id 1 */
+
+static struct numtl_s *nw_font3d_glint;
+static struct numtl_s *nw_font3d_saving[2];
 
 /* This frame's and the last frame's strings, for stable interpolation keys. */
 #define NW_FONT3D_TEXTS 256
@@ -108,6 +113,19 @@ static int nw_font3d_target(char c)
     }
 }
 
+static struct numtl_s *nw_font3d_overlay(void)
+{
+    struct numtl_s *mtl = NuMtlCreate(1);
+    mtl->diffuse.r = mtl->diffuse.g = mtl->diffuse.b = 1.0f;
+    mtl->alpha = 0.999f;
+    mtl->attrib.cull = 2;
+    mtl->attrib.zmode = 3;
+    mtl->attrib.alpha = 1;
+    mtl->attrib.lighting = 2;
+    mtl->attrib.colour = 1;
+    return mtl;
+}
+
 /* The PNG as a type 3 bitmap (A, B, G, R), blended over everything, unlit. */
 static struct numtl_s *nw_font3d_icon(const char *name)
 {
@@ -126,26 +144,19 @@ static struct numtl_s *nw_font3d_icon(const char *name)
     for (size_t i = 0; i < nw_prompt_icons_count && !file; i++) {
         file = strcmp(nw_prompt_icons[i].name, name) == 0 ? &nw_prompt_icons[i] : NULL;
     }
+    struct nw_embed_file autosave = { "autosave", nw_autosave_png, nw_autosave_png_size };
+    if (!file && strcmp(name, autosave.name) == 0) file = &autosave;
     SDL_IOStream *io = file ? SDL_IOFromConstMem(file->data, file->size) : NULL;
     SDL_Surface *png = io ? SDL_LoadPNG_IO(io, true) : NULL;
     SDL_Surface *abgr = png ? SDL_ConvertSurface(png, SDL_PIXELFORMAT_ABGR32) : NULL;
     SDL_DestroySurface(png);
     if (!abgr || abgr->pitch != abgr->w * 4) {
-        nw_log_warn(NW_LOG_LOAD, "prompts: icon %s: %s", name, file ? SDL_GetError() : "not in assets/prompts");
+        nw_log_warn(NW_LOG_LOAD, "font: icon %s: %s", name, file ? SDL_GetError() : "not embedded");
         SDL_DestroySurface(abgr);
         return NULL;
     }
     struct nutex_s tex = { 3, abgr->w, abgr->h, 1, abgr->pixels, NULL };
-    struct numtl_s *mtl = NuMtlCreate(1);
-    mtl->diffuse.r = 1.0f;
-    mtl->diffuse.g = 1.0f;
-    mtl->diffuse.b = 1.0f;
-    mtl->alpha = 0.999f;
-    mtl->attrib.cull = 2;
-    mtl->attrib.zmode = 3;
-    mtl->attrib.alpha = 1;
-    mtl->attrib.lighting = 2;
-    mtl->attrib.colour = 1;
+    struct numtl_s *mtl = nw_font3d_overlay();
     mtl->tid = NuTexCreate(&tex);
     NuMtlUpdate(mtl);
     SDL_DestroySurface(abgr);
@@ -156,6 +167,70 @@ void nw_font3d_release(void)
 {
     nw_font3d_nicons = 0;
     nw_font3d_grey[1] = NULL;
+    nw_font3d_glint = NULL;
+    nw_font3d_saving[0] = nw_font3d_saving[1] = NULL;
+}
+
+static f32 nw_font3d_saving_alpha(void)
+{
+    return 0.45f + 0.55f * (0.5f + 0.5f * SDL_cosf((SDL_GetTicks() % 1000) * (6.2831853f / 1000.0f)));
+}
+
+static struct numtl_s *nw_font3d_saving_material(struct numtl_s *src, int side)
+{
+    if (!nw_font3d_saving[side]) {
+        struct numtl_s *mtl = NuMtlCreate(1);
+        mtl->attrib = src->attrib;
+        mtl->attrib.alpha = 1;
+        mtl->ambient = src->ambient;
+        mtl->diffuse = src->diffuse;
+        mtl->power = src->power;
+        mtl->alpha = src->alpha;
+        mtl->tid = src->tid;
+        mtl->K = src->K;
+        mtl->L = src->L;
+        NuMtlUpdate(mtl);
+        nw_font3d_saving[side] = mtl;
+    }
+    return nw_font3d_saving[side];
+}
+
+/* The unlit font reads alpha from its vertices; leave the shared letter meshes untouched. */
+static void nw_font3d_saving_letter(struct nuspecial_s *special, f32 x, f32 y, f32 z,
+                                   f32 scalex, f32 scaley, f32 scalez)
+{
+    struct nugobj_s *obj = font3d_scene->gobjs[special->instance->objid];
+    struct nuvec_s scale = { FONT3DSIZE * scalex, FONT3DSIZE * scaley, FONT3DSIZE * scalez * 4.0f };
+    struct numtx_s m;
+    NuMtxSetScale(&m, &scale);
+    m._30 = x * PANEL3DMULX;
+    m._31 = y * PANEL3DMULY;
+    m._32 = z;
+    NuRndrSetLocalMtx(&m, 2);
+    f32 opacity = nw_font3d_saving_alpha();
+    NwInterpScope scope = nw_interp_begin(&m, obj, &m, (obj->max.y - obj->min.y) * scale.y);
+    u32 geom = 0;
+    for (struct nugeom_s *g = obj->geom; g; g = g->next, geom++) {
+        const NwGpuMesh *gpu = g->dmastream;
+        if (!gpu) continue;
+        struct numtl_s *mtl = g->mtl;
+        if (nurndr_forced_mtl_table && mtl->special_id && nurndr_forced_mtl_table[mtl->special_id]) {
+            mtl = nurndr_forced_mtl_table[mtl->special_id];
+        }
+        mtl = nw_font3d_saving_material(mtl, g->mtl->special_id != 0);
+        nw_interp_at(0, geom, 0);
+        NuRndrStreamAddMtl(&mtl->rs, mtl);
+        NwVuSpriteVertex *v;
+        nw_rndr_verts(&mtl->rs, NW_VERTS_TRIS, gpu->mesh.ntris * 3, &v);
+        for (u32 i = 0; i < gpu->mesh.ntris * 3; i++, v++) {
+            const NwVifVertex *src = &gpu->mesh.verts[gpu->mesh.tris[i]];
+            memcpy(v->pos, src->pos, sizeof(v->pos));
+            for (int j = 0; j < 4; j++) v->tex[j] = src->tex[j];
+            memcpy(v->col, src->col, sizeof(v->col));
+            v->col[3] = (uint8_t)(src->col[3] * opacity);
+        }
+    }
+    nw_interp_end(scope);
 }
 
 /* The menu entries' colour 2 at half its brightness. */
@@ -296,6 +371,73 @@ static void nw_font3d_quad(struct numtl_s *mtl, f32 x, f32 y, f32 z, f32 scalex,
     }
     NuRndrStreamAddMtl(&mtl->rs, mtl);
     nw_rndr_strip(v, 4, &m, &mtl->rs);
+}
+
+void nw_font3d_autosave(float x, float y, float size, bool writing)
+{
+    struct numtl_s *mtl = nw_font3d_icon("autosave");
+    if (!mtl) return;
+    f32 half = size * PANEL3DMULY * 0.5f;
+    f32 opacity = writing ? nw_font3d_saving_alpha() : 1.0f;
+    struct numtx_s m;
+    NuMtxSetIdentity(&m);
+    m._30 = x * PANEL3DMULX;
+    m._31 = y * PANEL3DMULY;
+    m._32 = 1.0f;
+    struct nuvtx_tc1_s quad[4] = { 0 };
+    for (int i = 0; i < 4; i++) {
+        quad[i].pnt.x = i & 1 ? half : -half;
+        quad[i].pnt.y = i & 2 ? -half : half;
+        quad[i].tc[0] = i & 1;
+        quad[i].tc[1] = i >> 1;
+        quad[i].diffuse = (s32)0x80808080;
+        quad[i].rgba.a = (int)(128 * opacity);
+    }
+    NuRndrStreamAddMtl(&mtl->rs, mtl);
+    nw_rndr_strip(quad, 4, &m, &mtl->rs);
+    if (!writing) return;
+    if (!nw_font3d_glint) {
+        nw_font3d_glint = nw_font3d_overlay();
+        NuMtlUpdate(nw_font3d_glint);
+    }
+    mtl = nw_font3d_glint;
+    f32 angle = -(SDL_GetTicks() % 1800) * (6.2831853f / 1800.0f);
+    f32 gx = SDL_cosf(angle) * half, gy = SDL_sinf(angle) * half;
+    f32 radius = half * 0.24f;
+    NuRndrStreamAddMtl(&mtl->rs, mtl);
+    NuRndrSetLocalMtx(&m, 2);
+    NwVuSpriteVertex *v;
+    nw_rndr_verts(&mtl->rs, NW_VERTS_TRIS, 27, &v);
+    /* One tapered tail and a four-point glint; no full ring around the disk. */
+    const float star[8][2] = { { 1, 0 }, { .2f, .2f }, { 0, 1 }, { -.2f, .2f },
+                              { -1, 0 }, { -.2f, -.2f }, { 0, -1 }, { .2f, -.2f } };
+    for (int i = 0; i < 27; i++, v++) {
+        memset(v, 0, sizeof(*v));
+        v->col[0] = 128;
+        v->col[1] = 110;
+        v->col[2] = 48;
+        v->col[3] = 128;
+        v->pos[0] = gx;
+        v->pos[1] = gy;
+        if (i < 3) {
+            if (i == 0) {
+                v->pos[0] = SDL_cosf(angle + 0.45f) * half;
+                v->pos[1] = SDL_sinf(angle + 0.45f) * half;
+                v->col[3] = 0;
+            } else {
+                f32 edge = (i == 1 ? 0.15f : -0.15f) * radius;
+                v->pos[0] += SDL_cosf(angle) * edge;
+                v->pos[1] += SDL_sinf(angle) * edge;
+            }
+        } else if ((i - 3) % 3) {
+            int point = ((i - 3) / 3 + (i - 3) % 3 - 1) % 8;
+            v->pos[0] += star[point][0] * radius;
+            v->pos[1] += star[point][1] * radius;
+        } else {
+            v->col[1] = v->col[2] = 128;
+        }
+        v->col[3] = (uint8_t)(v->col[3] * opacity);
+    }
 }
 
 static void nw_font3d_glyph(char c, f32 x, f32 y, f32 z, f32 dx, f32 scalex, f32 scaley, f32 scalez)
@@ -492,9 +634,13 @@ void Text3D(char *txt, f32 x, f32 y, f32 z, f32 scalex, f32 scaley, f32 scalez, 
                     } else {
                         y0 = y;
                     }
-                    DrawPanel3DObject(-1, x0, y0, z, FONT3DSIZE * scalex,
-                        FONT3DSIZE * scaley, (FONT3DSIZE * scalez) * f, 0, 0, 0,
-                        font3d_scene, Font3DTab[idx].obj.special, 1);
+                    if (colour == NW_FONT3D_SAVING) {
+                        nw_font3d_saving_letter(Font3DTab[idx].obj.special, x0, y0, z, scalex, scaley, scalez);
+                    } else {
+                        DrawPanel3DObject(-1, x0, y0, z, FONT3DSIZE * scalex,
+                            FONT3DSIZE * scaley, (FONT3DSIZE * scalez) * f, 0, 0, 0,
+                            font3d_scene, Font3DTab[idx].obj.special, 1);
+                    }
                 }
             }
         } else if (c < 0) {

@@ -170,6 +170,7 @@ set(nw_game_sources ${nw_dataimage} src/gfx/dma.c src/gfx/fx2.c src/gfx/nulight.
 list(FILTER nw_game_sources INCLUDE REGEX "\\.c$")
 add_library(nuworld_game STATIC $<TARGET_OBJECTS:nuworld_decomp> ${nw_game_sources})
 nw_embed_dir(nuworld_game nw_prompt_icons ${CMAKE_CURRENT_SOURCE_DIR}/assets/prompts)
+nw_embed(nuworld_game nw_autosave_png ${CMAKE_CURRENT_SOURCE_DIR}/assets/hud/autosave.png)
 nw_embed(nuworld_game nw_hubgem_toml ${CMAKE_CURRENT_SOURCE_DIR}/assets/hubgem.toml)
 set(nw_title_logo ${nw_gen}/nw_title_logo.ghg)
 add_custom_command(OUTPUT ${nw_title_logo}

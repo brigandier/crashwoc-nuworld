@@ -4,6 +4,8 @@
 #include "game/game.retail.h"
 #include "nu_types.h"
 #include "platform/buildid.h"
+#include "platform/log.h"
+#include "platform/text3d.h"
 #include "platform/update.h"
 #include "port/font3d.h"
 #include "port/menu.h"
@@ -12,15 +14,19 @@
 #include "port/saves.h"
 #include "port/autosave.h"
 #include "port/names.h"
+#include "port/wide.h"
 #include "gameplay/gameplay.h"
 
 extern s32 editor_active, GameMode, pause_dir, LANGUAGEOPTION;
 extern struct game_s Game;
+extern struct cursor_s Cursor;
+extern f32 font3d_xright, BONUSWUMPAOBJSX;
 extern char tbuf[128];
 extern char *tNEWGAME[6], *tLOADGAME[6], *tLANGUAGE[6], *LanguageName[6];
 extern char *tYES[6], *tNO[6];
 extern char *tRESUME[6], *tOPTIONS[6], *tQUIT[6], *tWARPROOM[6], *tRESTARTTRIAL[6];
-extern s32 Level, TimeTrial;
+extern s32 Level, TimeTrial, VEHICLECONTROL, Bonus;
+extern struct ldata_s *LDATA;
 extern s32 new_level, cutmovie, next_cut_movie, fade_rate, i_nameinput;
 extern struct game_s *game;
 extern char *tVIBRATION[6], *tON[6], *tOFF[6], *tSOUNDOPTIONS[6], *tADJUSTSCREEN[6], *tDONE[6];
@@ -277,6 +283,17 @@ static void nw_menu_dialog_entry(struct cursor_s *cursor, char *text, f32 *x, f3
     *y -= 0.035f;
 }
 
+static void nw_menu_utf8_text(const char *text, f32 x, f32 y, f32 size, f32 letters, s32 colour)
+{
+    char encoded[64];
+    if (!nw_text3d_encode(text, encoded, sizeof(encoded))) {
+        nw_log_error(NW_LOG_PORT, "menu: invalid Text3D text: %s", text);
+        SDL_strlcpy(encoded, "TEXT ERROR", sizeof(encoded));
+    }
+    f32 sx = size * SDL_min(1.0f, letters / (f32)SDL_strlen(encoded));
+    Text3D(encoded, x, y, 1.0f, sx, size, size, 0, colour);
+}
+
 static void nw_menu_autosave_draw(struct cursor_s *cursor)
 {
     int lang = Game.language, menu = cursor->menu;
@@ -289,6 +306,15 @@ static void nw_menu_autosave_draw(struct cursor_s *cursor)
         { "VOORTGANG WORDT AUTOMATISCH OPGESLAGEN", "IN EEN APART SLOT. HANDMATIG OPSLAAN", "WERKT GEWOON ZOALS ALTIJD.", "AUTOMATISCH OPSLAAN ZET JE ALTIJD AAN", "OF UIT IN HET MENU OPTIES." },
     };
     static char *activate[6] = { "ENABLE", "ACTIVER", "AKTIVIEREN", "ATTIVA", "ACTIVAR", "AANZETTEN" };
+    static const char *const icon_text[6][2] = {
+        { "THIS ICON APPEARS WHILE SAVING.", "WAIT UNTIL IT DISAPPEARS BEFORE QUITTING." },
+        { "CETTE ICÔNE INDIQUE UNE SAUVEGARDE.", "ATTENDS QU'ELLE DISPARAISSE AVANT DE QUITTER." },
+        { "DIESES SYMBOL ERSCHEINT BEIM SPEICHERN.", "WARTE VOR DEM BEENDEN, BIS ES VERSCHWINDET." },
+        { "QUESTA ICONA APPARE DURANTE IL SALVATAGGIO.", "ASPETTA CHE SCOMPAIA PRIMA DI USCIRE." },
+        { "ESTE ICONO APARECE MIENTRAS SE GUARDA.", "ESPERA A QUE DESAPAREZCA ANTES DE SALIR." },
+        { "DIT PICTOGRAM VERSCHIJNT TIJDENS OPSLAAN.", "WACHT TOT HET VERDWIJNT VOORDAT JE AFSLUIT." },
+    };
+    static const char *const icon_label[6] = { "SAVE ICON", "ICÔNE DE SAUVEGARDE", "SPEICHERSYMBOL", "ICONA DI SALVATAGGIO", "ICONO DE GUARDADO", "OPSLAGPICTOGRAM" };
     static char *disable[6] = { "DISABLE", "DESACTIVER", "DEAKTIVIEREN", "DISATTIVA", "DESACTIVAR", "UITZETTEN" };
     static char *without[6] = { "CONTINUE WITHOUT", "CONTINUER SANS", "OHNE FORTFAHREN", "CONTINUA SENZA", "CONTINUAR SIN", "DOORGAAN ZONDER" };
     static char *enable_title[6] = {
@@ -303,15 +329,20 @@ static void nw_menu_autosave_draw(struct cursor_s *cursor)
         { "EXISTE UN GUARDADO AUTOMATICO MAS NUEVO.", "SUSTITUIRLO CON ESTE PROGRESO?", "SE CONSERVAN LAS VERSIONES ANTERIORES." },
         { "ER IS EEN NIEUWERE AUTOMATISCHE SAVE.", "VERVANGEN DOOR DEZE VOORTGANG?", "VORIGE VERSIES BLIJVEN BEWAARD." },
     };
-    f32 x = 0.0f, y = -0.36f;
+    f32 x = 0.0f, y = menu == NW_MENU_AUTOSAVE_ROLLBACK ? -0.36f : -0.48f;
     s32 i = 0;
-    nw_menu_confirm_text(menu == NW_MENU_AUTOSAVE_NEW ? enable_title[lang] : nw_menu_autosave_title[lang], 0, 0.65f, 0.6f, 28);
+    nw_menu_confirm_text(menu == NW_MENU_AUTOSAVE_NEW ? enable_title[lang] : nw_menu_autosave_title[lang], 0,
+        menu == NW_MENU_AUTOSAVE_ROLLBACK ? 0.65f : 0.82f,
+        menu == NW_MENU_AUTOSAVE_ROLLBACK ? 0.6f : 0.5f, menu == NW_MENU_AUTOSAVE_ROLLBACK ? 28 : 32);
     if (menu == NW_MENU_AUTOSAVE_ROLLBACK) {
         for (int row = 0; row < 3; row++) nw_menu_confirm_text(rollback[lang][row], 0, 0.28f - row * 0.15f, 0.4f, 39);
         nw_menu_dialog_entry(cursor, activate[lang], &x, &y, &i);
         nw_menu_dialog_entry(cursor, without[lang], &x, &y, &i);
     } else {
-        for (int row = 0; row < 5; row++) nw_menu_confirm_text(disclaimer[lang][row], 0, 0.38f - row * 0.13f, 0.4f, 39);
+        nw_font3d_autosave(0, 0.63f, 0.13f, false);
+        nw_menu_utf8_text(icon_label[lang], 0, 0.51f, 0.24f, 18, 0);
+        for (int row = 0; row < 2; row++) nw_menu_utf8_text(icon_text[lang][row], 0, 0.34f - row * 0.10f, 0.30f, 44, 0);
+        for (int row = 0; row < 5; row++) nw_menu_confirm_text(disclaimer[lang][row], 0, 0.08f - row * 0.10f, 0.30f, 44);
         nw_menu_dialog_entry(cursor, activate[lang], &x, &y, &i);
         nw_menu_dialog_entry(cursor, menu == NW_MENU_AUTOSAVE_NEW ? without[lang] : disable[lang], &x, &y, &i);
         nw_menu_dialog_entry(cursor, nw_menu_back[lang], &x, &y, &i);
@@ -420,17 +451,31 @@ float nw_menu_autosave_hud_top(void)
 void nw_menu_autosave_notice(void)
 {
     NwAutosaveStatus status = nw_autosave_status();
-    if (status == NW_AUTOSAVE_IDLE || (u32)Game.language >= 6 || !nw_autosave_notice_visible(SDL_GetTicks())) return;
-    static char *notice[4][6] = {
-        { "AUTOSAVE IN PROGRESS...", "SAUVEGARDE AUTO EN COURS...", "AUTOMATISCHES SPEICHERN...", "AUTOSALVATAGGIO IN CORSO...", "GUARDANDO AUTOMATICAMENTE...", "AUTOMATISCH OPSLAAN..." },
-        { "AUTOSAVE COMPLETE", "SAUVEGARDE AUTO TERMINEE", "AUTOMATISCH GESPEICHERT", "AUTOSALVATAGGIO COMPLETATO", "GUARDADO AUTOMATICO COMPLETADO", "AUTOMATISCH OPGESLAGEN" },
-        { "AUTOSAVE FAILED", "ECHEC SAUVEGARDE AUTO", "AUTOMATISCHES SPEICHERN FEHLGESCHLAGEN", "AUTOSALVATAGGIO NON RIUSCITO", "ERROR DE GUARDADO AUTOMATICO", "AUTOMATISCH OPSLAAN MISLUKT" },
-        { "SAVE RECOVERED FROM BACKUP", "SAUVEGARDE RESTAUREE", "SPEICHERSTAND WIEDERHERGESTELLT", "SALVATAGGIO RECUPERATO DAL BACKUP", "GUARDADO RECUPERADO DE COPIA", "SAVE HERSTELD VANUIT BACKUP" },
+    if (status == NW_AUTOSAVE_IDLE || (u32)Game.language >= 6) return;
+    if (cutmovie >= 0 || Level == 0x23 || Cursor.menu == NW_MENU_AUTOSAVE_NEW) return;
+    static const char *const notice[3][6] = {
+        { "SAVING", "SAUVEGARDE", "SPEICHERN", "SALVATAGGIO", "GUARDANDO", "OPSLAAN" },
+        { "SAVE FAILED", "ÉCHEC DE SAUVEGARDE", "SPEICHERFEHLER", "SALVATAGGIO FALLITO", "ERROR AL GUARDAR", "OPSLAAN MISLUKT" },
+        { "BACKUP RESTORED", "SAUVEGARDE RESTAURÉE", "WIEDERHERGESTELLT", "BACKUP RIPRISTINATO", "COPIA RESTAURADA", "BACK-UP HERSTELD" },
     };
-    char *text = notice[status - 1][Game.language];
+    bool saving = status == NW_AUTOSAVE_WRITING || status == NW_AUTOSAVE_COMPLETE;
+    const char *text = notice[saving ? 0 : status == NW_AUTOSAVE_FAILED ? 1 : 2][Game.language];
     nw_autosave_notice_presented();
-    nw_menu_confirm_text(text, 0.0f, -0.88f, 0.34f, 40);
-    nw_menu_autosave_top = -0.83f;
+    f32 x = -(f32)nw_wide_width() / 640.0f + 0.18f;
+    f32 label_x = saving ? x : x + 0.18f;
+    f32 right = label_x + (saving ? 0.08f : 0.20f);
+    f32 y = -0.77f;
+    /* Vehicle counters stay in the 4:3 area; bonus fruit follows the configured HUD edge. */
+    if (right > -1.0f && ((LDATA && (LDATA->flags & 0x200) && VEHICLECONTROL == 1) ||
+                           Level == 3 || Level == 0x15)) {
+        y = -0.35f;
+    } else if (Bonus >= 2 && Bonus <= 4 && right > BONUSWUMPAOBJSX - 0.10f) {
+        y = -0.57f;
+    }
+    nw_font3d_autosave(x, y, 0.10f, saving);
+    nw_menu_utf8_text(text, label_x, y - 0.11f, 0.20f, saving ? 8 : 20, saving ? NW_FONT3D_SAVING : 0);
+    /* Let centred subtitles clear the icon and label when they share the lower edge. */
+    nw_menu_autosave_top = SDL_max(x + 0.07f, font3d_xright) > -0.90f ? y + 0.07f : -1.0f;
 }
 
 static void nw_menu_confirm(struct cursor_s *cursor, s32 paused)

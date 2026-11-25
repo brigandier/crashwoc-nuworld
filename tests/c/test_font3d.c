@@ -20,7 +20,10 @@
 #include "nu3d/nuvport.h"
 #include "nucore/nufile.h"
 #include "numath/nutrig.h"
+#include "port/autosave.h"
 #include "port/font3d.h"
+#include "port/menu.h"
+#include "port/wide.h"
 #include "port/game.h"
 #include "shim/shim.h"
 #include "vfs/extract.h"
@@ -48,6 +51,9 @@ void NuCameraSet(struct nucamera_s *cam);
 void InitFont3D(struct nugscn_s *gscn);
 void Text3D(char *txt, float x, float y, float z, float scalex, float scaley, float scalez, int align, int colour);
 void NewLanguage(int lang);
+void DrawMenu(struct cursor_s *cursor, s32 paused);
+extern struct game_s Game;
+extern s32 Bonus, Level, cutmovie;
 
 static int failures;
 static char scene_buffer[1 << 20];
@@ -83,6 +89,37 @@ static void camera_init(void)
     cam->mtx = numtx_identity;
     cam->mtx._32 = -20.0f;
     NuCameraSet(cam);
+}
+
+static void test_autosave_icon(void)
+{
+    for (int saving = 0; saving < 2; saving++) {
+        nw_font3d_autosave(0, 0, 0.10f, saving != 0);
+        NuRndrEndScene();
+        const NwPacket *packet = nw_rndr_packet();
+        unsigned disks = 0, glints = 0;
+        for (uint32_t i = 0; i < packet->ncmds; i++) {
+            const NwCmd *cmd = &packet->cmds[i];
+            CHECK(cmd->op == NW_CMD_VERTS);
+            if (cmd->material->tid) {
+                const NwGpuTex *tex = nw_rndr_texture(cmd->material->tid);
+                CHECK(tex && tex->tex.levels[0].width == 128 && tex->tex.levels[0].height == 128);
+                if (tex) {
+                    const uint8_t *pixels = tex->tex.levels[0].texels;
+                    CHECK(pixels[3] == 0 && pixels[(64 * 128 + 64) * 4 + 3] > 0);
+                }
+                CHECK(cmd->count == 6);
+                uint8_t alpha = packet->verts[cmd->first].col[3];
+                CHECK(saving ? alpha >= 57 && alpha <= 128 : alpha == 128);
+                disks++;
+            } else {
+                CHECK(cmd->count == 27);
+                glints++;
+            }
+        }
+        CHECK(disks == 1 && glints == (unsigned)saving);
+        NuRndrSwapStreamBuffers();
+    }
 }
 
 static void test_synthetic(const char *scratch)
@@ -198,6 +235,7 @@ static void test_synthetic(const char *scratch)
         }
     }
     NewLanguage(0);
+    test_autosave_icon();
 
     nw_shim_file_init(NULL);
     nw_vfs_shutdown(&vfs);
@@ -209,6 +247,93 @@ static void test_synthetic(const char *scratch)
 static NwVfs retail_vfs;
 static unsigned retail_glyphs, retail_found, retail_accents, retail_colours, retail_draws, retail_places;
 static int retail_bad;
+
+static void test_autosave_position(void)
+{
+    static const struct {
+        float aspect, hud;
+        int level, bonus;
+        float y;
+    } cases[] = {
+        { 4.0f / 3.0f, 0, 3, 0, -0.35f },
+        { 16.0f / 10.0f, 0, 3, 0, -0.35f },
+        { 21.0f / 9.0f, 0, 3, 0, -0.77f },
+        { 21.0f / 9.0f, 0, 0, 2, -0.57f },
+        { 21.0f / 9.0f, 4.0f / 3.0f, 0, 2, -0.77f },
+    };
+    NewLanguage(0);
+    cutmovie = -1;
+    nw_autosave_recovered();
+    for (size_t i = 0; i < SDL_arraysize(cases); i++) {
+        Level = cases[i].level;
+        Bonus = cases[i].bonus;
+        nw_wide_set(cases[i].aspect, cases[i].hud);
+        nw_menu_autosave_notice();
+        NuRndrEndScene();
+        const NwPacket *packet = nw_rndr_packet();
+        unsigned disks = 0;
+        for (uint32_t j = 0; j < packet->ncmds; j++) {
+            const NwCmd *cmd = &packet->cmds[j];
+            if (cmd->op == NW_CMD_VERTS && cmd->count == 6 && cmd->material->tid) {
+                float x = -(float)nw_wide_width() / 640.0f + 0.18f;
+                CHECK(SDL_fabsf(cmd->local[12] - x * PANEL3DMULX) < 1e-5f);
+                CHECK(SDL_fabsf(cmd->local[13] - cases[i].y * PANEL3DMULY) < 1e-5f);
+                disks++;
+            }
+        }
+        CHECK(disks == 1);
+        NuRndrSwapStreamBuffers();
+    }
+}
+
+static void test_autosave_retail(void)
+{
+    PANEL3DMULX = 640.0f / 1200.0f;
+    PANEL3DMULY = 448.0f / 1200.0f;
+    float original_alpha = Font3DMtlTab[0][1]->alpha;
+    Text3D("SAVING", 0, 0, 1, 0.20f, 0.20f, 0.20f, 0, NW_FONT3D_SAVING);
+    NuRndrEndScene();
+    const NwPacket *p = nw_rndr_packet();
+    unsigned faded = 0;
+    for (uint32_t j = 0; j < p->ncmds; j++) {
+        const NwCmd *cmd = &p->cmds[j];
+        CHECK(cmd->op == NW_CMD_VERTS);
+        for (uint32_t k = 0; k < cmd->count; k++) {
+            uint8_t alpha = p->verts[cmd->first + k].col[3];
+            CHECK(alpha >= 57 && alpha <= 128);
+        }
+        if (cmd->material->tid == Font3DMtlTab[0][1]->tid) {
+            CHECK(cmd->material != Font3DMtlTab[0][1] && cmd->material->attrib.alpha == 1);
+            faded++;
+        }
+    }
+    CHECK(faded == 6 && Font3DMtlTab[0][1]->alpha == original_alpha);
+    NuRndrSwapStreamBuffers();
+
+    struct cursor_s cursor = { .menu = NW_MENU_AUTOSAVE_NEW, .y_max = 2 };
+    for (int lang = 0; lang < 6; lang++) {
+        NewLanguage(lang);
+        DrawMenu(&cursor, 25);
+        NuRndrEndScene();
+        p = nw_rndr_packet();
+        unsigned rows[3] = { 0 }, disks = 0;
+        const float y[] = { 0.51f, 0.34f, 0.24f };
+        for (uint32_t j = 0; j < p->ncmds; j++) {
+            const NwCmd *cmd = &p->cmds[j];
+            for (int row = 0; row < 3; row++) {
+                if (SDL_fabsf(cmd->local[13] - y[row] * PANEL3DMULY) < 1e-5f) rows[row]++;
+            }
+            if (cmd->op == NW_CMD_VERTS && cmd->count == 6 &&
+                SDL_fabsf(cmd->local[13] - 0.63f * PANEL3DMULY) < 1e-5f) disks++;
+        }
+        CHECK(Game.language == lang && disks == 1);
+        CHECK(rows[0] > 8 && rows[1] > 50 && rows[2] > 50);
+        NuRndrSwapStreamBuffers();
+    }
+    test_autosave_position();
+    nw_wide_set(4.0f / 3.0f, 0);
+    nw_autosave_init(NULL);
+}
 
 static int retail_main(int argc, char **argv)
 {
@@ -253,6 +378,8 @@ static int retail_main(int argc, char **argv)
     }
 
     font3d_scene = sc;
+    test_autosave_retail();
+    NewLanguage(0);
     PANEL3DMULX = 1.0f;
     PANEL3DMULY = 1.0f;
     Text3D("NEW GAME", 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0, 2);

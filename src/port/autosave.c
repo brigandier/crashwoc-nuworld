@@ -49,7 +49,7 @@ static struct {
         int slot;
         NwAutoSnapshot snapshot;
         NwSaveMeta meta;
-        bool ok;
+        bool ok, quiet;
         char error[512];
     } job;
     NwAutosaveStatus status;
@@ -148,6 +148,8 @@ static void nw_autosave_start(void)
     nw_auto.job.snapshot = nw_auto.snapshot;
     nw_auto.job.meta = nw_auto.meta;
     nw_auto.job.ok = false;
+    /* The initial save belongs to the title/intro, even if the player skips the intro. */
+    nw_auto.job.quiet = Level == 0x23 || cutmovie >= 0;
     nw_autosave_notice(NW_AUTOSAVE_WRITING);
     nw_auto.pending = nw_save_worker_submit(&nw_auto.task, nw_autosave_worker, NULL);
     if (!nw_auto.pending) {
@@ -366,19 +368,15 @@ void nw_autosave_accept_rollback(bool enabled)
 
 NwAutosaveStatus nw_autosave_status(void)
 {
-    uint64_t elapsed = SDL_GetTicks() - nw_auto.notice;
-    if (nw_auto.presented && nw_auto.status == NW_AUTOSAVE_COMPLETE && elapsed >= 2500) {
-        return NW_AUTOSAVE_IDLE;
-    }
-    if (nw_auto.presented && (nw_auto.status == NW_AUTOSAVE_FAILED || nw_auto.status == NW_AUTOSAVE_RECOVERED) && elapsed >= 6000) {
-        return NW_AUTOSAVE_IDLE;
-    }
-    return nw_auto.status;
+    return nw_autosave_notice_visible(SDL_GetTicks()) ? nw_auto.status : NW_AUTOSAVE_IDLE;
 }
 
 bool nw_autosave_notice_visible(uint64_t now)
 {
-    return nw_auto.status != NW_AUTOSAVE_WRITING || ((now - nw_auto.notice) / 350) % 2 == 0;
+    if (nw_auto.status == NW_AUTOSAVE_IDLE) return false;
+    if (nw_auto.status == NW_AUTOSAVE_WRITING) return !nw_auto.job.quiet;
+    if (nw_auto.status == NW_AUTOSAVE_COMPLETE && nw_auto.job.quiet) return false;
+    return !nw_auto.presented || now - nw_auto.notice < (nw_auto.status == NW_AUTOSAVE_COMPLETE ? 2500 : 6000);
 }
 
 void nw_autosave_notice_presented(void)
