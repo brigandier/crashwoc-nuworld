@@ -51,6 +51,8 @@ static void catalog(void)
             NwSubtitleLayout layout;
             CHECK(nw_subtitles_layout(cue->text, &layout));
             CHECK(layout.count > 0 && layout.count <= NW_SUBTITLE_LINES);
+            const char *colon = strchr(layout.line[0], ':');
+            CHECK(colon && layout.speaker_length == colon - layout.line[0] + 1);
             CHECK(layout.scale > 0.25f && layout.scale <= 0.34f);
             size_t expected = 0, drawn = 0;
             const char *p = cue->text;
@@ -110,6 +112,7 @@ static void playback(void)
     NwSubtitleLayout layout;
     CHECK(nw_subtitles_layout("x o s t q u / Straße", &layout));
     CHECK(!strcmp(layout.line[0], "X O S T Q U / STRASSE"));
+    CHECK(layout.speaker_length == 0);
     CHECK(!nw_subtitles_layout("", &layout));
     CHECK(!nw_subtitles_layout("   ", &layout));
     CHECK(!nw_subtitles_layout("#o", &layout));

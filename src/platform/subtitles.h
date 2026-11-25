@@ -14,7 +14,7 @@ bool nw_subtitles_enabled(bool title);
 #define NW_SUBTITLE_LINE_SIZE 256
 typedef struct NwSubtitleLayout {
     char line[NW_SUBTITLE_LINES][NW_SUBTITLE_LINE_SIZE];
-    int count;
+    int count, speaker_length; /* the first line, including the colon */
     float scale;
 } NwSubtitleLayout;
 

@@ -160,6 +160,8 @@ bool nw_subtitles_layout(const char *utf8, NwSubtitleLayout *out)
     }
     for (int cells = 52; cells <= 128; cells += 4) {
         if (nw_subtitles_wrap(text, (float)cells, out)) {
+            const char *colon = SDL_strchr(out->line[0], ':');
+            if (colon) out->speaker_length = (int)(colon - out->line[0]) + 1;
             const char *dialogue = SDL_strchr(utf8, ':');
             dialogue = dialogue ? dialogue + 1 : utf8;
             bool upper = false, lower = false;

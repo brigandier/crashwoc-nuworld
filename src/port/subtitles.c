@@ -78,6 +78,7 @@ static void nw_subtitles_draw(void)
     if (text && pNuCam) {
         static const char *last;
         static NwSubtitleLayout layout;
+        static char first_line[NW_SUBTITLE_LINE_SIZE + 4];
         if (text != last) {
             last = text;
             if (!nw_subtitles_layout(text, &layout)) {
@@ -85,6 +86,11 @@ static void nw_subtitles_draw(void)
                 SDL_strlcpy(layout.line[0], "TEXT ERROR", sizeof(layout.line[0]));
                 layout.count = 1;
                 layout.scale = 0.34f;
+            }
+            if (layout.speaker_length) {
+                /* Text3D ignores its colour controls when measuring and centring the line. */
+                SDL_snprintf(first_line, sizeof(first_line), "#b%.*s#o%s",
+                    layout.speaker_length, layout.line[0], layout.line[0] + layout.speaker_length);
             }
         }
         struct numtx_s camera = pNuCam->mtx;
@@ -101,7 +107,8 @@ static void nw_subtitles_draw(void)
         float y = bottom + (layout.count - 1) * 0.10f;
         bool accents = nw_font3d_subtitle_accents(true);
         for (int i = 0; i < layout.count; i++) {
-            Text3D(layout.line[i], 0.0f, y, 1.0f, layout.scale, layout.scale, layout.scale, 0, 0);
+            char *line = i == 0 && layout.speaker_length ? first_line : layout.line[i];
+            Text3D(line, 0.0f, y, 1.0f, layout.scale, layout.scale, layout.scale, 0, 0);
             y -= 0.10f;
         }
         nw_font3d_subtitle_accents(accents);
