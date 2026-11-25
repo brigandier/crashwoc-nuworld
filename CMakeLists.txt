@@ -185,6 +185,8 @@ add_library(nuworld_port STATIC
   src/hle/eefpu.c
   src/platform/clock.c
   src/platform/http.c
+  src/platform/language.c
+  src/platform/subtitles.c
   src/platform/update.c
   src/port/stub.c
   src/port/funcmap.c
@@ -247,7 +249,7 @@ add_library(nuworld_frontend STATIC
   src/platform/prompts.c)
 target_include_directories(nuworld_frontend PUBLIC src)
 target_compile_options(nuworld_frontend PRIVATE -Wall -Wextra)
-target_link_libraries(nuworld_frontend PUBLIC nuworld_vfs nuworld_save)
+target_link_libraries(nuworld_frontend PUBLIC nuworld_vfs nuworld_save nuworld_port)
 
 set(NW_SAVE_SOURCES
   src/save/saveio.c

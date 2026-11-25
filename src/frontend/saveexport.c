@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "frontend/debug.h"
+#include "platform/language.h"
 #include "platform/log.h"
 #include "port/saves.h"
 
@@ -95,7 +96,7 @@ static void nw_saveexport_scan(void)
         }
         int i = nw_saveexport.count++;
         nw_saveexport.numbers[i] = n;
-        SDL_snprintf(nw_saveexport.saves[i], NW_SAVEEXPORT_LABEL, "Save %d: %s%s  %04d-%02d-%02d %02d:%02d", n + 1,
+        SDL_snprintf(nw_saveexport.saves[i], NW_SAVEEXPORT_LABEL, nw_language_ui_text("Save %d: %s%s  %04d-%02d-%02d %02d:%02d"), n + 1,
                      what, longer, t.year, t.month, t.day, t.hour, t.minute);
     }
     for (int s = 0; s < NW_SAVE_PS2_GAMES; s++) {
@@ -118,9 +119,9 @@ static void nw_saveexport_read_card(void)
         char what[48];
         if (nw_saveexport.state == NW_SAVE_CARD_SAVE && !game[NW_SAVE_EMPTY]) {
             nw_saveexport_game(game, what, sizeof(what));
-            SDL_snprintf(nw_saveexport.keep[s], NW_SAVEEXPORT_LABEL, "Keep the card's: %s", what);
+            SDL_snprintf(nw_saveexport.keep[s], NW_SAVEEXPORT_LABEL, nw_language_ui_text("Keep the card's: %s"), what);
         } else {
-            SDL_strlcpy(nw_saveexport.keep[s], "Keep the card's: empty", NW_SAVEEXPORT_LABEL);
+            SDL_strlcpy(nw_saveexport.keep[s], nw_language_ui_text("Keep the card's: empty"), NW_SAVEEXPORT_LABEL);
         }
     }
 }
@@ -163,11 +164,11 @@ static void nw_saveexport_export(void)
                               picks, icon, icon_len);
     if (nw_saveexport.result_ok) {
         SDL_snprintf(nw_saveexport.result, sizeof(nw_saveexport.result),
-                     "Exported. The card as it was before is %s.bak.", nw_saveexport.card);
+                     nw_language_ui_text("Exported. The card as it was before is %s.bak."), nw_saveexport.card);
         nw_log_info(NW_LOG_SAVE, "saves: exported to %s", nw_saveexport.card);
         SDL_zeroa(nw_saveexport.choice);
     } else {
-        SDL_snprintf(nw_saveexport.result, sizeof(nw_saveexport.result), "Not exported: %s", SDL_GetError());
+        SDL_snprintf(nw_saveexport.result, sizeof(nw_saveexport.result), nw_language_ui_text("Not exported: %s"), SDL_GetError());
     }
     SDL_free(icon);
     nw_saveexport_read_card();
@@ -230,7 +231,7 @@ static void nw_saveexport_draw(void *user)
         for (int i = 0; i < nw_saveexport.count; i++) {
             nw_saveexport.items[s][i + 2] = nw_saveexport.saves[i];
         }
-        SDL_snprintf(label, sizeof(label), "Slot %d", s + 1);
+        SDL_snprintf(label, sizeof(label), nw_language_ui_text("Slot %d"), s + 1);
         if (nw_debug_combo(label, &nw_saveexport.choice[s], nw_saveexport.items[s], nw_saveexport.count + 2)) {
             nw_saveexport.result[0] = '\0';
         }

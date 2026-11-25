@@ -6,6 +6,7 @@
 
 #include "app.h"
 #include "platform/paths.h"
+#include "platform/language.h"
 #include "save/savedoc.h"
 
 typedef enum NwSettingKind {
@@ -320,6 +321,12 @@ static const NwSettingKey nw_settings_keys[] = {
               "Video menu (Windows); next start" },
     { .table = "game", .name = "hardware_speed", .kind = NW_SETTING_BOOL, NW_FIELD(hardware_speed),
       .help = "true: PS2 disc and sound load times" },
+    { .table = "game", .name = "language", .kind = NW_SETTING_ENUM, NW_FIELD(language), .hi = NW_LANGUAGES,
+      .names = nw_language_keys, .help = "disc (follow the save), en, fr, de, it, es, nl or pt-BR; PT-BR uses English voices" },
+    { .table = "game", .name = "subtitles", .kind = NW_SETTING_BOOL, NW_FIELD(subtitles),
+      .help = "true: subtitles in the selected game language" },
+    { .table = "game", .name = "title_subtitles", .kind = NW_SETTING_BOOL, NW_FIELD(title_subtitles),
+      .help = "true: include the opening logos and title when subtitles are enabled" },
     { .table = "game", .name = "retail_menu", .kind = NW_SETTING_BOOL, NW_FIELD(retail_menu),
       .help = "true: PS2 logos and title cutscene; false: NuWorld title menu; next start" },
     { .table = "game", .name = "air_indicator", .kind = NW_SETTING_BOOL, NW_FIELD(air_indicator),
@@ -398,6 +405,9 @@ static const NwSettingKey nw_settings_keys[] = {
 
 void nw_settings_defaults(NwSettings *s)
 {
+    s->language = NW_LANGUAGE_DISC;
+    s->subtitles = false;
+    s->title_subtitles = false;
     s->hardware_speed = false;
     s->retail_menu = false;
     s->movement = (NwMovement)NW_MOVEMENT_NHANCED;

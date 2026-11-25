@@ -60,7 +60,9 @@ static struct {
 static void nw_autosave_notice(NwAutosaveStatus status)
 {
     nw_auto.status = status;
-    nw_auto.presented = false;
+    /* New-game/title saves are quiet; failures still wait for a visible gameplay frame. */
+    nw_auto.presented = (status == NW_AUTOSAVE_WRITING || status == NW_AUTOSAVE_COMPLETE) &&
+        (cutmovie >= 0 || Level == 0x23);
     nw_auto.notice = SDL_GetTicks();
 }
 
@@ -366,19 +368,14 @@ void nw_autosave_accept_rollback(bool enabled)
 
 NwAutosaveStatus nw_autosave_status(void)
 {
-    uint64_t elapsed = SDL_GetTicks() - nw_auto.notice;
-    if (nw_auto.presented && nw_auto.status == NW_AUTOSAVE_COMPLETE && elapsed >= 2500) {
-        return NW_AUTOSAVE_IDLE;
-    }
-    if (nw_auto.presented && (nw_auto.status == NW_AUTOSAVE_FAILED || nw_auto.status == NW_AUTOSAVE_RECOVERED) && elapsed >= 6000) {
-        return NW_AUTOSAVE_IDLE;
-    }
-    return nw_auto.status;
+    return nw_autosave_notice_visible(SDL_GetTicks()) ? nw_auto.status : NW_AUTOSAVE_IDLE;
 }
 
 bool nw_autosave_notice_visible(uint64_t now)
 {
-    return nw_auto.status != NW_AUTOSAVE_WRITING || ((now - nw_auto.notice) / 350) % 2 == 0;
+    if (nw_auto.status == NW_AUTOSAVE_IDLE) return false;
+    if (!nw_auto.presented || nw_auto.status == NW_AUTOSAVE_WRITING) return true;
+    return now - nw_auto.notice < (nw_auto.status == NW_AUTOSAVE_COMPLETE ? 2500 : 6000);
 }
 
 void nw_autosave_notice_presented(void)

@@ -16,6 +16,8 @@
 #include "platform/discord.h"
 #include "platform/log.h"
 #include "platform/paths.h"
+#include "platform/language.h"
+#include "platform/subtitles.h"
 #include "platform/platform.h"
 #include "platform/prompts.h"
 #include "platform/update.h"
@@ -857,6 +859,28 @@ static void nw_boot_audio(void *user)
     nw_debug_slider_int("Voice", &s->voice_volume, 0, 100);
 }
 
+static void nw_boot_language(void *user)
+{
+    NwSettings *s = user;
+    static const char *const labels[NW_LANGUAGES] = { "Disc / save language", "English", "French", "German",
+        "Italian", "Spanish", "Dutch", "Português (BR)" };
+    const NwVfs *vfs = nw_shim_file_vfs();
+    if (vfs && vfs->manifest && (vfs->manifest->flags & NW_DISC_ENGLISH)) {
+        static const char *const english_labels[] = { "Disc / save language", "English", "Português (BR)" };
+        int choice = s->language == NW_LANGUAGE_PT_BR ? 2 : s->language == NW_LANGUAGE_EN ? 1 : 0;
+        if (nw_debug_combo("Language", &choice, english_labels, 3)) {
+            s->language = choice == 2 ? NW_LANGUAGE_PT_BR : choice;
+        }
+    } else {
+        nw_debug_combo("Language", &s->language, labels, NW_LANGUAGES);
+    }
+    if (s->language == NW_LANGUAGE_PT_BR) {
+        nw_debug_text("Portuguese text uses English voices.");
+    }
+    nw_debug_checkbox("Subtitles", &s->subtitles);
+    nw_debug_checkbox("Subtitles on title screen", &s->title_subtitles);
+}
+
 static const char *const nw_movement_profiles[] = { "Retail", "N. Hanced", "Custom" };
 
 static bool nw_boot_switch(const char *label, const char *help, bool *value)
@@ -1080,22 +1104,22 @@ static void nw_boot_levels(void *user)
     nw_debug_list_begin("levels", 16);
     for (int i = 0, shown = -1; i < nw_level_count(); i++) {
         int room, slot, level = nw_level_at(i, &room, &slot);
-        const char *name = nw_level_name(level);
+        const char *name = nw_language_ui_text(nw_level_name(level));
         if (!name || !SDL_strcasestr(name, filter)) {
             continue;
         }
         char label[80];
         if (room != shown) {
-            SDL_snprintf(label, sizeof(label), "Warp Room %d", room);
+            SDL_snprintf(label, sizeof(label), nw_language_ui_text("Warp Room %d"), room);
             nw_debug_heading(room ? label : "Other");
             shown = room;
         }
         if (!room) {
-            SDL_strlcpy(label, name, sizeof(label));
+            SDL_snprintf(label, sizeof(label), "%s###level%d", name, level);
         } else if (slot == 5) {
-            SDL_snprintf(label, sizeof(label), "Boss: %s", name);
+            SDL_snprintf(label, sizeof(label), nw_language_ui_text("Boss: %s###level%d"), name, level);
         } else {
-            SDL_snprintf(label, sizeof(label), "%d. %s", slot + 1, name);
+            SDL_snprintf(label, sizeof(label), "%d. %s###level%d", slot + 1, name, level);
         }
         if (nw_debug_selectable(label, level == nw_level_current())) {
             nw_level_load(level);
@@ -1104,7 +1128,7 @@ static void nw_boot_levels(void *user)
     nw_debug_list_end();
     int pending = nw_level_pending();
     if (pending >= 0) {
-        nw_debug_text("entering %s", nw_level_name(pending));
+        nw_debug_text("entering %s", nw_language_ui_text(nw_level_name(pending)));
     }
 }
 
@@ -1125,7 +1149,7 @@ static void nw_boot_cutscenes(void *user)
             shown = group;
         }
         char label[64];
-        SDL_snprintf(label, sizeof(label), "%s##%d", name, i);
+        SDL_snprintf(label, sizeof(label), "%s###cutscene%d", nw_language_ui_text(name), i);
         if (nw_debug_selectable(label, i == current)) {
             nw_cutscene_play(i);
         }
@@ -1134,7 +1158,7 @@ static void nw_boot_cutscenes(void *user)
     const char *group;
     const char *name = nw_cutscene_name(nw_cutscene_pending(), &group);
     if (name) {
-        nw_debug_text("starting %s: %s", group, name);
+        nw_debug_text("starting %s: %s", nw_language_ui_text(group), nw_language_ui_text(name));
     }
 }
 
@@ -1170,6 +1194,8 @@ static int nw_boot(const char *data_dir, int hardware_speed, float aspect, NwPla
     NwSettings settings;
     nw_settings_defaults(&settings);
     nw_boot_settings(data_dir, &settings, false);
+    nw_language_request(settings.language);
+    nw_subtitles_enable(settings.subtitles, settings.title_subtitles);
     if (hardware_speed >= 0) {
         settings.hardware_speed = hardware_speed;
     }
@@ -1235,6 +1261,7 @@ static int nw_boot(const char *data_dir, int hardware_speed, float aspect, NwPla
     }
     nw_wide_set(nw_video_start(&platform, &settings), settings.hud);
     nw_debug_panel("Settings", "Audio", nw_boot_audio, &settings, false);
+    nw_debug_panel("Settings", "Language", nw_boot_language, &settings, false);
     nw_control_panel_start(&settings.controls);
     if (presence) {
         nw_debug_toggle("Settings", "Discord Rich Presence", &settings.discord);
@@ -1337,9 +1364,15 @@ static int nw_boot(const char *data_dir, int hardware_speed, float aspect, NwPla
             running = false;
         }
         NwPresenceSnap snap;
+        nw_subtitles_enable(settings.subtitles, settings.title_subtitles);
         nw_presence_poll(&snap);
         if (snap.valid) {
             nw_settings_level_fog(&settings, snap.cutmovie == 0 ? -1 : snap.level, &fog_kept);
+        }
+        if (settings.language != applied.language) {
+            nw_language_request(settings.language);
+        } else {
+            settings.language = nw_language_preference(); /* changed in the game's language menu */
         }
         if (!nw_settings_equal(&settings, &applied)) {
             if (settings.discord != applied.discord) {

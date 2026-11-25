@@ -12,6 +12,7 @@
 #include "game/gametypes.h"
 #include "port/rev.h"
 #include "nu3d/nucamera.h"
+#include "nu3d/nugobj.h"
 #include "nu3d/nugscn.h"
 #include "nu3d/numtl.h"
 #include "nu3d/nurndr.h"
@@ -21,6 +22,8 @@
 #include "nucore/nufile.h"
 #include "numath/nutrig.h"
 #include "port/font3d.h"
+#include "port/language.h"
+#include "port/menu.h"
 #include "port/game.h"
 #include "shim/shim.h"
 #include "vfs/extract.h"
@@ -38,6 +41,7 @@ extern struct numtl_s *Font3DMtlTab[5][2];
 extern struct nugscn_s *font3d_scene;
 extern struct numtl_s **nurndr_forced_mtl_table;
 extern float FONT3DSIZE, FONT3DYMUL, PANEL3DMULX, PANEL3DMULY;
+void DrawMenu(struct cursor_s *cursor, s32 paused);
 extern float font3d_xleft, font3d_xright;
 extern struct powerdata_s PData[6];
 
@@ -229,7 +233,7 @@ static int retail_main(int argc, char **argv)
     for (int i = 0; Font3DTab[i].ascii != 0; i++) {
         retail_glyphs++;
         retail_found += Font3DTab[i].obj.special != NULL;
-        /* font.gsc has no "exclamation": '!' draws nothing on retail either. */
+        /* font.gsc omits "exclamation"; the port draws it from the question mark's dot. */
         if (!Font3DTab[i].obj.special && strcmp(Font3DTab[i].name, "exclamation") != 0) {
             fprintf(stderr, "retail: glyph %s is not in font.gsc\n", Font3DTab[i].name);
             retail_bad++;
@@ -270,6 +274,196 @@ static int retail_main(int argc, char **argv)
     }
     retail_draws = p->ncmds;
     NuRndrSwapStreamBuffers();
+
+    /* The fallback must share the question mark's dot width, baseline, colours and depth. */
+    const struct nugobj_s *question = sc->gobjs[Font3DTab[Font3DRemap['?']].obj.special->instance->objid];
+    float height = question->max.y - question->min.y;
+    float cut = question->min.y + height * 0.30f;
+    float left = 1, right = -1;
+    for (const struct nugeom_s *g = question->geom; g; g = g->next) {
+        const NwGpuMesh *gpu = g->dmastream;
+        for (uint32_t j = 0; j < gpu->mesh.nverts; j++) {
+            const NwVifVertex *v = &gpu->mesh.verts[j];
+            if (v->pos[1] < cut) {
+                left = SDL_min(left, v->pos[0]);
+                right = SDL_max(right, v->pos[0]);
+            }
+        }
+    }
+    const char *punctuation[] = { "!", "\xad" };
+    PANEL3DMULX = 640.0f / 1200.0f;
+    PANEL3DMULY = 448.0f / 1200.0f;
+    for (int colour = 0; colour < 5; colour++) {
+        for (int i = 0; i < 2; i++) {
+            Text3D((char *)punctuation[i], 0, 0, 1, 1, 1, 1, 0, colour);
+            NuRndrEndScene();
+            p = nw_rndr_packet();
+            CHECK(p->ncmds > 0);
+            float low[2] = { 1, 1 }, high[2] = { -1, -1 };
+            float xlow = 1, xhigh = -1;
+            float front_low = 1, front_high = -1, uv_bottom = 0, uv_top = 4096;
+            for (uint32_t j = 0; j < p->ncmds; j++) {
+                const NwCmd *cmd = &p->cmds[j];
+                CHECK(cmd->op == NW_CMD_VERTS);
+                CHECK(cmd->material == question->geom->mtl || cmd->material == Font3DMtlTab[colour][1]);
+                for (uint32_t k = 0; k < cmd->count; k++) {
+                    const NwVuSpriteVertex *v = &p->verts[cmd->first + k];
+                    float py = i ? question->min.y + question->max.y - v->pos[1] : v->pos[1];
+                    float px = i ? left + right - v->pos[0] : v->pos[0];
+                    int stem = py > cut;
+                    low[stem] = SDL_min(low[stem], py);
+                    high[stem] = SDL_max(high[stem], py);
+                    xlow = SDL_min(xlow, v->pos[0]);
+                    xhigh = SDL_max(xhigh, v->pos[0]);
+                    if (cmd->material == Font3DMtlTab[colour][1]) {
+                        if (v->pos[1] < front_low) {
+                            front_low = v->pos[1];
+                            uv_bottom = v->tex[1];
+                        }
+                        if (v->pos[1] > front_high) {
+                            front_high = v->pos[1];
+                            uv_top = v->tex[1];
+                        }
+                    }
+                    bool native = false;
+                    for (const struct nugeom_s *g = question->geom; g; g = g->next) {
+                        const NwGpuMesh *gpu = g->dmastream;
+                        for (uint32_t n = 0; n < gpu->mesh.nverts; n++) {
+                            const NwVifVertex *src = &gpu->mesh.verts[n];
+                            if (src->pos[1] < cut && SDL_fabsf(src->pos[0] - px) < 0.00001f && src->pos[2] == v->pos[2] &&
+                                memcmp(src->col, v->col, sizeof(v->col)) == 0) native = true;
+                        }
+                    }
+                    CHECK(native);
+                }
+            }
+            CHECK(SDL_fabsf(xlow - left) < 0.0001f && SDL_fabsf(xhigh - right) < 0.0001f);
+            CHECK(SDL_fabsf(low[0] - question->min.y) < 0.0001f);
+            CHECK(SDL_fabsf(high[1] - question->max.y) < 0.0001f);
+            CHECK(low[1] > high[0]);
+            CHECK(uv_top <= 64 && uv_bottom >= 4000); /* Full light-to-dark font texture, also for ¡. */
+            NuRndrSwapStreamBuffers();
+        }
+    }
+
+    /* Tilde spacing changes only while drawing subtitles; ordinary text keeps retail transforms. */
+    const char *tildes[] = { "\xc7", "\xe5" };
+    const char letters[] = { 'A', 'O' };
+    const float scales[] = { 0.30f, 0.34f, 0.55f, 1.0f };
+    const float positions[] = { -0.88f, 0.5f };
+    for (int i = 0; i < 2; i++) {
+        const struct nugobj_s *base = sc->gobjs[Font3DTab[Font3DRemap[(int)letters[i]]].obj.special->instance->objid];
+        const struct nugobj_s *mark = sc->gobjs[Font3DAccentTab[2].obj.special->instance->objid];
+        for (unsigned k = 0; k < SDL_arraysize(scales); k++) {
+            for (unsigned pos = 0; pos < SDL_arraysize(positions); pos++) {
+                float scale = scales[k], top = 0, bottom = 0;
+                bool saw_base = false, saw_mark = false;
+                bool subtitle = scale <= 0.34f;
+                bool accents = nw_font3d_subtitle_accents(subtitle);
+                Text3D((char *)tildes[i], 0, positions[pos], 1, scale, scale, scale, 0, 0);
+                CHECK(nw_font3d_subtitle_accents(accents) == subtitle);
+                NuRndrEndScene();
+                p = nw_rndr_packet();
+                for (uint32_t j = 0; j < p->ncmds; j++) {
+                    const NwCmd *cmd = &p->cmds[j];
+                    bool accent = cmd->local[10] > FONT3DSIZE * scale * 5.0f;
+                    if (accent) {
+                        bottom = mark->min.y * cmd->local[5] + cmd->local[13];
+                        saw_mark = true;
+                    } else {
+                        top = base->max.y * cmd->local[5] + cmd->local[13];
+                        saw_base = true;
+                    }
+                    if (!subtitle) {
+                        CHECK(SDL_fabsf(cmd->local[13] - positions[pos] * PANEL3DMULY) < 0.00001f);
+                        CHECK(SDL_fabsf(cmd->local[0] - FONT3DSIZE * scale) < 0.00001f);
+                    }
+                }
+                float height = (base->max.y - base->min.y) * FONT3DSIZE * scale;
+                CHECK(saw_base && saw_mark);
+                if (scale <= 0.34f) {
+                    CHECK(bottom - top >= height * 0.10f && bottom - top <= height * 0.25f);
+                }
+                NuRndrSwapStreamBuffers();
+            }
+        }
+    }
+    /* An ordinary menu's O-tilde must retain retail's exact position and scale. */
+    CHECK(!nw_font3d_subtitle_accents(false));
+    Text3D("\xe5", 0, -0.5f, 1, 0.6f, 0.6f, 0.6f, 0, 0);
+    NuRndrEndScene();
+    p = nw_rndr_packet();
+    bool menu_base = false, menu_mark = false;
+    for (uint32_t j = 0; j < p->ncmds; j++) {
+        const NwCmd *cmd = &p->cmds[j];
+        CHECK(cmd->local[12] == 0 && SDL_fabsf(cmd->local[13] + 0.5f * PANEL3DMULY) < 0.00001f);
+        CHECK(SDL_fabsf(cmd->local[0] - FONT3DSIZE * 0.6f) < 0.00001f);
+        if (cmd->local[10] > FONT3DSIZE * 0.6f * 5.0f) menu_mark = true;
+        else menu_base = true;
+    }
+    CHECK(menu_base && menu_mark);
+    NuRndrSwapStreamBuffers();
+    for (int animated = 0; animated < 2; animated++) {
+        nw_font3d_autosave(0, 0, 0.10f, animated != 0);
+        NuRndrEndScene();
+        p = nw_rndr_packet();
+        unsigned disks = 0, glints = 0;
+        for (uint32_t j = 0; j < p->ncmds; j++) {
+            const NwCmd *cmd = &p->cmds[j];
+            CHECK(cmd->op == NW_CMD_VERTS);
+            if (cmd->material->tid) {
+                const NwGpuTex *tex = nw_rndr_texture(cmd->material->tid);
+                CHECK(tex && tex->tex.levels[0].width == 128 && tex->tex.levels[0].height == 128);
+                if (tex) {
+                    const uint8_t *pixels = tex->tex.levels[0].texels;
+                    CHECK(pixels[3] == 0); /* The disk has no rectangular background. */
+                    CHECK(pixels[(64 * 128 + 64) * 4 + 3] > 0);
+                }
+                CHECK(cmd->count == 6);
+                uint8_t alpha = p->verts[cmd->first].col[3];
+                CHECK(animated ? alpha >= 57 && alpha <= 128 : alpha == 128);
+                disks++;
+            } else {
+                CHECK(cmd->count == 27); /* One short tail, one four-point glint. */
+                glints++;
+            }
+        }
+        CHECK(disks == 1 && glints == (unsigned)animated);
+        NuRndrSwapStreamBuffers();
+    }
+    float original_alpha = Font3DMtlTab[0][1]->alpha;
+    Text3D("SAVING", 0, 0, 1, 0.20f, 0.20f, 0.20f, 0, NW_FONT3D_SAVING);
+    NuRndrEndScene();
+    p = nw_rndr_packet();
+    unsigned faded = 0;
+    for (uint32_t j = 0; j < p->ncmds; j++) {
+        const NwCmd *cmd = &p->cmds[j];
+        const struct numtl_s *mtl = cmd->material;
+        CHECK(cmd->op == NW_CMD_VERTS);
+        for (uint32_t k = 0; k < cmd->count; k++) {
+            uint8_t alpha = p->verts[cmd->first + k].col[3];
+            CHECK(alpha >= 57 && alpha <= 128);
+        }
+        if (mtl->tid == Font3DMtlTab[0][1]->tid) {
+            CHECK(mtl != Font3DMtlTab[0][1]);
+            CHECK(mtl->alpha >= original_alpha * 0.45f && mtl->alpha <= original_alpha);
+            CHECK(mtl->attrib.alpha == 1);
+            faded++;
+        }
+    }
+    CHECK(faded == 6 && Font3DMtlTab[0][1]->alpha == original_alpha);
+    NuRndrSwapStreamBuffers();
+    /* The explanation and its icon must render for all six original languages and Portuguese. */
+    for (int language = 0; language < 7; language++) {
+        nw_language_game_select(language);
+        struct cursor_s cursor = { 0 };
+        cursor.menu = NW_MENU_AUTOSAVE_NEW;
+        cursor.y_max = 2;
+        DrawMenu(&cursor, 25);
+        NuRndrEndScene();
+        CHECK(nw_rndr_packet()->ncmds > 100);
+        NuRndrSwapStreamBuffers();
+    }
     return 0;
 }
 

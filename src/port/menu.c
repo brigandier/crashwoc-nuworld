@@ -12,15 +12,21 @@
 #include "port/saves.h"
 #include "port/autosave.h"
 #include "port/names.h"
+#include "port/language.h"
+#include "port/wide.h"
+#include "platform/language.h"
+#include "platform/log.h"
 #include "gameplay/gameplay.h"
 
 extern s32 editor_active, GameMode, pause_dir, LANGUAGEOPTION;
 extern struct game_s Game;
+extern struct cursor_s Cursor;
 extern char tbuf[128];
 extern char *tNEWGAME[6], *tLOADGAME[6], *tLANGUAGE[6], *LanguageName[6];
 extern char *tYES[6], *tNO[6];
 extern char *tRESUME[6], *tOPTIONS[6], *tQUIT[6], *tWARPROOM[6], *tRESTARTTRIAL[6];
 extern s32 Level, TimeTrial;
+extern s32 stick_bits_db;
 extern s32 new_level, cutmovie, next_cut_movie, fade_rate, i_nameinput;
 extern struct game_s *game;
 extern char *tVIBRATION[6], *tON[6], *tOFF[6], *tSOUNDOPTIONS[6], *tADJUSTSCREEN[6], *tDONE[6];
@@ -33,6 +39,16 @@ extern f32 PANELMENUX, dme_sx, dme_symul;
 
 void Text3D(char *txt, f32 x, f32 y, f32 z, f32 scalex, f32 scaley, f32 scalez, s32 align, s32 colour);
 void DrawMenuEntry(struct cursor_s *cursor, char *txt, f32 *x, f32 *y, s32 *i);
+
+static void nw_menu_entry(struct cursor_s *cursor, char *text, f32 *x, f32 *y, s32 *i)
+{
+    text = nw_language_game_text(text);
+    if (nw_language_preference() == NW_LANGUAGE_PT_BR) {
+        float fit = cursor->menu == 3 || cursor->menu == 4 || cursor->menu == 7 ? 16.0f : 29.0f;
+        dme_sx = SDL_min(dme_sx, fit / SDL_max(1.0f, (float)SDL_strlen(text)));
+    }
+    DrawMenuEntry(cursor, text, x, y, i);
+}
 
 #define NW_MENU_QUIT_TITLE 34
 #define NW_MENU_QUIT_PAUSE 35
@@ -63,6 +79,44 @@ static char nw_menu_typed[NW_NAMES_GAME + 1], nw_menu_own[9];
 static int nw_menu_position;
 static bool nw_menu_rollback_options, nw_menu_previous_failed;
 static uint32_t nw_menu_pressed;
+static int nw_menu_language_parent = 4;
+
+static int nw_menu_language_row(void)
+{
+    int language = nw_language_game_selected();
+    return !LANGUAGEOPTION && language == 6 ? 1 : language;
+}
+
+static bool nw_menu_language_proc(struct cursor_s *cursor, int confirm, int cancel)
+{
+    if (cursor->menu == 7) {
+        if (confirm) nw_language_game_select(nw_language_game_row(cursor->y));
+        if (confirm || cancel) NewMenu(cursor, nw_menu_language_parent, -1, -1);
+        return true;
+    }
+    if (cursor->menu == 4 && cursor->y == 3 && confirm) {
+        nw_menu_language_parent = 4;
+        NewMenu(cursor, 7, nw_menu_language_row(), -1);
+        return true;
+    }
+    if (cursor->menu != 0 || cursor->y != 2) return false;
+    if (confirm) {
+        nw_menu_language_parent = 0;
+        NewMenu(cursor, 7, nw_menu_language_row(), -1);
+    } else {
+        uint32_t buttons = nw_menu_pressed;
+        if (!(buttons & 0xf000u)) buttons |= (uint32_t)stick_bits_db;
+        int row = nw_menu_language_row(), count = nw_language_game_count();
+        int next = row;
+        if ((buttons & 0x2000u) && row + 1 < count) next++;
+        else if ((buttons & 0x8000u) && row > 0) next--;
+        if (next != row) {
+            nw_language_game_select(nw_language_game_row(next));
+            GameSfx(NW_MENU_SFX, NULL);
+        }
+    }
+    return true;
+}
 
 void nw_menu_buttons(uint32_t pressed)
 {
@@ -222,6 +276,10 @@ static bool nw_menu_has_quit(struct cursor_s *cursor)
 void GetMenuInfo(struct cursor_s *cursor)
 {
     GetMenuInfo__retail(cursor);
+    if (cursor->menu == 7) {
+        cursor->y_max = nw_language_game_count() - 1;
+    }
+    if (!LANGUAGEOPTION && (cursor->menu == 0 || cursor->menu == 4)) cursor->y_max++;
     if (nw_menu_has_quit(cursor)) {
         cursor->y_max++;
     } else if (cursor->menu == 4) {
@@ -240,6 +298,7 @@ void GetMenuInfo(struct cursor_s *cursor)
 
 bool nw_menu_quit(struct cursor_s *cursor, int confirm, int cancel)
 {
+    if (nw_menu_language_proc(cursor, confirm, cancel)) return true;
     if (nw_menu_autosave_proc(cursor, confirm, cancel)) return true;
     if (nw_menu_update_proc(cursor, confirm, cancel)) return true;
     bool title = cursor->menu == NW_MENU_QUIT_TITLE;
@@ -265,16 +324,30 @@ bool nw_menu_quit(struct cursor_s *cursor, int confirm, int cancel)
 
 static void nw_menu_confirm_text(char *text, f32 x, f32 y, f32 size, f32 letters)
 {
+    text = nw_language_game_text(text);
     f32 sx = size * SDL_min(1.0f, letters / (f32)SDL_strlen(text));
     Text3D(text, x, y, 1.0f, sx, size, size, 0, 0);
 }
 
 static void nw_menu_dialog_entry(struct cursor_s *cursor, char *text, f32 *x, f32 *y, s32 *i)
 {
+    text = nw_language_game_text(text);
     dme_sx = SDL_min(0.85f, 25.0f / (f32)SDL_strlen(text));
     dme_symul = 0.8f;
-    DrawMenuEntry(cursor, text, x, y, i);
+    nw_menu_entry(cursor, text, x, y, i);
     *y -= 0.035f;
+}
+
+static void nw_menu_utf8_text(const char *text, f32 x, f32 y, f32 size, f32 letters, s32 colour)
+{
+    char encoded[256];
+    const char *localized = nw_language_ui_text(text);
+    if (!nw_language_encode(encoded, sizeof(encoded), localized)) {
+        nw_log_error(NW_LOG_PORT, "menu: invalid Text3D text: %s", localized);
+        SDL_strlcpy(encoded, "TEXT ERROR", sizeof(encoded));
+    }
+    f32 sx = size * SDL_min(1.0f, letters / (f32)SDL_strlen(encoded));
+    Text3D(encoded, x, y, 1.0f, sx, size, size, 0, colour);
 }
 
 static void nw_menu_autosave_draw(struct cursor_s *cursor)
@@ -289,6 +362,15 @@ static void nw_menu_autosave_draw(struct cursor_s *cursor)
         { "VOORTGANG WORDT AUTOMATISCH OPGESLAGEN", "IN EEN APART SLOT. HANDMATIG OPSLAAN", "WERKT GEWOON ZOALS ALTIJD.", "AUTOMATISCH OPSLAAN ZET JE ALTIJD AAN", "OF UIT IN HET MENU OPTIES." },
     };
     static char *activate[6] = { "ENABLE", "ACTIVER", "AKTIVIEREN", "ATTIVA", "ACTIVAR", "AANZETTEN" };
+    static char *icon_text[6][2] = {
+        { "THIS ICON APPEARS WHILE SAVING.", "WAIT UNTIL IT DISAPPEARS BEFORE QUITTING." },
+        { "CETTE ICÔNE INDIQUE UNE SAUVEGARDE.", "ATTENDS QU'ELLE DISPARAISSE AVANT DE QUITTER." },
+        { "DIESES SYMBOL ERSCHEINT BEIM SPEICHERN.", "WARTE VOR DEM BEENDEN, BIS ES VERSCHWINDET." },
+        { "QUESTA ICONA APPARE DURANTE IL SALVATAGGIO.", "ASPETTA CHE SCOMPAIA PRIMA DI USCIRE." },
+        { "ESTE ICONO APARECE MIENTRAS SE GUARDA.", "ESPERA A QUE DESAPAREZCA ANTES DE SALIR." },
+        { "DIT PICTOGRAM VERSCHIJNT TIJDENS OPSLAAN.", "WACHT TOT HET VERDWIJNT VOORDAT JE AFSLUIT." },
+    };
+    static char *icon_label[6] = { "SAVE ICON", "ICÔNE DE SAUVEGARDE", "SPEICHERSYMBOL", "ICONA DI SALVATAGGIO", "ICONO DE GUARDADO", "OPSLAGPICTOGRAM" };
     static char *disable[6] = { "DISABLE", "DESACTIVER", "DEAKTIVIEREN", "DISATTIVA", "DESACTIVAR", "UITZETTEN" };
     static char *without[6] = { "CONTINUE WITHOUT", "CONTINUER SANS", "OHNE FORTFAHREN", "CONTINUA SENZA", "CONTINUAR SIN", "DOORGAAN ZONDER" };
     static char *enable_title[6] = {
@@ -303,15 +385,19 @@ static void nw_menu_autosave_draw(struct cursor_s *cursor)
         { "EXISTE UN GUARDADO AUTOMATICO MAS NUEVO.", "SUSTITUIRLO CON ESTE PROGRESO?", "SE CONSERVAN LAS VERSIONES ANTERIORES." },
         { "ER IS EEN NIEUWERE AUTOMATISCHE SAVE.", "VERVANGEN DOOR DEZE VOORTGANG?", "VORIGE VERSIES BLIJVEN BEWAARD." },
     };
-    f32 x = 0.0f, y = -0.36f;
+    f32 x = 0.0f, y = menu == NW_MENU_AUTOSAVE_ROLLBACK ? -0.36f : -0.48f;
     s32 i = 0;
-    nw_menu_confirm_text(menu == NW_MENU_AUTOSAVE_NEW ? enable_title[lang] : nw_menu_autosave_title[lang], 0, 0.65f, 0.6f, 28);
+    nw_menu_confirm_text(menu == NW_MENU_AUTOSAVE_NEW ? enable_title[lang] : nw_menu_autosave_title[lang], 0,
+        menu == NW_MENU_AUTOSAVE_ROLLBACK ? 0.65f : 0.82f, 0.5f, 32);
     if (menu == NW_MENU_AUTOSAVE_ROLLBACK) {
         for (int row = 0; row < 3; row++) nw_menu_confirm_text(rollback[lang][row], 0, 0.28f - row * 0.15f, 0.4f, 39);
         nw_menu_dialog_entry(cursor, activate[lang], &x, &y, &i);
         nw_menu_dialog_entry(cursor, without[lang], &x, &y, &i);
     } else {
-        for (int row = 0; row < 5; row++) nw_menu_confirm_text(disclaimer[lang][row], 0, 0.38f - row * 0.13f, 0.4f, 39);
+        nw_font3d_autosave(0, 0.63f, 0.13f, false);
+        nw_menu_utf8_text(icon_label[lang], 0, 0.51f, 0.24f, 18, 0);
+        for (int row = 0; row < 2; row++) nw_menu_utf8_text(icon_text[lang][row], 0, 0.34f - row * 0.10f, 0.30f, 44, 0);
+        for (int row = 0; row < 5; row++) nw_menu_confirm_text(disclaimer[lang][row], 0, 0.08f - row * 0.10f, 0.30f, 44);
         nw_menu_dialog_entry(cursor, activate[lang], &x, &y, &i);
         nw_menu_dialog_entry(cursor, menu == NW_MENU_AUTOSAVE_NEW ? without[lang] : disable[lang], &x, &y, &i);
         nw_menu_dialog_entry(cursor, nw_menu_back[lang], &x, &y, &i);
@@ -366,10 +452,10 @@ static void nw_menu_load_confirm(struct cursor_s *cursor)
     static char *title[6] = { "LOAD GAME", "CHARGER PARTIE", "SPIEL LADEN", "CARICA PARTITA", "CARGAR PARTIDA", "SPEL LADEN" };
     nw_menu_confirm_text(title[Game.language], 0, 0.75f, 0.6f, 28);
     if (game) DrawGameSlot(game, 0, 0.15f, 0);
-    DrawMenuEntry(cursor, tYES[Game.language], &x, &y, &i);
-    DrawMenuEntry(cursor, tNO[Game.language], &x, &y, &i);
+    nw_menu_entry(cursor, tYES[Game.language], &x, &y, &i);
+    nw_menu_entry(cursor, tNO[Game.language], &x, &y, &i);
     dme_sx = 0.75f;
-    DrawMenuEntry(cursor, nw_menu_previous[Game.language], &x, &y, &i);
+    nw_menu_entry(cursor, nw_menu_previous[Game.language], &x, &y, &i);
 }
 
 static void nw_menu_previous_draw(struct cursor_s *cursor)
@@ -384,9 +470,9 @@ static void nw_menu_previous_draw(struct cursor_s *cursor)
     if (nw_menu_previous_failed) nw_menu_confirm_text(missing[Game.language], 0, 0.2f, 0.45f, 32);
     f32 x = 0, y = -0.35f;
     s32 i = 0;
-    DrawMenuEntry(cursor, versions[Game.language][0], &x, &y, &i);
-    DrawMenuEntry(cursor, versions[Game.language][1], &x, &y, &i);
-    DrawMenuEntry(cursor, nw_menu_back[Game.language], &x, &y, &i);
+    nw_menu_entry(cursor, versions[Game.language][0], &x, &y, &i);
+    nw_menu_entry(cursor, versions[Game.language][1], &x, &y, &i);
+    nw_menu_entry(cursor, nw_menu_back[Game.language], &x, &y, &i);
 }
 
 static void nw_menu_options(struct cursor_s *cursor, s32 paused)
@@ -395,29 +481,32 @@ static void nw_menu_options(struct cursor_s *cursor, s32 paused)
     f32 x = PANELMENUX, y = -0.5f - (cursor->y_max - cursor->y_min) * NW_MENUDY * 0.5f;
     s32 i = 0;
     SDL_snprintf(tbuf, sizeof(tbuf), "%s: %s", tVIBRATION[Game.language], temp_vibration ? tON[Game.language] : tOFF[Game.language]);
-    DrawMenuEntry(cursor, tbuf, &x, &y, &i);
-    DrawMenuEntry(cursor, tSOUNDOPTIONS[Game.language], &x, &y, &i);
-    DrawMenuEntry(cursor, tADJUSTSCREEN[Game.language], &x, &y, &i);
-    if (LANGUAGEOPTION) DrawMenuEntry(cursor, tLANGUAGE[Game.language], &x, &y, &i);
-    SDL_snprintf(tbuf, sizeof(tbuf), "%s: %s", nw_menu_autosave_title[Game.language], nw_autosave_enabled() ? tON[Game.language] : tOFF[Game.language]);
+    nw_menu_entry(cursor, tbuf, &x, &y, &i);
+    nw_menu_entry(cursor, tSOUNDOPTIONS[Game.language], &x, &y, &i);
+    nw_menu_entry(cursor, tADJUSTSCREEN[Game.language], &x, &y, &i);
+    nw_menu_entry(cursor, tLANGUAGE[Game.language], &x, &y, &i);
+    SDL_snprintf(tbuf, sizeof(tbuf), "%s: %s", nw_language_game_text(nw_menu_autosave_title[Game.language]), nw_autosave_enabled() ? tON[Game.language] : tOFF[Game.language]);
     dme_sx = SDL_min(1.0f, 18.0f / SDL_strlen(tbuf));
-    DrawMenuEntry(cursor, tbuf, &x, &y, &i);
-    DrawMenuEntry(cursor, tDONE[Game.language], &x, &y, &i);
+    nw_menu_entry(cursor, tbuf, &x, &y, &i);
+    nw_menu_entry(cursor, tDONE[Game.language], &x, &y, &i);
 }
 
 void nw_menu_autosave_notice(void)
 {
     NwAutosaveStatus status = nw_autosave_status();
-    if (status == NW_AUTOSAVE_IDLE || (u32)Game.language >= 6 || !nw_autosave_notice_visible(SDL_GetTicks())) return;
-    static char *notice[4][6] = {
-        { "AUTOSAVE IN PROGRESS...", "SAUVEGARDE AUTO EN COURS...", "AUTOMATISCHES SPEICHERN...", "AUTOSALVATAGGIO IN CORSO...", "GUARDANDO AUTOMATICAMENTE...", "AUTOMATISCH OPSLAAN..." },
-        { "AUTOSAVE COMPLETE", "SAUVEGARDE AUTO TERMINEE", "AUTOMATISCH GESPEICHERT", "AUTOSALVATAGGIO COMPLETATO", "GUARDADO AUTOMATICO COMPLETADO", "AUTOMATISCH OPGESLAGEN" },
-        { "AUTOSAVE FAILED", "ECHEC SAUVEGARDE AUTO", "AUTOMATISCHES SPEICHERN FEHLGESCHLAGEN", "AUTOSALVATAGGIO NON RIUSCITO", "ERROR DE GUARDADO AUTOMATICO", "AUTOMATISCH OPSLAAN MISLUKT" },
-        { "SAVE RECOVERED FROM BACKUP", "SAUVEGARDE RESTAUREE", "SPEICHERSTAND WIEDERHERGESTELLT", "SALVATAGGIO RECUPERATO DAL BACKUP", "GUARDADO RECUPERADO DE COPIA", "SAVE HERSTELD VANUIT BACKUP" },
+    if (status == NW_AUTOSAVE_IDLE || (u32)Game.language >= 6) return;
+    if (cutmovie >= 0 || Level == 0x23 || Cursor.menu == NW_MENU_AUTOSAVE_NEW) return;
+    static char *notice[3][6] = {
+        { "SAVING", "SAUVEGARDE", "SPEICHERN", "SALVATAGGIO", "GUARDANDO", "OPSLAAN" },
+        { "SAVE FAILED", "ÉCHEC DE SAUVEGARDE", "SPEICHERFEHLER", "SALVATAGGIO FALLITO", "ERROR AL GUARDAR", "OPSLAAN MISLUKT" },
+        { "BACKUP RESTORED", "SAUVEGARDE RESTAURÉE", "WIEDERHERGESTELLT", "BACKUP RIPRISTINATO", "COPIA RESTAURADA", "BACK-UP HERSTELD" },
     };
-    char *text = notice[status - 1][Game.language];
+    bool saving = status == NW_AUTOSAVE_WRITING || status == NW_AUTOSAVE_COMPLETE;
+    char *text = notice[saving ? 0 : status == NW_AUTOSAVE_FAILED ? 1 : 2][Game.language];
     nw_autosave_notice_presented();
-    nw_menu_confirm_text(text, 0.0f, -0.88f, 0.34f, 40);
+    f32 x = -(f32)nw_wide_width() / 640.0f + 0.18f;
+    nw_font3d_autosave(x, -0.77f, 0.10f, saving);
+    nw_menu_utf8_text(text, saving ? x : x + 0.18f, -0.88f, 0.20f, saving ? 8 : 20, saving ? NW_FONT3D_SAVING : 0);
 }
 
 static void nw_menu_confirm(struct cursor_s *cursor, s32 paused)
@@ -445,8 +534,8 @@ static void nw_menu_confirm(struct cursor_s *cursor, s32 paused)
         nw_menu_confirm_text(warning[Game.language][0], x, -0.39f, 0.38f, 27.0f);
         nw_menu_confirm_text(warning[Game.language][1], x, -0.47f, 0.38f, 27.0f);
     }
-    DrawMenuEntry(cursor, tYES[Game.language], &x, &y, &i);
-    DrawMenuEntry(cursor, tNO[Game.language], &x, &y, &i);
+    nw_menu_entry(cursor, tYES[Game.language], &x, &y, &i);
+    nw_menu_entry(cursor, tNO[Game.language], &x, &y, &i);
 }
 
 static void nw_menu_draw_quit(struct cursor_s *cursor, f32 *x, f32 *y, s32 *i)
@@ -457,11 +546,11 @@ static void nw_menu_draw_quit(struct cursor_s *cursor, f32 *x, f32 *y, s32 *i)
     if (!nw_menu_has_quit(cursor)) {
         return;
     }
-    SDL_snprintf(tbuf, sizeof(tbuf), text[Game.language], nw_menu_desktop());
+    SDL_snprintf(tbuf, sizeof(tbuf), nw_language_game_text(text[Game.language]), nw_menu_desktop());
     /* The pause menu shares the screen with the inventory; fit long translations in its left panel. */
     f32 letters = cursor->menu == 3 ? 17.0f : 29.0f;
     dme_sx = SDL_min(1.0f, letters / (f32)SDL_strlen(tbuf));
-    DrawMenuEntry(cursor, tbuf, x, y, i);
+    nw_menu_entry(cursor, tbuf, x, y, i);
 }
 
 /* Retail's menu 0 with a grey MODS (SOON) line under LOAD GAME, one row more to centre. */
@@ -476,21 +565,21 @@ static void nw_menu_title(struct cursor_s *cursor, s32 paused)
     f32 centre = nw_menu_has_quit(cursor) ? -0.69f : -0.75f;
     f32 y = centre - (cursor->y_max - cursor->y_min + 1) * NW_MENUDY * 0.5f;
     s32 i = 0;
-    DrawMenuEntry(cursor, tNEWGAME[Game.language], &x, &y, &i);
-    DrawMenuEntry(cursor, tLOADGAME[Game.language], &x, &y, &i);
-    Text3D(nw_menu_mods[Game.language], x, y, 1.0f, 0.6f, 0.6f, 0.6f, 0, NW_FONT3D_GREY);
+    nw_menu_entry(cursor, tNEWGAME[Game.language], &x, &y, &i);
+    nw_menu_entry(cursor, tLOADGAME[Game.language], &x, &y, &i);
+    Text3D(nw_language_game_text(nw_menu_mods[Game.language]), x, y, 1.0f, 0.6f, 0.6f, 0.6f, 0, NW_FONT3D_GREY);
     y += NW_MENUDY;
-    if (LANGUAGEOPTION) {
-        SDL_snprintf(tbuf, sizeof(tbuf), "%s: %s", tLANGUAGE[Game.language], LanguageName[Game.language]);
-        DrawMenuEntry(cursor, tbuf, &x, &y, &i);
+    {
+        SDL_snprintf(tbuf, sizeof(tbuf), "%s: %s", tLANGUAGE[Game.language], nw_language_game_name(nw_language_game_selected()));
+        nw_menu_entry(cursor, tbuf, &x, &y, &i);
     }
     nw_menu_draw_quit(cursor, &x, &y, &i);
     if (nw_update_available()) {
         /* DrawMenuEntry's flashing colours for the selected row */
         u32 period = nw_hz == 60 ? 12 : 10;
         s32 colour = (GlobalTimer.frame % period < period / 2) ? 0 : 3;
-        Text3D(nw_menu_update_notice[Game.language][0], 0.95f, 0.9f, 1.0f, 0.3f, 0.3f, 0.3f, 8, colour);
-        Text3D(nw_menu_update_notice[Game.language][1], 0.95f, 0.82f, 1.0f, 0.3f, 0.3f, 0.3f, 8, colour);
+        Text3D(nw_language_game_text(nw_menu_update_notice[Game.language][0]), 0.95f, 0.9f, 1.0f, 0.3f, 0.3f, 0.3f, 8, colour);
+        Text3D(nw_language_game_text(nw_menu_update_notice[Game.language][1]), 0.95f, 0.82f, 1.0f, 0.3f, 0.3f, 0.3f, 8, colour);
     }
 }
 
@@ -502,11 +591,11 @@ static void nw_menu_pause(struct cursor_s *cursor, s32 paused)
     f32 x = PANELMENUX;
     f32 y = -0.5f - (cursor->y_max - cursor->y_min) * NW_MENUDY * 0.5f;
     s32 i = 0;
-    DrawMenuEntry(cursor, tRESUME[Game.language], &x, &y, &i);
-    DrawMenuEntry(cursor, tOPTIONS[Game.language], &x, &y, &i);
-    DrawMenuEntry(cursor, Level == 0x25 ? tQUIT[Game.language] : tWARPROOM[Game.language], &x, &y, &i);
+    nw_menu_entry(cursor, tRESUME[Game.language], &x, &y, &i);
+    nw_menu_entry(cursor, tOPTIONS[Game.language], &x, &y, &i);
+    nw_menu_entry(cursor, Level == 0x25 ? tQUIT[Game.language] : tWARPROOM[Game.language], &x, &y, &i);
     if (TimeTrial) {
-        DrawMenuEntry(cursor, tRESTARTTRIAL[Game.language], &x, &y, &i);
+        nw_menu_entry(cursor, tRESTARTTRIAL[Game.language], &x, &y, &i);
     }
     nw_menu_draw_quit(cursor, &x, &y, &i);
 }
@@ -532,6 +621,15 @@ void DrawMenu(struct cursor_s *cursor, s32 paused)
         nw_menu_previous_draw(cursor);
     } else if (cursor->menu == 21 && (u32)Game.language < 6) {
         nw_menu_load_confirm(cursor);
+    } else if (cursor->menu == 7 && (u32)Game.language < 6) {
+        if (nw_menu_language_parent == 0 || paused >= 25) {
+            f32 x = nw_menu_language_parent == 0 ? 0.0f : PANELMENUX;
+            f32 y = -0.5f - cursor->y_max * NW_MENUDY * 0.5f;
+            s32 i = 0;
+            for (int row = 0; row < nw_language_game_count(); row++) {
+                nw_menu_entry(cursor, nw_language_game_name(nw_language_game_row(row)), &x, &y, &i);
+            }
+        }
     } else if (cursor->menu == 4 && (u32)Game.language < 6) {
         nw_menu_options(cursor, paused);
     } else if ((cursor->menu == NW_MENU_QUIT_TITLE || cursor->menu == NW_MENU_QUIT_PAUSE) && (u32)Game.language < 6) {

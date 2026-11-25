@@ -1,5 +1,6 @@
 /* Text3D override: the pad buttons' glyph codes (x o s t, the port's q r u v for L1 R1 L2 R2) draw as prompts. */
 #include "port/font3d.h"
+#include "port/language.h"
 
 #include <string.h>
 
@@ -50,6 +51,8 @@ struct nw_embed_file {
 };
 extern const struct nw_embed_file nw_prompt_icons[];
 extern const size_t nw_prompt_icons_count;
+extern const unsigned char nw_autosave_png[];
+extern const size_t nw_autosave_png_size;
 
 #define NW_FONT3D_ICONS 64
 /* Icon scale over the cross model's extent (about two letters wide) and the letter cells it takes. */
@@ -64,7 +67,10 @@ static struct {
     struct numtl_s *mtl;
 } nw_font3d_icons[NW_FONT3D_ICONS];
 static int nw_font3d_nicons;
+static bool nw_font3d_subtitle_marks;
 static struct numtl_s *nw_font3d_grey[2]; /* forced table: the letters' special_id 1 */
+static struct numtl_s *nw_font3d_glint;
+static struct numtl_s *nw_font3d_saving[2];
 
 /* This frame's and the last frame's strings, for stable interpolation keys. */
 #define NW_FONT3D_TEXTS 256
@@ -80,6 +86,13 @@ static struct {
     int cur, n[2];
     NwFont3DText text[2][NW_FONT3D_TEXTS];
 } nw_font3d_texts;
+
+bool nw_font3d_subtitle_accents(bool enabled)
+{
+    bool previous = nw_font3d_subtitle_marks;
+    nw_font3d_subtitle_marks = enabled;
+    return previous;
+}
 
 void nw_font3d_prompts(const NwPrompts *p)
 {
@@ -108,6 +121,19 @@ static int nw_font3d_target(char c)
     }
 }
 
+static struct numtl_s *nw_font3d_overlay(void)
+{
+    struct numtl_s *mtl = NuMtlCreate(1);
+    mtl->diffuse.r = mtl->diffuse.g = mtl->diffuse.b = 1.0f;
+    mtl->alpha = 0.999f;
+    mtl->attrib.cull = 2;
+    mtl->attrib.zmode = 3;
+    mtl->attrib.alpha = 1;
+    mtl->attrib.lighting = 2;
+    mtl->attrib.colour = 1;
+    return mtl;
+}
+
 /* The PNG as a type 3 bitmap (A, B, G, R), blended over everything, unlit. */
 static struct numtl_s *nw_font3d_icon(const char *name)
 {
@@ -126,26 +152,24 @@ static struct numtl_s *nw_font3d_icon(const char *name)
     for (size_t i = 0; i < nw_prompt_icons_count && !file; i++) {
         file = strcmp(nw_prompt_icons[i].name, name) == 0 ? &nw_prompt_icons[i] : NULL;
     }
+    struct nw_embed_file autosave = { "autosave", nw_autosave_png, nw_autosave_png_size };
+    if (!file && strcmp(name, autosave.name) == 0) file = &autosave;
     SDL_IOStream *io = file ? SDL_IOFromConstMem(file->data, file->size) : NULL;
     SDL_Surface *png = io ? SDL_LoadPNG_IO(io, true) : NULL;
     SDL_Surface *abgr = png ? SDL_ConvertSurface(png, SDL_PIXELFORMAT_ABGR32) : NULL;
     SDL_DestroySurface(png);
+    if (abgr && file == &autosave && (abgr->w > 128 || abgr->h > 128)) {
+        SDL_Surface *small = SDL_ScaleSurface(abgr, 128, 128, SDL_SCALEMODE_LINEAR);
+        SDL_DestroySurface(abgr);
+        abgr = small;
+    }
     if (!abgr || abgr->pitch != abgr->w * 4) {
-        nw_log_warn(NW_LOG_LOAD, "prompts: icon %s: %s", name, file ? SDL_GetError() : "not in assets/prompts");
+        nw_log_warn(NW_LOG_LOAD, "font: icon %s: %s", name, file ? SDL_GetError() : "not embedded");
         SDL_DestroySurface(abgr);
         return NULL;
     }
     struct nutex_s tex = { 3, abgr->w, abgr->h, 1, abgr->pixels, NULL };
-    struct numtl_s *mtl = NuMtlCreate(1);
-    mtl->diffuse.r = 1.0f;
-    mtl->diffuse.g = 1.0f;
-    mtl->diffuse.b = 1.0f;
-    mtl->alpha = 0.999f;
-    mtl->attrib.cull = 2;
-    mtl->attrib.zmode = 3;
-    mtl->attrib.alpha = 1;
-    mtl->attrib.lighting = 2;
-    mtl->attrib.colour = 1;
+    struct numtl_s *mtl = nw_font3d_overlay();
     mtl->tid = NuTexCreate(&tex);
     NuMtlUpdate(mtl);
     SDL_DestroySurface(abgr);
@@ -156,6 +180,70 @@ void nw_font3d_release(void)
 {
     nw_font3d_nicons = 0;
     nw_font3d_grey[1] = NULL;
+    nw_font3d_glint = NULL;
+    nw_font3d_saving[0] = nw_font3d_saving[1] = NULL;
+}
+
+static f32 nw_font3d_saving_alpha(void)
+{
+    return 0.45f + 0.55f * (0.5f + 0.5f * SDL_cosf((SDL_GetTicks() % 1000) * (6.2831853f / 1000.0f)));
+}
+
+static struct numtl_s *nw_font3d_saving_material(struct numtl_s *src, int side)
+{
+    if (!nw_font3d_saving[side]) {
+        struct numtl_s *mtl = NuMtlCreate(1);
+        mtl->attrib = src->attrib;
+        mtl->attrib.alpha = 1;
+        mtl->ambient = src->ambient;
+        mtl->diffuse = src->diffuse;
+        mtl->power = src->power;
+        mtl->alpha = src->alpha;
+        mtl->tid = src->tid;
+        mtl->K = src->K;
+        mtl->L = src->L;
+        NuMtlUpdate(mtl);
+        nw_font3d_saving[side] = mtl;
+    }
+    return nw_font3d_saving[side];
+}
+
+/* The unlit font reads alpha from its vertices; leave the shared letter meshes untouched. */
+static void nw_font3d_saving_letter(struct nuspecial_s *special, f32 x, f32 y, f32 z,
+                                   f32 scalex, f32 scaley, f32 scalez)
+{
+    struct nugobj_s *obj = font3d_scene->gobjs[special->instance->objid];
+    struct nuvec_s scale = { FONT3DSIZE * scalex, FONT3DSIZE * scaley, FONT3DSIZE * scalez * 4.0f };
+    struct numtx_s m;
+    NuMtxSetScale(&m, &scale);
+    m._30 = x * PANEL3DMULX;
+    m._31 = y * PANEL3DMULY;
+    m._32 = z;
+    NuRndrSetLocalMtx(&m, 2);
+    f32 opacity = nw_font3d_saving_alpha();
+    NwInterpScope scope = nw_interp_begin(&m, obj, &m, (obj->max.y - obj->min.y) * scale.y);
+    u32 geom = 0;
+    for (struct nugeom_s *g = obj->geom; g; g = g->next, geom++) {
+        const NwGpuMesh *gpu = g->dmastream;
+        if (!gpu) continue;
+        struct numtl_s *mtl = g->mtl;
+        if (nurndr_forced_mtl_table && mtl->special_id && nurndr_forced_mtl_table[mtl->special_id]) {
+            mtl = nurndr_forced_mtl_table[mtl->special_id];
+        }
+        mtl = nw_font3d_saving_material(mtl, g->mtl->special_id != 0);
+        nw_interp_at(0, geom, 0);
+        NuRndrStreamAddMtl(&mtl->rs, mtl);
+        NwVuSpriteVertex *v;
+        nw_rndr_verts(&mtl->rs, NW_VERTS_TRIS, gpu->mesh.ntris * 3, &v);
+        for (u32 i = 0; i < gpu->mesh.ntris * 3; i++, v++) {
+            const NwVifVertex *src = &gpu->mesh.verts[gpu->mesh.tris[i]];
+            memcpy(v->pos, src->pos, sizeof(v->pos));
+            for (int j = 0; j < 4; j++) v->tex[j] = src->tex[j];
+            memcpy(v->col, src->col, sizeof(v->col));
+            v->col[3] = (uint8_t)(src->col[3] * opacity);
+        }
+    }
+    nw_interp_end(scope);
 }
 
 /* The menu entries' colour 2 at half its brightness. */
@@ -266,6 +354,105 @@ static void nw_font3d_letter(char c, f32 x, f32 y, f32 z, f32 dx, f32 scalex, f3
                       font3d_scene, Font3DTab[idx].obj.special, 1);
 }
 
+/* Some discs omit '!'. Reuse the question mark's dot, extending its middle into a stem. */
+static void nw_font3d_exclamation(f32 x, f32 y, f32 z, f32 scalex, f32 scaley, f32 scalez, bool inverted)
+{
+    s32 idx = nw_font3d_remap('?');
+    if (idx < 0) return;
+    struct nugobj_s *question = font3d_scene->gobjs[Font3DTab[idx].obj.special->instance->objid];
+    f32 height = question->max.y - question->min.y;
+    f32 cut = question->min.y + height * 0.30f;
+    f32 low = question->max.y, high = question->min.y;
+    f32 left = question->max.x, right = question->min.x;
+    for (struct nugeom_s *g = question->geom; g; g = g->next) {
+        const NwGpuMesh *gpu = g->dmastream;
+        if (!gpu) continue;
+        for (u32 i = 0; i < gpu->mesh.nverts; i++) {
+            f32 py = gpu->mesh.verts[i].pos[1];
+            if (py < cut) {
+                low = SDL_min(low, py);
+                high = SDL_max(high, py);
+                left = SDL_min(left, gpu->mesh.verts[i].pos[0]);
+                right = SDL_max(right, gpu->mesh.verts[i].pos[0]);
+            }
+        }
+    }
+    if (high <= low) return;
+    f32 middle = (low + high) * 0.5f;
+    f32 bottom = high + height * 0.06f;
+    f32 extension = question->max.y - bottom - (high - low);
+    struct nuvec_s scale = { FONT3DSIZE * scalex, FONT3DSIZE * scaley, FONT3DSIZE * scalez * 4.0f };
+    struct numtx_s m;
+    NuMtxSetScale(&m, &scale);
+    m._30 = x * PANEL3DMULX;
+    m._31 = y * PANEL3DMULY;
+    m._32 = z;
+    NuRndrSetLocalMtx(&m, 2);
+    NwInterpScope scope = nw_interp_begin(&m, question, &m, height * scale.y);
+    for (int stem = 0; stem < 2; stem++) {
+        u32 geom = 0;
+        for (struct nugeom_s *g = question->geom; g; g = g->next, geom++) {
+            const NwGpuMesh *gpu = g->dmastream;
+            if (!gpu) continue;
+            const NwVifMesh *mesh = &gpu->mesh;
+            f32 tex_low_y = question->max.y, tex_high_y = question->min.y;
+            f32 tex_low = 0, tex_high = 0;
+            if (g->mtl->special_id == 1) {
+                for (u32 j = 0; j < mesh->nverts; j++) {
+                    const NwVifVertex *v = &mesh->verts[j];
+                    if (v->pos[1] < tex_low_y) {
+                        tex_low_y = v->pos[1];
+                        tex_low = v->tex[1];
+                    }
+                    if (v->pos[1] > tex_high_y) {
+                        tex_high_y = v->pos[1];
+                        tex_high = v->tex[1];
+                    }
+                }
+            }
+            u32 count = 0;
+            for (u32 t = 0; t < mesh->ntris; t++) {
+                const u32 *tri = &mesh->tris[t * 3];
+                if (mesh->verts[tri[0]].pos[1] < cut && mesh->verts[tri[1]].pos[1] < cut &&
+                    mesh->verts[tri[2]].pos[1] < cut) count += 3;
+            }
+            if (!count) continue;
+            struct numtl_s *mtl = g->mtl;
+            if (nurndr_forced_mtl_table && mtl->special_id && nurndr_forced_mtl_table[mtl->special_id]) {
+                mtl = nurndr_forced_mtl_table[mtl->special_id];
+            }
+            for (u32 pass = 0; mtl; mtl = mtl->next, pass++) {
+                nw_interp_at(stem, geom, pass);
+                NuRndrStreamAddMtl(&mtl->rs, mtl);
+                NwVuSpriteVertex *v;
+                nw_rndr_verts(&mtl->rs, NW_VERTS_TRIS, count, &v);
+                for (u32 t = 0; t < mesh->ntris; t++) {
+                    const u32 *tri = &mesh->tris[t * 3];
+                    if (mesh->verts[tri[0]].pos[1] >= cut || mesh->verts[tri[1]].pos[1] >= cut ||
+                        mesh->verts[tri[2]].pos[1] >= cut) continue;
+                    for (int k = 0; k < 3; k++, v++) {
+                        const NwVifVertex *src = &mesh->verts[tri[k]];
+                        memcpy(v->pos, src->pos, sizeof(v->pos));
+                        for (int j = 0; j < 4; j++) v->tex[j] = src->tex[j];
+                        memcpy(v->col, src->col, sizeof(v->col));
+                        if (stem) v->pos[1] += bottom - low + (src->pos[1] > middle ? extension : 0);
+                        if (inverted) {
+                            v->pos[0] = left + right - v->pos[0];
+                            v->pos[1] = question->min.y + question->max.y - v->pos[1];
+                        }
+                        /* Sample the font's full vertical gradient, rather than stretching the dot's colour. */
+                        if (tex_high_y > tex_low_y) {
+                            f32 t = SDL_clamp((v->pos[1] - tex_low_y) / (tex_high_y - tex_low_y), 0.0f, 1.0f);
+                            v->tex[1] = tex_low + (tex_high - tex_low) * t;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    nw_interp_end(scope);
+}
+
 /* The icon as a square on the cross model's extent, under DrawPanel3DObject's matrix. */
 static void nw_font3d_quad(struct numtl_s *mtl, f32 x, f32 y, f32 z, f32 scalex, f32 scaley)
 {
@@ -298,6 +485,73 @@ static void nw_font3d_quad(struct numtl_s *mtl, f32 x, f32 y, f32 z, f32 scalex,
     nw_rndr_strip(v, 4, &m, &mtl->rs);
 }
 
+void nw_font3d_autosave(float x, float y, float size, bool writing)
+{
+    struct numtl_s *mtl = nw_font3d_icon("autosave");
+    if (!mtl) return;
+    f32 half = size * PANEL3DMULY * 0.5f;
+    f32 opacity = writing ? nw_font3d_saving_alpha() : 1.0f;
+    struct numtx_s m;
+    NuMtxSetIdentity(&m);
+    m._30 = x * PANEL3DMULX;
+    m._31 = y * PANEL3DMULY;
+    m._32 = 1.0f;
+    struct nuvtx_tc1_s quad[4] = { 0 };
+    for (int i = 0; i < 4; i++) {
+        quad[i].pnt.x = i & 1 ? half : -half;
+        quad[i].pnt.y = i & 2 ? -half : half;
+        quad[i].tc[0] = i & 1;
+        quad[i].tc[1] = i >> 1;
+        quad[i].diffuse = (s32)0x80808080;
+        quad[i].rgba.a = (int)(128 * opacity);
+    }
+    NuRndrStreamAddMtl(&mtl->rs, mtl);
+    nw_rndr_strip(quad, 4, &m, &mtl->rs);
+    if (!writing) return;
+    if (!nw_font3d_glint) {
+        nw_font3d_glint = nw_font3d_overlay();
+        NuMtlUpdate(nw_font3d_glint);
+    }
+    mtl = nw_font3d_glint;
+    f32 angle = -(SDL_GetTicks() % 1800) * (6.2831853f / 1800.0f);
+    f32 gx = SDL_cosf(angle) * half, gy = SDL_sinf(angle) * half;
+    f32 radius = half * 0.24f;
+    NuRndrStreamAddMtl(&mtl->rs, mtl);
+    NuRndrSetLocalMtx(&m, 2);
+    NwVuSpriteVertex *v;
+    nw_rndr_verts(&mtl->rs, NW_VERTS_TRIS, 27, &v);
+    /* One tapered tail and a four-point glint; no full ring around the disk. */
+    const float star[8][2] = { { 1, 0 }, { .2f, .2f }, { 0, 1 }, { -.2f, .2f },
+                              { -1, 0 }, { -.2f, -.2f }, { 0, -1 }, { .2f, -.2f } };
+    for (int i = 0; i < 27; i++, v++) {
+        memset(v, 0, sizeof(*v));
+        v->col[0] = 128;
+        v->col[1] = 110;
+        v->col[2] = 48;
+        v->col[3] = 128;
+        v->pos[0] = gx;
+        v->pos[1] = gy;
+        if (i < 3) {
+            if (i == 0) {
+                v->pos[0] = SDL_cosf(angle + 0.45f) * half;
+                v->pos[1] = SDL_sinf(angle + 0.45f) * half;
+                v->col[3] = 0;
+            } else {
+                f32 edge = (i == 1 ? 0.15f : -0.15f) * radius;
+                v->pos[0] += SDL_cosf(angle) * edge;
+                v->pos[1] += SDL_sinf(angle) * edge;
+            }
+        } else if ((i - 3) % 3) {
+            int point = ((i - 3) / 3 + (i - 3) % 3 - 1) % 8;
+            v->pos[0] += star[point][0] * radius;
+            v->pos[1] += star[point][1] * radius;
+        } else {
+            v->col[1] = v->col[2] = 128;
+        }
+        v->col[3] = (uint8_t)(v->col[3] * opacity);
+    }
+}
+
 static void nw_font3d_glyph(char c, f32 x, f32 y, f32 z, f32 dx, f32 scalex, f32 scaley, f32 scalez)
 {
     const NwPromptGlyph *g = &nw_font3d_glyphs.glyph[nw_font3d_target(c)];
@@ -316,6 +570,7 @@ static void nw_font3d_glyph(char c, f32 x, f32 y, f32 z, f32 dx, f32 scalex, f32
 
 void Text3D(char *txt, f32 x, f32 y, f32 z, f32 scalex, f32 scaley, f32 scalez, s32 align, s32 colour)
 {
+    txt = nw_language_game_render_text(txt);
     s32 i;
     s32 l;
     f32 w;
@@ -417,9 +672,9 @@ void Text3D(char *txt, f32 x, f32 y, f32 z, f32 scalex, f32 scaley, f32 scalez, 
     } else {
         x = x - (dx * w * 0.5f - dx * 0.5f);
     }
-    struct numtl_s **grey = colour == NW_FONT3D_GREY ? nw_font3d_grey_table() : NULL;
+    struct numtl_s **table = colour == NW_FONT3D_GREY ? nw_font3d_grey_table() : NULL;
     i = ((u32)colour < 5) ? colour : 0;
-    nurndr_forced_mtl_table = grey ? grey : &Font3DMtlTab[i][0];
+    nurndr_forced_mtl_table = table ? table : &Font3DMtlTab[i][0];
     font3d_xleft = x - dx * 0.5f;
 
     for (i = 0; i < l; i++) {
@@ -452,6 +707,8 @@ void Text3D(char *txt, f32 x, f32 y, f32 z, f32 scalex, f32 scaley, f32 scalez, 
                     i++;
                 }
                 continue;
+            } else if (c == '!' && nw_font3d_remap(c) < 0) {
+                nw_font3d_exclamation(x, y, z, scalex, scaley, scalez, false);
             } else if (nw_font3d_target(c) >= 0) {
                 nw_font3d_glyph(c, x, y, z, dx, scalex, scaley, scalez);
             } else if ((c >= 'a' && c <= 'z') && (nw_font3d_remap(c) == -1)) {
@@ -492,10 +749,23 @@ void Text3D(char *txt, f32 x, f32 y, f32 z, f32 scalex, f32 scaley, f32 scalez, 
                     } else {
                         y0 = y;
                     }
-                    DrawPanel3DObject(-1, x0, y0, z, FONT3DSIZE * scalex,
-                        FONT3DSIZE * scaley, (FONT3DSIZE * scalez) * f, 0, 0, 0,
-                        font3d_scene, Font3DTab[idx].obj.special, 1);
+                    if (colour == NW_FONT3D_SAVING) {
+                        nw_font3d_saving_letter(Font3DTab[idx].obj.special, x0, y0, z, scalex, scaley, scalez);
+                    } else {
+                        DrawPanel3DObject(-1, x0, y0, z, FONT3DSIZE * scalex,
+                            FONT3DSIZE * scaley, (FONT3DSIZE * scalez) * f, 0, 0, 0,
+                            font3d_scene, Font3DTab[idx].obj.special, 1);
+                    }
                 }
+            }
+        } else if (c == (char)0xa8 || c == (char)0xad) {
+            idx = nw_font3d_remap(c == (char)0xa8 ? '?' : '!');
+            if (c == (char)0xad && idx < 0) {
+                nw_font3d_exclamation(x, y, z, scalex, scaley, scalez, true);
+            } else if (idx != -1) {
+                DrawPanel3DObject(-1, x, y, z, FONT3DSIZE * scalex,
+                    FONT3DSIZE * scaley, (FONT3DSIZE * scalez) * 4.0f, 0, 0, 0x8000,
+                    font3d_scene, Font3DTab[idx].obj.special, 1);
             }
         } else if (c < 0) {
             accent = RemapAccentedCharacter(&c);
@@ -506,7 +776,19 @@ void Text3D(char *txt, f32 x, f32 y, f32 z, f32 scalex, f32 scaley, f32 scalez, 
                         FONT3DSIZE * scaley, (FONT3DSIZE * scalez) * 4.0f, 0, 0, 0,
                         font3d_scene, Font3DTab[idx].obj.special, 1);
                 }
-                DrawPanel3DObject(-1, x, y, z, FONT3DSIZE * scalex,
+                f32 accent_x = scalex, accent_y = y, accent_pos_x = x;
+                if (nw_font3d_subtitle_marks && accent == 2 && (c == 'A' || c == 'O') &&
+                    idx != -1 && PANEL3DMULX != 0 && PANEL3DMULY != 0) {
+                    struct nugobj_s *base = font3d_scene->gobjs[Font3DTab[idx].obj.special->instance->objid];
+                    struct nugobj_s *mark = font3d_scene->gobjs[Font3DAccentTab[accent].obj.special->instance->objid];
+                    accent_x *= 0.80f;
+                    /* Leave a visible gap above the letter in subtitles only. */
+                    accent_y += (base->max.y + (base->max.y - base->min.y) * 0.16f - mark->min.y)
+                        * FONT3DSIZE * scaley / PANEL3DMULY;
+                    accent_pos_x += ((base->min.x + base->max.x) * 0.5f
+                        - (mark->min.x + mark->max.x) * 0.40f) * FONT3DSIZE * scalex / PANEL3DMULX;
+                }
+                DrawPanel3DObject(-1, accent_pos_x, accent_y, z, FONT3DSIZE * accent_x,
                     FONT3DSIZE * scaley, (FONT3DSIZE * scalez) * 6.0f, 0, 0, 0,
                     font3d_scene, Font3DAccentTab[accent].obj.special, 1);
             }

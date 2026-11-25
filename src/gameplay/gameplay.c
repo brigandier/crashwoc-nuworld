@@ -12,6 +12,7 @@
 #include "gameplay/monkeybars.h"
 #include "gameplay/submarine.h"
 #include "port/game.h"
+#include "port/language.h"
 #include "port/autosave.h"
 #include "port/saves.h"
 
@@ -156,6 +157,7 @@ void nw_deviation_off(const char *sw)
 
 void nw_gameplay_swap(void)
 {
+    nw_language_game_poll();
     nw_profile_poll();
     nw_cheats_swap();
     nw_autosave_poll();

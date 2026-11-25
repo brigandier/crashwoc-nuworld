@@ -27,6 +27,8 @@ void nw_ui_end(void);
 
 void nw_ui_push_font(NwUiFont font, float scale);
 void nw_ui_pop_font(void);
+/* Main-thread scratch storage: visible translation with the source as ImGui ID. */
+const char *nw_ui_label(const char *label);
 
 #ifdef __cplusplus
 }

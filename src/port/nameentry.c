@@ -1,4 +1,5 @@
 #include "port/nameentry.h"
+#include "platform/language.h"
 
 #include <SDL3/SDL.h>
 
@@ -258,14 +259,14 @@ int nw_nameentry_hint(char lines[NW_NAMEENTRY_HINT_LINES][NW_NAMEENTRY_HINT_TEXT
         return 0;
     }
     int n = 0;
-    SDL_snprintf(lines[n++], NW_NAMEENTRY_HINT_TEXT, "%s", heading[l]);
+    SDL_snprintf(lines[n++], NW_NAMEENTRY_HINT_TEXT, "%s", nw_language_game_text(heading[l]));
     SDL_snprintf(lines[n++], NW_NAMEENTRY_HINT_TEXT, "%s: %s", enter[l], tDONE[l]);
-    SDL_snprintf(lines[n++], NW_NAMEENTRY_HINT_TEXT, "%s: %s", back[l], erase[l]);
+    SDL_snprintf(lines[n++], NW_NAMEENTRY_HINT_TEXT, "%s: %s", back[l], nw_language_game_text(erase[l]));
     if (nw_nameentry.menu == NW_NAMEENTRY_GAME) {
         SDL_snprintf(lines[n++], NW_NAMEENTRY_HINT_TEXT, "%s: %s", escape[l], tCANCEL[l]);
     }
     if (pad) {
-        SDL_snprintf(lines[n++], NW_NAMEENTRY_HINT_TEXT, "%s", controller[l]);
+        SDL_snprintf(lines[n++], NW_NAMEENTRY_HINT_TEXT, "%s", nw_language_game_text(controller[l]));
     }
     return n;
 }

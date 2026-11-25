@@ -12,6 +12,8 @@ extern "C" {
 #include "gfx/gl.h"
 #include "platform/log.h"
 #include "platform/paths.h"
+#include "platform/language.h"
+#include "frontend/settings.h"
 #include "vfs/extract.h"
 
 extern const unsigned char nw_beta_menu_png[];
@@ -134,6 +136,10 @@ NwWizard *nw_wizard_create(SDL_Window *window, const char *root)
         return NULL;
     }
     w->window = window;
+    NwSettings settings;
+    nw_settings_defaults(&settings);
+    nw_settings_load(&settings, root);
+    nw_language_request(settings.language);
     w->root = SDL_strdup(root);
     w->import_dir = nw_paths_dir(root, NW_PATHS_IMPORT, false);
     w->dialog_event = SDL_RegisterEvents(1);
@@ -173,7 +179,7 @@ void nw_wizard_event(NwWizard *w, const SDL_Event *e)
             nw_wizard_start(w, path);
         } else if (why) {
             SDL_snprintf(w->notice, sizeof(w->notice),
-                         "No file dialog available (%s). Drop the image here or use the import folder.",
+                         nw_language_ui_text("No file dialog available (%s). Drop the image here or use the import folder."),
                          why);
         }
         SDL_free(path);
@@ -184,21 +190,21 @@ void nw_wizard_event(NwWizard *w, const SDL_Event *e)
 static void nw_wizard_heading(const char *text)
 {
     nw_ui_push_font(NW_UI_BOLD, 1.1f);
-    ImGui::SeparatorText(text);
+    ImGui::SeparatorText(nw_language_ui_text(text));
     nw_ui_pop_font();
 }
 
 static void nw_wizard_title(const char *text)
 {
     nw_ui_push_font(NW_UI_BOLD, 1.35f);
-    ImGui::TextUnformatted(text);
+    ImGui::TextUnformatted(nw_language_ui_text(text));
     nw_ui_pop_font();
 }
 
 static void nw_wizard_wrapped(const ImVec4 &color, const char *text)
 {
     ImGui::PushStyleColor(ImGuiCol_Text, color);
-    ImGui::TextWrapped("%s", text);
+    ImGui::TextWrapped(nw_language_ui_text("%s"), nw_language_ui_text(text));
     ImGui::PopStyleColor();
 }
 
@@ -207,7 +213,7 @@ static void nw_wizard_align_right(const char *const *labels, int count)
     const ImGuiStyle &style = ImGui::GetStyle();
     float width = 0.0f;
     for (int i = 0; i < count; i++) {
-        width += ImGui::CalcTextSize(labels[i]).x + style.FramePadding.x * 2.0f + (i ? style.ItemSpacing.x : 0.0f);
+        width += ImGui::CalcTextSize(nw_language_ui_text(labels[i])).x + style.FramePadding.x * 2.0f + (i ? style.ItemSpacing.x : 0.0f);
     }
     float avail = ImGui::GetContentRegionAvail().x;
     if (avail > width) {
@@ -228,10 +234,10 @@ static NwWizardResult nw_wizard_pick(NwWizard *w)
     }
 
     nw_wizard_title("Welcome");
-    ImGui::TextWrapped("NuWorld needs a disc image of your own copy of the game:");
-    ImGui::BulletText("Crash Bandicoot: The Wrath of Cortex for PS2: PAL v1.03 or v2.01 Platinum (SLES-50386), USA "
-                      "v1.00 or v1.01 Greatest Hits (SLUS-20238)");
-    ImGui::BulletText(".iso, or .bin with its .cue");
+    ImGui::TextWrapped("%s", nw_language_ui_text("NuWorld needs a disc image of your own copy of the game:"));
+    ImGui::BulletText("%s", nw_language_ui_text("Crash Bandicoot: The Wrath of Cortex for PS2: PAL v1.03 or v2.01 Platinum (SLES-50386), USA "
+                      "v1.00 or v1.01 Greatest Hits (SLUS-20238)"));
+    ImGui::BulletText("%s", nw_language_ui_text(".iso, or .bin with its .cue"));
 
     if (w->had_disc) {
         nw_wizard_wrapped(nw_wizard_ok, "A disc is already imported. It is only replaced if the new import works.");
@@ -242,21 +248,21 @@ static NwWizardResult nw_wizard_pick(NwWizard *w)
 
     nw_wizard_heading("Disc image");
     ImGui::BeginDisabled(!w->dialog_event);
-    if (ImGui::Button("Choose file...")) {
+    if (ImGui::Button(nw_ui_label("Choose file..."))) {
         SDL_ShowOpenFileDialog(nw_wizard_picked, (void *)(uintptr_t)w->dialog_event, w->window, nw_wizard_filters,
                                (int)SDL_arraysize(nw_wizard_filters), NULL, false);
     }
     ImGui::EndDisabled();
     ImGui::SameLine();
     ImGui::AlignTextToFramePadding();
-    ImGui::TextDisabled("or drop it here");
+    ImGui::TextDisabled("%s", nw_language_ui_text("or drop it here"));
 
     nw_wizard_heading("Import folder");
-    ImGui::TextWrapped("Or copy it into this folder and pick it below (Steam Deck: use Desktop Mode).");
+    ImGui::TextWrapped("%s", nw_language_ui_text("Or copy it into this folder and pick it below (Steam Deck: use Desktop Mode)."));
     ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-    ImGui::TextWrapped("%s", w->import_dir);
+    ImGui::TextWrapped(nw_language_ui_text("%s"), w->import_dir);
     ImGui::PopStyleColor();
-    if (ImGui::Button("Open folder")) {
+    if (ImGui::Button(nw_ui_label("Open folder"))) {
         nw_wizard_open_folder(w->import_dir);
     }
 
@@ -269,9 +275,9 @@ static NwWizardResult nw_wizard_pick(NwWizard *w)
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::AlignTextToFramePadding();
-            ImGui::TextWrapped("%s", w->list.names[i]);
+            ImGui::TextWrapped(nw_language_ui_text("%s"), w->list.names[i]);
             ImGui::TableNextColumn();
-            if (ImGui::Button("Import")) {
+            if (ImGui::Button(nw_ui_label("Import"))) {
                 char *path = NULL;
                 if (SDL_asprintf(&path, "%s%s", w->import_dir, w->list.names[i]) >= 0) {
                     nw_wizard_start(w, path);
@@ -284,7 +290,7 @@ static NwWizardResult nw_wizard_pick(NwWizard *w)
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::AlignTextToFramePadding();
-            ImGui::TextDisabled("No disc images found.");
+            ImGui::TextDisabled("%s", nw_language_ui_text("No disc images found."));
         }
         ImGui::EndTable();
     }
@@ -292,17 +298,17 @@ static NwWizardResult nw_wizard_pick(NwWizard *w)
     ImGui::Spacing();
     ImGui::Separator();
     ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-    ImGui::TextWrapped("Data folder: %s", w->root);
+    ImGui::TextWrapped(nw_language_ui_text("Data folder: %s"), w->root);
     ImGui::PopStyleColor();
     static const char *const both[] = { "Start game", "Quit" }, *const quit[] = { "Quit" };
     nw_wizard_align_right(w->had_disc ? both : quit, w->had_disc ? 2 : 1);
     if (w->had_disc) {
-        if (ImGui::Button("Start game")) {
+        if (ImGui::Button(nw_ui_label("Start game"))) {
             result = NW_WIZARD_CLOSED;
         }
         ImGui::SameLine();
     }
-    if (ImGui::Button("Quit")) {
+    if (ImGui::Button(nw_ui_label("Quit"))) {
         result = NW_WIZARD_QUIT;
     }
     return result;
@@ -327,23 +333,23 @@ static void nw_wizard_run(NwWizard *w)
     }
 
     nw_wizard_title("Importing");
-    ImGui::TextWrapped("%s", nw_wizard_basename(w->image));
+    ImGui::TextWrapped(nw_language_ui_text("%s"), nw_wizard_basename(w->image));
     ImGui::Spacing();
     if (!total) {
-        ImGui::TextUnformatted("Checking the disc...");
+        ImGui::TextUnformatted(nw_language_ui_text("Checking the disc..."));
         ImGui::ProgressBar(-1.0f * (float)ImGui::GetTime(), ImVec2(-FLT_MIN, 0.0f), "");
     } else {
         char overlay[32];
         float fraction = (float)((double)done / (double)total);
         SDL_snprintf(overlay, sizeof(overlay), "%d%%", (int)(done * 100 / total));
-        ImGui::TextUnformatted("Copying and checking files...");
+        ImGui::TextUnformatted(nw_language_ui_text("Copying and checking files..."));
         ImGui::ProgressBar(fraction, ImVec2(-FLT_MIN, 0.0f), overlay);
-        ImGui::TextDisabled("%llu of %llu MB", (unsigned long long)(done >> 20), (unsigned long long)(total >> 20));
+        ImGui::TextDisabled(nw_language_ui_text("%llu of %llu MB"), (unsigned long long)(done >> 20), (unsigned long long)(total >> 20));
     }
     ImGui::Spacing();
     static const char *const cancel[] = { "Cancel" };
     nw_wizard_align_right(cancel, 1);
-    if (ImGui::Button("Cancel")) {
+    if (ImGui::Button(nw_ui_label("Cancel"))) {
         nw_import_cancel(w->job);
     }
 }
@@ -351,15 +357,15 @@ static void nw_wizard_run(NwWizard *w)
 static void nw_wizard_done(NwWizard *w)
 {
     char matches[64];
-    SDL_snprintf(matches, sizeof(matches), "Every file matches %s", w->imported ? w->imported->name : "the disc");
+    SDL_snprintf(matches, sizeof(matches), nw_language_ui_text("Every file matches %s"), w->imported ? w->imported->name : "the disc");
     nw_wizard_title("Disc imported");
     nw_wizard_wrapped(nw_wizard_ok, matches);
-    ImGui::TextWrapped("The game files are in %s" NW_DISC_DIR ". You will not need the disc image again, you can delete it if you want!",
+    ImGui::TextWrapped(nw_language_ui_text("The game files are in %s" NW_DISC_DIR ". You will not need the disc image again, you can delete it if you want!"),
                        w->root);
     ImGui::Spacing();
     static const char *const next[] = { "Continue" };
     nw_wizard_align_right(next, 1);
-    if (ImGui::Button("Continue")) {
+    if (ImGui::Button(nw_ui_label("Continue"))) {
         w->page = NW_PAGE_WELCOME;
     }
 }
@@ -390,21 +396,21 @@ static void nw_wizard_load_shot(NwWizard *w)
 static NwWizardResult nw_wizard_welcome(NwWizard *w)
 {
     nw_wizard_title("Welcome to the NuWorld BETA");
-    ImGui::TextWrapped("Thanks for testing! This beta has one goal: fine-tuning N. Hanced Movement, NuWorld's reworked "
-                       "movement for Crash, Coco and the vehicles.");
+    ImGui::TextWrapped("%s", nw_language_ui_text("Thanks for testing! This beta has one goal: fine-tuning N. Hanced Movement, NuWorld's reworked "
+                       "movement for Crash, Coco and the vehicles."));
 
     nw_wizard_heading("Debug menu");
     ImGui::Bullet();
-    ImGui::TextWrapped("Press F1 at any time to open the debug menu. Under Settings and Gameplay you also find video, "
-                       "audio, controls and camera, so you can set NuWorld up the way you like.");
+    ImGui::TextWrapped("%s", nw_language_ui_text("Press F1 at any time to open the debug menu. Under Settings and Gameplay you also find video, "
+                       "audio, controls and camera, so you can set NuWorld up the way you like."));
     ImGui::Bullet();
-    ImGui::TextWrapped("The debug menu is only for the beta. The first release will have native menus.");
+    ImGui::TextWrapped("%s", nw_language_ui_text("The debug menu is only for the beta. The first release will have native menus."));
     ImGui::Bullet();
-    ImGui::TextWrapped("Under N. Hanced Movement you can change the parameters of Crash, Coco and every vehicle. Each "
-                       "one also has its own key, shown next to it in the menu.");
+    ImGui::TextWrapped("%s", nw_language_ui_text("Under N. Hanced Movement you can change the parameters of Crash, Coco and every vehicle. Each "
+                       "one also has its own key, shown next to it in the menu."));
     ImGui::Bullet();
-    ImGui::TextWrapped("Retail and N. Hanced at the top of a panel switch between the original movement and the "
-                       "beta's defaults. Changes are saved automatically.");
+    ImGui::TextWrapped("%s", nw_language_ui_text("Retail and N. Hanced at the top of a panel switch between the original movement and the "
+                       "beta's defaults. Changes are saved automatically."));
 
     if (!w->shot && w->shot_w >= 0) {
         nw_wizard_load_shot(w);
@@ -427,7 +433,7 @@ static NwWizardResult nw_wizard_welcome(NwWizard *w)
         ImGui::Image((ImTextureID)w->shot, ImVec2(width, height));
         if (ImGui::IsItemHovered()) {
             ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-            ImGui::SetTooltip("Click to enlarge");
+            ImGui::SetTooltip("%s", nw_language_ui_text("Click to enlarge"));
         }
         if (ImGui::IsItemClicked()) {
             w->zoom = true;
@@ -437,13 +443,13 @@ static NwWizardResult nw_wizard_welcome(NwWizard *w)
 
     ImGui::BeginGroup();
     nw_wizard_heading("Feedback");
-    ImGui::TextWrapped("Something not working, or a parameter you would like to have? Create an issue on GitHub with "
-                       "the Beta Feedback template, or start a thread on the Discord server.");
-    if (ImGui::Button("Beta Feedback on GitHub")) {
+    ImGui::TextWrapped("%s", nw_language_ui_text("Something not working, or a parameter you would like to have? Create an issue on GitHub with "
+                       "the Beta Feedback template, or start a thread on the Discord server."));
+    if (ImGui::Button(nw_ui_label("Beta Feedback on GitHub"))) {
         SDL_OpenURL(NW_WIZARD_FEEDBACK_URL);
     }
     ImGui::SameLine();
-    if (ImGui::Button("Discord")) {
+    if (ImGui::Button(nw_ui_label("Discord"))) {
         SDL_OpenURL(NW_WIZARD_DISCORD_URL);
     }
     ImGui::EndGroup();
@@ -451,7 +457,7 @@ static NwWizardResult nw_wizard_welcome(NwWizard *w)
     ImGui::Spacing();
     static const char *const start[] = { "Start game" };
     nw_wizard_align_right(start, 1);
-    return ImGui::Button("Start game") ? NW_WIZARD_CLOSED : NW_WIZARD_OPEN;
+    return ImGui::Button(nw_ui_label("Start game")) ? NW_WIZARD_CLOSED : NW_WIZARD_OPEN;
 }
 
 static void nw_wizard_zoom(NwWizard *w)
@@ -483,19 +489,19 @@ static void nw_wizard_zoom(NwWizard *w)
 static void nw_wizard_failed(NwWizard *w)
 {
     nw_wizard_title("Import failed");
-    ImGui::TextWrapped("%s", nw_wizard_basename(w->image ? w->image : ""));
+    ImGui::TextWrapped(nw_language_ui_text("%s"), nw_wizard_basename(w->image ? w->image : ""));
     nw_wizard_wrapped(nw_wizard_bad, w->error);
-    ImGui::TextWrapped("NuWorld runs PAL v1.03 and v2.01 (SLES-50386) and USA v1.00 and v1.01 (SLUS-20238). The data "
-                       "folder is unchanged.");
+    ImGui::TextWrapped("%s", nw_language_ui_text("NuWorld runs PAL v1.03 and v2.01 (SLES-50386) and USA v1.00 and v1.01 (SLUS-20238). The data "
+                       "folder is unchanged."));
     ImGui::Spacing();
     static const char *const buttons[] = { "Try again", "Back" };
     nw_wizard_align_right(buttons, 2);
-    if (ImGui::Button("Try again") && w->image) {
+    if (ImGui::Button(nw_ui_label("Try again")) && w->image) {
         nw_wizard_start(w, w->image); /* copies the path before freeing the old one */
         return;
     }
     ImGui::SameLine();
-    if (ImGui::Button("Back")) {
+    if (ImGui::Button(nw_ui_label("Back"))) {
         w->page = NW_PAGE_PICK;
     }
 }
@@ -516,7 +522,17 @@ NwWizardResult nw_wizard_draw(NwWizard *w)
                  ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
                      ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings |
                      ImGuiWindowFlags_AlwaysAutoResize);
-    ImGui::TextDisabled(NW_APP_NAME " - first-time setup");
+    ImGui::TextDisabled(nw_language_ui_text("%s"), nw_language_ui_text(NW_APP_NAME " - first-time setup"));
+    int language = nw_language_preference() == NW_LANGUAGE_PT_BR ? 1 : 0;
+    static const char *const languages[] = { "English", "Português (BR)" };
+    if (ImGui::Combo("Language / Idioma", &language, languages, 2)) {
+        NwSettings settings;
+        nw_settings_defaults(&settings);
+        nw_settings_load(&settings, w->root);
+        settings.language = language ? NW_LANGUAGE_PT_BR : NW_LANGUAGE_DISC;
+        nw_language_request(settings.language);
+        nw_settings_save(&settings, w->root);
+    }
     switch (w->page) {
     case NW_PAGE_PICK:
         result = nw_wizard_pick(w);

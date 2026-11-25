@@ -13,6 +13,7 @@
 #include "port/menu.h"
 #include "port/names.h"
 #include "port/saves.h"
+#include "platform/language.h"
 
 #define NW_SAVEMENU_ARROW_X 0.85f
 #define NW_SAVEMENU_DX 0.7f       /* retail's SLOTPANELDX, SLOTPANELDY, SLOTPANELSX and SLOTPANELSZ */
@@ -214,7 +215,7 @@ void nw_savemenu_draw(struct cursor_s *cursor)
             { "MANUAL SAVES", "SAUVEGARDES MANUELLES", "MANUELLE SPEICHERSTAENDE", "SALVATAGGI MANUALI", "GUARDADOS MANUALES", "HANDMATIGE SAVES" },
             { "AUTOSAVES", "SAUVEGARDES AUTO", "AUTOMATISCHE SPEICHERSTAENDE", "AUTOSALVATAGGI", "GUARDADOS AUTOMATICOS", "AUTOMATISCHE SAVES" },
         };
-        Text3D(kind[nw_saves_automatic()][Game.language], 0, 0.54f, 1, 0.32f, 0.32f, 0.32f, 0, 0);
+        Text3D(nw_language_game_text(kind[nw_saves_automatic()][Game.language]), 0, 0.54f, 1, 0.32f, 0.32f, 0.32f, 0, 0);
         if (menu != 23 && (nw_saves_automatic() || nw_saves_has_autos())) {
             Text3D("q / r", 0, -0.83f, 1, 0.32f, 0.32f, 0.32f, 0, 0);
         }

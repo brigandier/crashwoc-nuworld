@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 
 #include "frontend/debug.h"
+#include "platform/language.h"
 #include "platform/input.h"
 
 #define NW_CONTROL_PANEL_PAD 8   /* the gamepad column, in font sizes */
@@ -19,7 +20,7 @@ static const char *nw_control_panel_names(const uint16_t *binds, bool keys, char
     for (int i = 0; i < NW_CONTROL_BINDS && binds[i]; i++) {
         const char *name = keys ? nw_controls_key_name(binds[i]) : nw_input_pad_label(binds[i]);
         SDL_strlcat(buf, i ? " / " : "", size);
-        SDL_strlcat(buf, name ? name : "?", size);
+        SDL_strlcat(buf, nw_language_ui_text(name ? name : "?"), size);
     }
     return buf[0] ? buf : "-";
 }
@@ -79,8 +80,8 @@ static void nw_control_panel_draw(void *user)
         nw_control_panel_cell(c->keys, i, true);
     }
     if (target >= 0) {
-        nw_debug_text("Press a %s for %s; Esc cancels", keys ? "key" : "button or trigger",
-                      nw_control_targets[target].label);
+        nw_debug_text("Press a %s for %s; Esc cancels", nw_language_ui_text(keys ? "key" : "button or trigger"),
+                      nw_language_ui_text(nw_control_targets[target].label));
         if (nw_debug_button("Clear")) {
             nw_controls_bind(binds, count, target, 0);
             nw_control_panel.target = -1;

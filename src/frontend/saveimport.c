@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "frontend/debug.h"
+#include "platform/language.h"
 #include "frontend/saveexport.h"
 #include "port/saves.h"
 
@@ -60,7 +61,7 @@ static void nw_saveimport_list(char *out, size_t size, const char *lead, const i
     bool first = true;
     for (int s = 0; s < NW_SAVE_PS2_GAMES; s++) {
         if (list[s] >= 0 && len < size) {
-            len += SDL_snprintf(out + len, size - len, "%s%s slot %d as Save %d", first ? "" : ",", first ? lead : "",
+            len += SDL_snprintf(out + len, size - len, nw_language_ui_text("%s%s slot %d as Save %d"), first ? "" : ",", first ? nw_language_ui_text(lead) : "",
                                 s + 1, list[s] + 1);
             first = false;
         }
@@ -78,9 +79,9 @@ static void nw_saveimport_report(NwSavesImport state, const NwSavesImported *r)
     nw_saveimport_list(out, sizeof(nw_saveimport.result), "Already saved:", r->already);
     size_t len = SDL_strlen(out);
     if (state == NW_SAVES_IMPORT_FAILED) {
-        SDL_snprintf(out + len, sizeof(nw_saveimport.result) - len, "Not imported: %s", r->why);
+        SDL_snprintf(out + len, sizeof(nw_saveimport.result) - len, nw_language_ui_text("Not imported: %s"), r->why);
     } else if (!len) {
-        SDL_strlcpy(out, "Nothing imported.", sizeof(nw_saveimport.result));
+        SDL_strlcpy(out, nw_language_ui_text("Nothing imported."), sizeof(nw_saveimport.result));
     }
 }
 
@@ -166,13 +167,13 @@ static void nw_saveimport_draw(void *user)
         char what[48], label[96];
         bool importable = !nw_saveimport_empty(s) && nw_saveimport.already[s] < 0;
         if (nw_saveimport_empty(s)) {
-            SDL_snprintf(label, sizeof(label), "Slot %d: empty", s + 1);
+            SDL_snprintf(label, sizeof(label), nw_language_ui_text("Slot %d: empty"), s + 1);
         } else {
             nw_saveexport_game(nw_saveimport.games + s * NW_SAVE_GAME_SIZE, what, sizeof(what));
             if (importable) {
-                SDL_snprintf(label, sizeof(label), "Slot %d: %s", s + 1, what);
+                SDL_snprintf(label, sizeof(label), nw_language_ui_text("Slot %d: %s"), s + 1, what);
             } else {
-                SDL_snprintf(label, sizeof(label), "Slot %d: %s (already Save %d)", s + 1, what,
+                SDL_snprintf(label, sizeof(label), nw_language_ui_text("Slot %d: %s (already Save %d)"), s + 1, what,
                              nw_saveimport.already[s] + 1);
             }
         }

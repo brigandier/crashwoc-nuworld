@@ -9,6 +9,7 @@
 
 extern "C" {
 #include "platform/paths.h"
+#include "platform/language.h"
 }
 
 #define NW_DEBUG_ITEMS 64
@@ -127,25 +128,25 @@ void nw_debug_text(const char *fmt, ...)
     va_list ap;
     va_start(ap, fmt);
     ImGui::PushTextWrapPos(ImGui::GetFontSize() * 24.0f);
-    ImGui::TextV(fmt, ap);
+    ImGui::TextV(nw_language_ui_text(fmt), ap);
     ImGui::PopTextWrapPos();
     va_end(ap);
 }
 
 void nw_debug_tooltip(const char *text)
 {
-    ImGui::SetItemTooltip("%s", text);
+    ImGui::SetItemTooltip("%s", nw_language_ui_text(text));
 }
 
 void nw_debug_label(const char *text)
 {
     ImGui::AlignTextToFramePadding();
-    ImGui::TextUnformatted(text);
+    ImGui::TextUnformatted(nw_language_ui_text(text));
 }
 
 bool nw_debug_button(const char *label)
 {
-    return ImGui::Button(label);
+    return ImGui::Button(nw_ui_label(label));
 }
 
 void nw_debug_enable_begin(bool enabled)
@@ -160,7 +161,7 @@ void nw_debug_enable_end(void)
 
 bool nw_debug_checkbox(const char *label, bool *value)
 {
-    return ImGui::Checkbox(label, value);
+    return ImGui::Checkbox(nw_ui_label(label), value);
 }
 
 void nw_debug_indent(bool in)
@@ -179,31 +180,32 @@ void nw_debug_same_line(float column)
 
 bool nw_debug_slider(const char *label, float *value, float lo, float hi, bool log)
 {
-    return ImGui::SliderFloat(label, value, lo, hi, "%.3g", log ? ImGuiSliderFlags_Logarithmic : 0);
+    return ImGui::SliderFloat(nw_ui_label(label), value, lo, hi, "%.3g", log ? ImGuiSliderFlags_Logarithmic : 0);
 }
 
 bool nw_debug_slider_int(const char *label, int *value, int lo, int hi)
 {
-    return ImGui::SliderInt(label, value, lo, hi, "%d", ImGuiSliderFlags_AlwaysClamp);
+    return ImGui::SliderInt(nw_ui_label(label), value, lo, hi, "%d", ImGuiSliderFlags_AlwaysClamp);
 }
 
 bool nw_debug_combo(const char *label, int *index, const char *const *items, int count)
 {
-    return ImGui::Combo(label, index, items, count);
+    auto getter = [](void *data, int i) { return nw_language_ui_text(((const char *const *)data)[i]); };
+    return ImGui::Combo(nw_ui_label(label), index, getter, (void *)items, count);
 }
 
 bool nw_debug_filter(const char *hint, char *buf, size_t size)
 {
     ImGui::PushID(hint);
     ImGui::SetNextItemWidth(-FLT_MIN);
-    bool changed = ImGui::InputTextWithHint("##filter", hint, buf, size);
+    bool changed = ImGui::InputTextWithHint("##filter", nw_language_ui_text(hint), buf, size);
     ImGui::PopID();
     return changed;
 }
 
 bool nw_debug_input(const char *label, char *buf, size_t size)
 {
-    return ImGui::InputText(label, buf, size);
+    return ImGui::InputText(nw_ui_label(label), buf, size);
 }
 
 void nw_debug_list_begin(const char *id, int rows)
@@ -225,12 +227,12 @@ void nw_debug_list_end(void)
 
 void nw_debug_heading(const char *text)
 {
-    ImGui::SeparatorText(text);
+    ImGui::SeparatorText(nw_language_ui_text(text));
 }
 
 bool nw_debug_selectable(const char *label, bool selected)
 {
-    return ImGui::Selectable(label, selected);
+    return ImGui::Selectable(nw_ui_label(label), selected);
 }
 
 bool nw_debug_tree(const char *label, const char *note, bool highlight, bool open)
@@ -241,7 +243,7 @@ bool nw_debug_tree(const char *label, const char *note, bool highlight, bool ope
     }
     float right = ImGui::GetCursorPosX() + ImGui::GetContentRegionAvail().x;
     ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth;
-    bool shown = ImGui::TreeNodeEx(label, highlight ? flags | ImGuiTreeNodeFlags_Selected : flags);
+    bool shown = ImGui::TreeNodeEx(nw_ui_label(label), highlight ? flags | ImGuiTreeNodeFlags_Selected : flags);
     if (note && *note) {
         ImGui::SameLine(right - ImGui::CalcTextSize(note).x);
         ImGui::TextDisabled("%s", note);
@@ -258,7 +260,7 @@ void nw_debug_warning(const char *text)
 {
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.76f, 0.3f, 1.0f));
     ImGui::PushTextWrapPos(ImGui::GetFontSize() * 24.0f);
-    ImGui::TextUnformatted(text);
+    ImGui::TextUnformatted(nw_language_ui_text(text));
     ImGui::PopTextWrapPos();
     ImGui::PopStyleColor();
 }
@@ -273,16 +275,16 @@ static void nw_debug_menu_item(NwDebugItem *item)
     if (item->kind == NW_DEBUG_TOGGLE) {
         ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
         ImGui::PushStyleColor(ImGuiCol_Border, ImGui::GetStyleColorVec4(ImGuiCol_TextDisabled));
-        ImGui::Checkbox(item->label, item->value);
+        ImGui::Checkbox(nw_ui_label(item->label), item->value);
         ImGui::PopStyleColor();
         ImGui::PopStyleVar();
     } else if (item->kind == NW_DEBUG_PANEL) {
         char label[80];
-        SDL_snprintf(label, sizeof(label), "%s...", item->label);
+        SDL_snprintf(label, sizeof(label), "%s...###%s", nw_language_ui_text(item->label), item->label);
         if (ImGui::MenuItem(label, item->key ? SDL_GetScancodeName(item->key) : NULL)) {
             item->open = item->focus = true;
         }
-    } else if (ImGui::MenuItem(item->label, item->key ? SDL_GetScancodeName(item->key) : NULL)) {
+    } else if (ImGui::MenuItem(nw_ui_label(item->label), item->key ? SDL_GetScancodeName(item->key) : NULL)) {
         item->fn(item->user);
     }
 }
@@ -311,7 +313,7 @@ static void nw_debug_menu(const char *path, size_t len)
             continue;
         }
         nw_ui_push_font(NW_UI_BOLD, 1.0f);
-        bool open = ImGui::BeginMenu(label);
+        bool open = ImGui::BeginMenu(nw_ui_label(label));
         nw_ui_pop_font();
         if (open) {
             nw_debug_menu(item->menu, sub);
@@ -333,7 +335,7 @@ static void nw_debug_panels(void)
             continue;
         }
         char name[128];
-        SDL_snprintf(name, sizeof(name), "%s###%s/%s", item->label, item->menu, item->label);
+        SDL_snprintf(name, sizeof(name), "%s###%s/%s", nw_language_ui_text(item->label), item->menu, item->label);
         if (!item->placed) {
             uint32_t k = nw_debug.placed++;
             float x = step * (float)(k % rows + k / rows * 4), y = step * (float)(k % rows);
@@ -467,7 +469,7 @@ void nw_debug_show(bool shown)
 
 static void nw_debug_prompt_frame(void)
 {
-    const char *title = nw_debug.prompt_title;
+    const char *title = nw_ui_label(nw_debug.prompt_title);
     if (!ImGui::IsPopupOpen(title)) {
         ImGui::OpenPopup(title);
     }

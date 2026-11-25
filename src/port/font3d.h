@@ -4,10 +4,16 @@
 #include "platform/prompts.h"
 
 #define NW_FONT3D_GREY 5
+#define NW_FONT3D_SAVING 6
+
+/* Game thread: subtitle-only spacing; restore the returned state after drawing. */
+bool nw_font3d_subtitle_accents(bool enabled);
 
 /* Any thread: the glyphs Text3D draws from its next call; retail's until the first. */
 void nw_font3d_prompts(const NwPrompts *p);
 /* NuMtlRelease: the icons' materials and textures went with the level's. */
 void nw_font3d_release(void);
+/* Panel camera: small autosave disk, with a soft pulse and one glint while saving. */
+void nw_font3d_autosave(float x, float y, float size, bool writing);
 
 #endif

@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include "frontend/debug.h"
+#include "platform/language.h"
 #include "frontend/settings.h"
 #include "platform/droptarget.h"
 #include "platform/log.h"
@@ -173,7 +174,7 @@ static void nw_profiles_parts_text(unsigned parts, char *out, size_t size)
 {
     out[0] = '\0';
     if (parts == NW_PARTS_ALL) {
-        SDL_strlcpy(out, "every character and vehicle", size);
+        SDL_strlcpy(out, nw_language_ui_text("every character and vehicle"), size);
         return;
     }
     for (int p = 0; p < NW_MOVEMENT_PARTS; p++) {
@@ -181,7 +182,7 @@ static void nw_profiles_parts_text(unsigned parts, char *out, size_t size)
             if (out[0]) {
                 SDL_strlcat(out, ", ", size);
             }
-            SDL_strlcat(out, nw_profiles_parts[p], size);
+            SDL_strlcat(out, nw_language_ui_text(nw_profiles_parts[p]), size);
         }
     }
 }
@@ -199,7 +200,7 @@ static bool nw_profiles_write(const char *name, unsigned parts, const NwMovement
     text = path ? nw_settings_profile_text(m, parts, name, &size) : NULL;
     bool ok = text && SDL_SaveFile(path, text, size);
     if (!ok) {
-        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), "Could not save %s: %s", name, SDL_GetError());
+        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), nw_language_ui_text("Could not save %s: %s"), name, SDL_GetError());
         nw_log_warn(NW_LOG_APP, "profiles: %s", nw_profiles.notice);
     }
     SDL_free(text);
@@ -213,9 +214,9 @@ static void nw_profiles_delete(const char *name)
 {
     const NwProfileFile *f = nw_profiles_find(name);
     if (f && SDL_RemovePath(f->path)) {
-        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), "Deleted %s.", name);
+        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), nw_language_ui_text("Deleted %s."), name);
     } else if (f) {
-        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), "Could not delete %s: %s", name, SDL_GetError());
+        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), nw_language_ui_text("Could not delete %s: %s"), name, SDL_GetError());
     }
     nw_profiles_scan();
 }
@@ -224,7 +225,7 @@ static void nw_profiles_use(const NwMovement *m, unsigned parts, const char *nam
 {
     nw_settings_profile_apply(nw_profiles.movement, m, parts);
     SDL_strlcpy(nw_profiles.name, name, sizeof(nw_profiles.name));
-    SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), "Loaded %s.", name);
+    SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), nw_language_ui_text("Loaded %s."), name);
     nw_log_info(NW_LOG_APP, "profiles: loaded %s", name);
 }
 
@@ -243,7 +244,7 @@ static bool nw_profiles_prompt(void *user)
         }
         if (nw_debug_button("Apply")) {
             nw_settings_profile_apply(nw_profiles.movement, &nw_profiles.ask_movement, nw_profiles.ask_parts);
-            SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), "Applied %s.", name);
+            SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), nw_language_ui_text("Applied %s."), name);
             nw_log_info(NW_LOG_APP, "profiles: applied %s (%s)", name, parts);
             open = false;
         }
@@ -258,7 +259,7 @@ static bool nw_profiles_prompt(void *user)
         }
         if (nw_debug_button("Import")) {
             if (nw_profiles_write(name, nw_profiles.ask_parts, &nw_profiles.ask_movement)) {
-                SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), "Imported %s.", name);
+                SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), nw_language_ui_text("Imported %s."), name);
             }
             open = false;
         }
@@ -273,7 +274,7 @@ static bool nw_profiles_prompt(void *user)
         nw_debug_text("Replace the saved %s Movement Profile?", name);
         if (nw_debug_button("Replace")) {
             if (nw_profiles_write(name, NW_PARTS_ALL, nw_profiles.movement)) {
-                SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), "Saved %s.", name);
+                SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), nw_language_ui_text("Saved %s."), name);
             }
             open = false;
         }
@@ -312,7 +313,7 @@ static void nw_profiles_offer(const char *path, bool quiet)
     unsigned parts = nw_profiles_load(path, &m, name, sizeof(name));
     if (!parts) {
         if (!quiet) {
-            SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), "%s is no movement profile.",
+            SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), nw_language_ui_text("%s is no movement profile."),
                          nw_profiles_base(path));
         }
         return;
@@ -338,7 +339,7 @@ static void nw_profiles_paste(NwProfilesAsk ask)
     }
     if (!parts) {
         if (ask == NW_PROFILES_IMPORT) {
-            SDL_strlcpy(nw_profiles.notice, "The clipboard holds no movement profile.", sizeof(nw_profiles.notice));
+            SDL_strlcpy(nw_profiles.notice, nw_language_ui_text("The clipboard holds no movement profile."), sizeof(nw_profiles.notice));
         }
         return;
     }
@@ -353,9 +354,9 @@ static bool nw_profiles_clip(const NwMovement *m, unsigned parts, const char *na
     if (ok) {
         char what[160];
         nw_profiles_parts_text(parts, what, sizeof(what));
-        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), "Copied %s (%s) to the clipboard.", name, what);
+        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), nw_language_ui_text("Copied %s (%s) to the clipboard."), name, what);
     } else {
-        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), "Could not copy %s: %s", name, SDL_GetError());
+        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), nw_language_ui_text("Could not copy %s: %s"), name, SDL_GetError());
     }
     SDL_free(text);
     return ok;
@@ -386,7 +387,7 @@ static void nw_profiles_export(const char *path)
     size_t n = SDL_strlen(path), size = 0;
     char *full = NULL, *text = NULL;
     if (!f) {
-        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), "%s is no longer saved.",
+        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), nw_language_ui_text("%s is no longer saved."),
                      nw_profiles.export_name);
         return;
     }
@@ -397,10 +398,10 @@ static void nw_profiles_export(const char *path)
     }
     text = full ? nw_settings_profile_text(&f->movement, f->parts, f->name, &size) : NULL;
     if (text && SDL_SaveFile(full, text, size)) {
-        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), "Exported %s as %s.", f->name,
+        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), nw_language_ui_text("Exported %s as %s."), f->name,
                      nw_profiles_base(full));
     } else {
-        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), "Could not export %s: %s", f->name,
+        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), nw_language_ui_text("Could not export %s: %s"), f->name,
                      SDL_GetError());
     }
     SDL_free(text);
@@ -456,7 +457,7 @@ static void nw_profiles_folder(void)
             SDL_MinimizeWindow(nw_profiles.window);
         }
     } else {
-        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), "Could not open the folder: %s",
+        SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), nw_language_ui_text("Could not open the folder: %s"),
                      SDL_GetError());
     }
     SDL_free(dir);
@@ -478,7 +479,7 @@ static void nw_profiles_draw(void *user)
         if (nw_profiles_find(name)) {
             nw_profiles_ask_for(NW_PROFILES_REPLACE, name, NW_PARTS_ALL, NULL);
         } else if (nw_profiles_write(name, NW_PARTS_ALL, nw_profiles.movement)) {
-            SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), "Saved %s.", name);
+            SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), nw_language_ui_text("Saved %s."), name);
         }
     }
     nw_debug_enable_end();
@@ -489,35 +490,35 @@ static void nw_profiles_draw(void *user)
     }
     for (int i = 0; i < nw_profiles.count; i++) {
         const NwProfileFile *f = &nw_profiles.files[i];
-        SDL_snprintf(id, sizeof(id), "Load##load%d", i);
+        SDL_snprintf(id, sizeof(id), nw_language_ui_text("Load###load%d"), i);
         if (nw_debug_button(id)) {
             nw_profiles_use(&f->movement, f->parts, f->name);
         }
         nw_debug_same_line(0.0f);
-        SDL_snprintf(id, sizeof(id), "Copy##copy%d", i);
+        SDL_snprintf(id, sizeof(id), nw_language_ui_text("Copy###copy%d"), i);
         if (nw_debug_button(id)) {
             nw_profiles_clip(&f->movement, f->parts, f->name);
         }
         nw_debug_same_line(0.0f);
         nw_debug_enable_begin(nw_profiles.dialog_event != 0);
-        SDL_snprintf(id, sizeof(id), "Export...##export%d", i);
+        SDL_snprintf(id, sizeof(id), nw_language_ui_text("Export...###export%d"), i);
         if (nw_debug_button(id)) {
             nw_profiles_export_dialog(f->name);
         }
         nw_debug_enable_end();
         nw_debug_same_line(0.0f);
-        SDL_snprintf(id, sizeof(id), "Delete##delete%d", i);
+        SDL_snprintf(id, sizeof(id), nw_language_ui_text("Delete###delete%d"), i);
         if (nw_debug_button(id)) {
             nw_profiles_ask_for(NW_PROFILES_DELETE, f->name, 0, NULL);
         }
         nw_debug_same_line(0.0f);
         if (f->parts == NW_PARTS_ALL) {
-            nw_debug_label(f->name);
+            nw_debug_text("%s", f->name);
         } else {
             char parts[160], label[224];
             nw_profiles_parts_text(f->parts, parts, sizeof(parts));
             SDL_snprintf(label, sizeof(label), "%s (%s)", f->name, parts);
-            nw_debug_label(label);
+            nw_debug_text("%s", label);
         }
     }
 
@@ -573,7 +574,7 @@ void nw_profiles_event(const SDL_Event *e)
         } else if (path) {
             nw_profiles_offer(path, e->user.code == NW_PROFILES_DROP);
         } else if (why) {
-            SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), "No file dialog: %s", why);
+            SDL_snprintf(nw_profiles.notice, sizeof(nw_profiles.notice), nw_language_ui_text("No file dialog: %s"), why);
         }
         SDL_free(e->user.data1);
         SDL_free(e->user.data2);

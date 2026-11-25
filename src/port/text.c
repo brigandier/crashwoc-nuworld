@@ -1,5 +1,7 @@
 /* NewLanguage override: shoulder-button power-up texts hold Text3D's glyph codes so they show the bound button. */
 #include "game/gametypes.h"
+#include "port/language.h"
+#include "platform/language.h"
 
 extern s32 LANGUAGEOPTION;
 extern struct game_s Game;
@@ -147,7 +149,7 @@ static char *nw_speedshoes_text[6][7] = {
 void NewLanguage(s32 lang)
 {
     /* every table below has 6 languages; retail trusts the save's byte. English only without LANGUAGEOPTION */
-    Game.language = lang >= 0 && lang < 6 && LANGUAGEOPTION ? lang : 0;
+    Game.language = nw_language_game_apply(lang);
     PData[0].name = tSNEAKSHOES[Game.language];
     PData[0].text = nw_sneakshoes_text[Game.language];
     PData[1].name = tDOUBLEJUMP[Game.language];
@@ -160,5 +162,13 @@ void NewLanguage(s32 lang)
     PData[4].text = nw_speedshoes_text[Game.language];
     PData[5].name = tSUPERBELLYFLOP[Game.language];
     PData[5].text = tSUPERBELLYFLOPTEXT[Game.language];
+    static char *localized[6][7];
+    if (nw_language_preference() == NW_LANGUAGE_PT_BR) {
+        for (int power = 0; power < 6; power++) {
+            for (int line = 0; line < 7; line++)
+                localized[power][line] = nw_language_game_text(PData[power].text[line]);
+            PData[power].text = localized[power];
+        }
+    }
     DefaultTimeTrialNames(0);
 }

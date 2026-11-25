@@ -320,11 +320,18 @@ static void test_autosaves(void)
     CHECK(nw_autosave_enabled() && nw_autosave_status() == NW_AUTOSAVE_WRITING);
     uint64_t now = SDL_GetTicks();
     CHECK(nw_autosave_notice_visible(now));
-    CHECK(!nw_autosave_notice_visible(now + 350));
+    CHECK(nw_autosave_notice_visible(now + 350));
     CHECK(nw_autosave_notice_visible(now + 700));
     nw_autosave_finish();
     CHECK(nw_autosave_status() == NW_AUTOSAVE_COMPLETE && there("autosave001.toml") && !there("save001.toml"));
-    CHECK(nw_autosave_notice_visible(now) && nw_autosave_notice_visible(now + 350));
+    now = SDL_GetTicks();
+    CHECK(nw_autosave_notice_visible(now));
+    CHECK(nw_autosave_notice_visible(now + 350));
+    CHECK(nw_autosave_notice_visible(now + 700));
+    nw_autosave_notice_presented();
+    now = SDL_GetTicks();
+    CHECK(nw_autosave_notice_visible(now + 2499));
+    CHECK(!nw_autosave_notice_visible(now + 2500));
     const NwSaveRegistry *reg = nw_saves_levels();
     struct game_s saved;
     NwSaveMeta first, meta;
@@ -618,6 +625,21 @@ static void test_import(void)
     nw_saves_init(NULL);
 }
 
+static void test_quiet_newgame_save(void)
+{
+    fresh();
+    nw_saves_init(dir);
+    play();
+    cutmovie = 0;
+    nw_autosave_new(true);
+    nw_autosave_finish();
+    CHECK(there("autosave001.toml"));
+    /* Initial success expires during the title/intro, without a deferred gameplay notification. */
+    CHECK(!nw_autosave_notice_visible(SDL_GetTicks() + 2500));
+    cutmovie = -1;
+    nw_saves_init(NULL);
+}
+
 int main(int argc, char *argv[])
 {
     if (argc < 2 || argc > 3 || (argc == 3 && strcmp(argv[2], "ps2") != 0)) {
@@ -631,6 +653,7 @@ int main(int argc, char *argv[])
     } else {
         test_menus();
         test_autosaves();
+        test_quiet_newgame_save();
         test_nonblocking_saves();
         test_import();
         /* what tests/save_toml.py reads with Python's tomllib */

@@ -31,6 +31,7 @@ bool nw_autosave_loading(void);
 bool nw_autosave_set(bool enabled);
 void nw_autosave_accept_rollback(bool enabled);
 NwAutosaveStatus nw_autosave_status(void);
+/* The notification's lifetime; the renderer handles its pulse without hiding the text. */
 bool nw_autosave_notice_visible(uint64_t now);
 void nw_autosave_notice_presented(void);
 void nw_autosave_recovered(void);

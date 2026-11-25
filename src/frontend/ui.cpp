@@ -1,5 +1,9 @@
 #include "frontend/ui.h"
 
+extern "C" {
+#include "platform/language.h"
+}
+
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_sdl3.h"
@@ -15,6 +19,19 @@ static SDL_Window *nw_ui_window;
 static ImFont *nw_ui_fonts[2];
 static float nw_ui_scale;
 static bool nw_ui_compact;
+
+const char *nw_ui_label(const char *label)
+{
+    const char *translated = nw_language_ui_text(label);
+    if (translated == label) {
+        return label;
+    }
+    static char labels[8][512];
+    static unsigned slot;
+    char *out = labels[slot++ % SDL_arraysize(labels)];
+    SDL_snprintf(out, sizeof(labels[0]), "%s###%s", translated, label);
+    return out;
+}
 
 static ImFont *nw_ui_add_font(const unsigned char *data, size_t size, const char *name)
 {

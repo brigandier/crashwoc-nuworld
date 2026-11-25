@@ -5,6 +5,8 @@
 #include "game/gametypes.h"
 #include "nups2/ps2ctl.h"
 #include "port/rev.h"
+#include "port/language.h"
+#include "platform/language.h"
 
 extern struct game_s Game;
 extern s32 LANGUAGEOPTION, TimeTrial, Level, Paused, fadeval, editor_active, ForceRestart;
@@ -57,10 +59,10 @@ int main(void)
             TimeTrial = trial;
             for (int menu = 0; menu <= 3; menu += 3) {
                 struct cursor_s cursor = open_menu(menu);
-                CHECK(cursor.y_max == (menu == 0 ? 2 + language : 3 + trial));
+                CHECK(cursor.y_max == (menu == 0 ? 3 : 3 + trial));
                 /* Recomputing bounds must not append the row twice. */
                 GetMenuInfo(&cursor);
-                CHECK(cursor.y_max == (menu == 0 ? 2 + language : 3 + trial));
+                CHECK(cursor.y_max == (menu == 0 ? 3 : 3 + trial));
                 ProcMenu(&cursor, &pad);
                 CHECK(!quit_event());
                 CHECK(cursor.menu == (menu == 0 ? 34 : 35) && cursor.y == 1);
@@ -146,9 +148,32 @@ int main(void)
     nw_rev = 0;
 
     cursor = open_menu(4);
-    CHECK(cursor.y_max == 4); /* autosave before DONE */
+    CHECK(cursor.y_max == 5); /* language and autosave before DONE */
     cursor = open_menu(8);
     CHECK(cursor.y_max == 1);
+
+    for (int pal = 0; pal <= 1; pal++) {
+        LANGUAGEOPTION = pal;
+        nw_language_game_select(0);
+        cursor = open_menu(0);
+        cursor.y = 2;
+        pad.paddata_db = 0x40;
+        ProcMenu(&cursor, &pad);
+        CHECK(cursor.menu == 7 && cursor.y_max == (pal ? 6 : 1));
+        cursor.item_frame = 1;
+        cursor.y = cursor.y_max;
+        ProcMenu(&cursor, &pad);
+        CHECK(cursor.menu == 0 && nw_language_game_selected() == 6 && Game.language == 0);
+
+        cursor = open_menu(4);
+        cursor.y = 3;
+        ProcMenu(&cursor, &pad);
+        CHECK(cursor.menu == 7 && cursor.y == cursor.y_max);
+        cursor.item_frame = 1;
+        cursor.y = 0;
+        ProcMenu(&cursor, &pad);
+        CHECK(cursor.menu == 4 && nw_language_game_selected() == 0 && Game.language == 0);
+    }
     SDL_Quit();
     return failures ? 1 : 0;
 }
