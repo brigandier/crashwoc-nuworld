@@ -186,6 +186,7 @@ add_library(nuworld_port STATIC
   src/platform/clock.c
   src/platform/text3d.c
   src/platform/http.c
+  src/platform/subtitles.c
   src/platform/update.c
   src/port/stub.c
   src/port/funcmap.c

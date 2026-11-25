@@ -18,6 +18,7 @@
 #include "platform/paths.h"
 #include "platform/platform.h"
 #include "platform/prompts.h"
+#include "platform/subtitles.h"
 #include "platform/update.h"
 #include "vfs/extract.h"
 #ifdef NW_WITH_GAME
@@ -855,6 +856,8 @@ static void nw_boot_audio(void *user)
         nw_options_set_volume(false, sfx);
     }
     nw_debug_slider_int("Voice", &s->voice_volume, 0, 100);
+    nw_debug_checkbox("Subtitles", &s->subtitles);
+    nw_debug_checkbox("Subtitles on title screen", &s->title_subtitles);
 }
 
 static const char *const nw_movement_profiles[] = { "Retail", "N. Hanced", "Custom" };
@@ -1170,6 +1173,7 @@ static int nw_boot(const char *data_dir, int hardware_speed, float aspect, NwPla
     NwSettings settings;
     nw_settings_defaults(&settings);
     nw_boot_settings(data_dir, &settings, false);
+    nw_subtitles_enable(settings.subtitles, settings.title_subtitles);
     if (hardware_speed >= 0) {
         settings.hardware_speed = hardware_speed;
     }
@@ -1342,6 +1346,7 @@ static int nw_boot(const char *data_dir, int hardware_speed, float aspect, NwPla
             nw_settings_level_fog(&settings, snap.cutmovie == 0 ? -1 : snap.level, &fog_kept);
         }
         if (!nw_settings_equal(&settings, &applied)) {
+            nw_subtitles_enable(settings.subtitles, settings.title_subtitles);
             if (settings.discord != applied.discord) {
                 nw_discord_enable(settings.discord);
             }
