@@ -184,6 +184,7 @@ add_library(nuworld_port STATIC
   src/hle/eedouble.c
   src/hle/eefpu.c
   src/platform/clock.c
+  src/platform/text3d.c
   src/platform/http.c
   src/platform/update.c
   src/port/stub.c
