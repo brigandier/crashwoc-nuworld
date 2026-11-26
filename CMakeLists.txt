@@ -184,12 +184,12 @@ add_library(nuworld_port STATIC
   src/hle/eedouble.c
   src/hle/eefpu.c
   src/platform/clock.c
-  src/platform/text3d.c
   src/platform/http.c
-  src/platform/subtitles.c
   src/platform/update.c
   src/port/stub.c
   src/port/funcmap.c
+  src/port/subtitle_catalog.c
+  src/port/text3d.c
   ${nw_buildid})
 add_dependencies(nuworld_port nuworld_buildid)
 target_include_directories(nuworld_port PUBLIC src)

@@ -1,5 +1,3 @@
-#include <string.h>
-
 #include "game/creature.h"
 #include "game/creature.retail.h"
 #include "gameplay/airindicator.h"
@@ -28,8 +26,6 @@ void CloseCreatures(void)
     nw_crunch_close();
     nw_hubgem_close();
     CloseCreatures__retail();
-    /* Movies can update 3D font objects before the next level loads its models. */
-    memset(CRemap, -1, sizeof(CRemap));
 }
 
 void LoadCharacterModels(void)

@@ -1,4 +1,3 @@
-#include "platform/subtitles.h"
 #include "port/subtitles.h"
 
 #include <SDL3/SDL.h>
@@ -9,10 +8,12 @@
 #include "game/gametypes.h"
 #include "game/main.retail.h"
 #include "game/panel.retail.h"
+#include "gameplay/gameplay.h"
 #include "nu3d/nucamera.h"
 #include "numath/numtx.h"
 #include "platform/log.h"
 #include "port/font3d.h"
+#include "port/level.h"
 #include "port/menu.h"
 
 extern struct game_s Game;
@@ -20,6 +21,7 @@ extern s32 Level, cutmovie, new_level, new_mode;
 extern s32 Paused, screendump, save_paused;
 extern s32 loadthread_id;
 extern struct nucamera_s *pNuCam;
+extern struct nugscn_s *font3d_scene;
 void MaxVP(void);
 void GameVP(void);
 void LoadFont3D(void);
@@ -28,6 +30,11 @@ void NuRndrClear(int flags, int colour, float depth);
 void Text3D(char *txt, f32 x, f32 y, f32 z, f32 sx, f32 sy, f32 sz, s32 align, s32 colour);
 
 static float nw_subtitles_hud_top = -1.0f;
+
+bool nw_subtitles_enabled(bool title)
+{
+    return nw_profile.subtitles && (!title || nw_profile.title_subtitles);
+}
 
 void nw_subtitles_hud_line(float y)
 {
@@ -82,15 +89,19 @@ static void nw_subtitles_draw(void)
             last = text;
             if (!nw_subtitles_layout(text, &layout)) {
                 nw_log_error(NW_LOG_PORT, "subtitles: cannot render Text3D line: %s", text);
-                SDL_strlcpy(layout.line[0], "TEXT ERROR", sizeof(layout.line[0]));
-                layout.count = 1;
-                layout.scale = 0.34f;
-            }
-            if (layout.speaker_length) {
+                layout.count = 0;
+            } else if (layout.speaker_length) {
                 /* Text3D ignores its colour controls when measuring and centring the line. */
                 SDL_snprintf(first_line, sizeof(first_line), "#b%.*s#o%s",
                     layout.speaker_length, layout.line[0], layout.line[0] + layout.speaker_length);
             }
+        }
+        if (!layout.count) {
+            return;
+        }
+        /* Space omits the HUD font. Load it on its first subtitle, also after a live toggle. */
+        if (cutmovie < 0 && Level == NW_LEVEL_SPACE && !font3d_scene) {
+            LoadFont3D();
         }
         struct numtx_s camera = pNuCam->mtx;
         /* Finish the scene and clear only its depth before drawing the text. */
@@ -99,7 +110,8 @@ static void nw_subtitles_draw(void)
         NuMtxSetIdentity(&pNuCam->mtx);
         NuCameraSet(pNuCam);
         /* Vehicle health and objectives occupy the bottom of gameplay's HUD. */
-        float bottom = cutmovie < 0 && Level != 0x25 && Level != 0x26 && Level != 0x28 ? -0.50f : -0.88f;
+        float bottom = cutmovie < 0 && Level != NW_LEVEL_HUB && Level != NW_LEVEL_GAMEOVER &&
+                       Level != NW_LEVEL_SPACE ? -0.50f : -0.88f;
         if (cutmovie < 0) {
             float hud_top = SDL_max(nw_subtitles_hud_top, nw_menu_autosave_hud_top());
             bottom = SDL_max(bottom, hud_top + 0.10f);
@@ -134,14 +146,5 @@ void DrawPanel(void)
     DrawPanel__retail();
     if (cutmovie < 0 && new_level == -1 && new_mode == -1) {
         nw_subtitles_draw();
-    }
-}
-
-void LoadLevel(void)
-{
-    LoadLevel__retail();
-    /* Space dialogs omit the HUD font. Keep it available for the subtitle toggle. */
-    if (Level == 0x28) {
-        LoadFont3D();
     }
 }

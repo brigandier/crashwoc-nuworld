@@ -34,11 +34,6 @@ static const NwSubtitleCue nw_subtitle_en_coc25[] = {
     { 3000, 5848, "Coco: It looks like Neo's using them to make the tornadoes." },
 };
 
-static const NwSubtitleCue nw_subtitle_en_coc27[] = {
-    { 0, 3500, "Coco: Crash! Cortex's air research base is dead ahead." },
-    { 3500, 6882, "Coco: Shoot down the gun turrets to gain access inside the ship." },
-};
-
 static const NwSubtitleCue nw_subtitle_en_cor13[] = {
     { 0, 1589, "Cortex: Giving up?" },
 };
@@ -409,11 +404,6 @@ static const NwSubtitleCue nw_subtitle_fr_akuint[] = {
 static const NwSubtitleCue nw_subtitle_fr_coc25[] = {
     { 0, 3140, "Coco : Crash, vite ! Les générateurs, détruis-les !" },
     { 3380, 5420, "Coco : Néo les utilise pour créer des tornades !" },
-};
-
-static const NwSubtitleCue nw_subtitle_fr_coc27[] = {
-    { 0, 3660, "Coco : Crash ! La base de recherche aérienne de Cortex est droit devant !" },
-    { 3660, 6340, "Coco : Détruis les tourelles pour accéder à l'intérieur du vaisseau !" },
 };
 
 static const NwSubtitleCue nw_subtitle_fr_cor13[] = {
@@ -791,10 +781,6 @@ static const NwSubtitleCue nw_subtitle_de_coc25[] = {
     { 0, 5320, "Coco: Crash! Die Generatoren! Schieß sie ab! Es scheint, dass Neo sie zur Herstellung der Tornados benutzt!" },
 };
 
-static const NwSubtitleCue nw_subtitle_de_coc27[] = {
-    { 0, 6240, "Coco: Crash! Die Luftforschungsbasis von Cortex liegt direkt vor uns. Schieß die Abwehrtürme ab, um in das Schiff zu gelangen." },
-};
-
 static const NwSubtitleCue nw_subtitle_de_cor13[] = {
     { 0, 1100, "Cortex: Gibst du auf?" },
 };
@@ -1149,11 +1135,6 @@ static const NwSubtitleCue nw_subtitle_it_akuint[] = {
 static const NwSubtitleCue nw_subtitle_it_coc25[] = {
     { 0, 2460, "Coco: Crash, distruggi i generatori!" },
     { 2460, 5460, "Coco: Credo che Neo li stia usando per creare i tornado!" },
-};
-
-static const NwSubtitleCue nw_subtitle_it_coc27[] = {
-    { 0, 3300, "Coco: Crash! La base di ricerca spaziale di Cortex è davanti a te!" },
-    { 3300, 6358, "Coco: Per entrare nella nave, devi distruggere le torrette di tiro!" },
 };
 
 static const NwSubtitleCue nw_subtitle_it_cor13[] = {
@@ -1518,10 +1499,6 @@ static const NwSubtitleCue nw_subtitle_es_coc25[] = {
     { 2700, 5300, "Coco: Neo debe estar usándolos para crear tornados." },
 };
 
-static const NwSubtitleCue nw_subtitle_es_coc27[] = {
-    { 0, 6358, "Coco: ¡Crash! La base aérea de investigación de Cortex está justo ahí. Destruye las torretas para conseguir acceso a la nave." },
-};
-
 static const NwSubtitleCue nw_subtitle_es_cor13[] = {
     { 0, 1000, "Cortex: ¿Te rindes?" },
 };
@@ -1883,11 +1860,6 @@ static const NwSubtitleCue nw_subtitle_nl_coc25[] = {
     { 0, 5340, "Coco: Crash! De generatoren, schiet ze neer! Het lijkt wel of Neo ze gebruikt om de tornado's te maken." },
 };
 
-static const NwSubtitleCue nw_subtitle_nl_coc27[] = {
-    { 0, 3080, "Coco: Crash! Cortex' luchtonderzoeksbasis is recht vooruit." },
-    { 3080, 6240, "Coco: Schiet de verdedigingstorens omver om het schip binnen te dringen." },
-};
-
 static const NwSubtitleCue nw_subtitle_nl_cor13[] = {
     { 0, 1120, "Cortex: Geef je het op?" },
 };
@@ -2231,7 +2203,6 @@ static const NwSubtitleTrack nw_subtitle_tracks[] = {
     { "USAKU24.VAG", NW_SUBTITLE_EN, 16298, nw_subtitle_en_aku24, SDL_arraysize(nw_subtitle_en_aku24) },
     { "AKU_INTR.VAG", NW_SUBTITLE_EN, 9172, nw_subtitle_en_akuint, SDL_arraysize(nw_subtitle_en_akuint) },
     { "US_COC25.VAG", NW_SUBTITLE_EN, 5848, nw_subtitle_en_coc25, SDL_arraysize(nw_subtitle_en_coc25) },
-    { "US_COC27.VAG", NW_SUBTITLE_EN, 6882, nw_subtitle_en_coc27, SDL_arraysize(nw_subtitle_en_coc27) },
     { "COR013.VAG", NW_SUBTITLE_EN, 1589, nw_subtitle_en_cor13, SDL_arraysize(nw_subtitle_en_cor13) },
     { "COR014.VAG", NW_SUBTITLE_EN, 1982, nw_subtitle_en_cor14, SDL_arraysize(nw_subtitle_en_cor14) },
     { "COR015.VAG", NW_SUBTITLE_EN, 2826, nw_subtitle_en_cor15, SDL_arraysize(nw_subtitle_en_cor15) },
@@ -2286,7 +2257,6 @@ static const NwSubtitleTrack nw_subtitle_tracks[] = {
     { "FRAKU24.VAG", NW_SUBTITLE_FR, 16298, nw_subtitle_fr_aku24, SDL_arraysize(nw_subtitle_fr_aku24) },
     { "FRAKUINT.VAG", NW_SUBTITLE_FR, 8490, nw_subtitle_fr_akuint, SDL_arraysize(nw_subtitle_fr_akuint) },
     { "FRCOC25.VAG", NW_SUBTITLE_FR, 5460, nw_subtitle_fr_coc25, SDL_arraysize(nw_subtitle_fr_coc25) },
-    { "FRCOC27.VAG", NW_SUBTITLE_FR, 6358, nw_subtitle_fr_coc27, SDL_arraysize(nw_subtitle_fr_coc27) },
     { "FRCOR13.VAG", NW_SUBTITLE_FR, 1123, nw_subtitle_fr_cor13, SDL_arraysize(nw_subtitle_fr_cor13) },
     { "FRCOR14.VAG", NW_SUBTITLE_FR, 1575, nw_subtitle_fr_cor14, SDL_arraysize(nw_subtitle_fr_cor14) },
     { "FRCOR15.VAG", NW_SUBTITLE_FR, 2826, nw_subtitle_fr_cor15, SDL_arraysize(nw_subtitle_fr_cor15) },
@@ -2341,7 +2311,6 @@ static const NwSubtitleTrack nw_subtitle_tracks[] = {
     { "DEAKU24.VAG", NW_SUBTITLE_DE, 16289, nw_subtitle_de_aku24, SDL_arraysize(nw_subtitle_de_aku24) },
     { "DEAKUINT.VAG", NW_SUBTITLE_DE, 8467, nw_subtitle_de_akuint, SDL_arraysize(nw_subtitle_de_akuint) },
     { "DECOC25.VAG", NW_SUBTITLE_DE, 5460, nw_subtitle_de_coc25, SDL_arraysize(nw_subtitle_de_coc25) },
-    { "DECOC27.VAG", NW_SUBTITLE_DE, 6358, nw_subtitle_de_coc27, SDL_arraysize(nw_subtitle_de_coc27) },
     { "DECOR13.VAG", NW_SUBTITLE_DE, 1123, nw_subtitle_de_cor13, SDL_arraysize(nw_subtitle_de_cor13) },
     { "DECOR14.VAG", NW_SUBTITLE_DE, 1582, nw_subtitle_de_cor14, SDL_arraysize(nw_subtitle_de_cor14) },
     { "DECOR15.VAG", NW_SUBTITLE_DE, 2826, nw_subtitle_de_cor15, SDL_arraysize(nw_subtitle_de_cor15) },
@@ -2396,7 +2365,6 @@ static const NwSubtitleTrack nw_subtitle_tracks[] = {
     { "ITAKU24.VAG", NW_SUBTITLE_IT, 16298, nw_subtitle_it_aku24, SDL_arraysize(nw_subtitle_it_aku24) },
     { "ITAKUINT.VAG", NW_SUBTITLE_IT, 8490, nw_subtitle_it_akuint, SDL_arraysize(nw_subtitle_it_akuint) },
     { "ITCOC25.VAG", NW_SUBTITLE_IT, 5541, nw_subtitle_it_coc25, SDL_arraysize(nw_subtitle_it_coc25) },
-    { "ITCOC27.VAG", NW_SUBTITLE_IT, 6358, nw_subtitle_it_coc27, SDL_arraysize(nw_subtitle_it_coc27) },
     { "ITCOR13.VAG", NW_SUBTITLE_IT, 1123, nw_subtitle_it_cor13, SDL_arraysize(nw_subtitle_it_cor13) },
     { "ITCOR14.VAG", NW_SUBTITLE_IT, 1582, nw_subtitle_it_cor14, SDL_arraysize(nw_subtitle_it_cor14) },
     { "ITCOR15.VAG", NW_SUBTITLE_IT, 2811, nw_subtitle_it_cor15, SDL_arraysize(nw_subtitle_it_cor15) },
@@ -2451,7 +2419,6 @@ static const NwSubtitleTrack nw_subtitle_tracks[] = {
     { "ESAKU24.VAG", NW_SUBTITLE_ES, 16298, nw_subtitle_es_aku24, SDL_arraysize(nw_subtitle_es_aku24) },
     { "ESAKUINT.VAG", NW_SUBTITLE_ES, 8490, nw_subtitle_es_akuint, SDL_arraysize(nw_subtitle_es_akuint) },
     { "ESCOC25.VAG", NW_SUBTITLE_ES, 5379, nw_subtitle_es_coc25, SDL_arraysize(nw_subtitle_es_coc25) },
-    { "ESCOC27.VAG", NW_SUBTITLE_ES, 6358, nw_subtitle_es_coc27, SDL_arraysize(nw_subtitle_es_coc27) },
     { "ESCOR13.VAG", NW_SUBTITLE_ES, 1123, nw_subtitle_es_cor13, SDL_arraysize(nw_subtitle_es_cor13) },
     { "ESCOR14.VAG", NW_SUBTITLE_ES, 1582, nw_subtitle_es_cor14, SDL_arraysize(nw_subtitle_es_cor14) },
     { "ESCOR15.VAG", NW_SUBTITLE_ES, 2826, nw_subtitle_es_cor15, SDL_arraysize(nw_subtitle_es_cor15) },
@@ -2506,7 +2473,6 @@ static const NwSubtitleTrack nw_subtitle_tracks[] = {
     { "NLAKU24.VAG", NW_SUBTITLE_NL, 16298, nw_subtitle_nl_aku24, SDL_arraysize(nw_subtitle_nl_aku24) },
     { "NLAKUINT.VAG", NW_SUBTITLE_NL, 8490, nw_subtitle_nl_akuint, SDL_arraysize(nw_subtitle_nl_akuint) },
     { "NLCOC25.VAG", NW_SUBTITLE_NL, 5528, nw_subtitle_nl_coc25, SDL_arraysize(nw_subtitle_nl_coc25) },
-    { "NLCOC27.VAG", NW_SUBTITLE_NL, 6358, nw_subtitle_nl_coc27, SDL_arraysize(nw_subtitle_nl_coc27) },
     { "NLCOR13.VAG", NW_SUBTITLE_NL, 1123, nw_subtitle_nl_cor13, SDL_arraysize(nw_subtitle_nl_cor13) },
     { "NLCOR14.VAG", NW_SUBTITLE_NL, 1582, nw_subtitle_nl_cor14, SDL_arraysize(nw_subtitle_nl_cor14) },
     { "NLCOR15.VAG", NW_SUBTITLE_NL, 2826, nw_subtitle_nl_cor15, SDL_arraysize(nw_subtitle_nl_cor15) },

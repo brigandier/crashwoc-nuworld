@@ -131,7 +131,7 @@ schema = 1
 "nusound/nusound" = { treatment = "compile" }
 
 "game/main" = { treatment = "compile", rename = { main = "nw_game_main" }, wrap = ["MiniGameReset", "MiniGame",
-    "MiniGameRender", "MiniGameRenderScore", "DoInput", "DrawFade", "LoadLevel"] }
+    "MiniGameRender", "MiniGameRenderScore", "DoInput", "DrawFade"] }
 "game/particle" = { treatment = "compile" }
 "game/listman" = { treatment = "compile" }
 "game/creature" = { treatment = "compile", wrap = ["CloseCreatures", "DrawCreatures", "LoadCharacterModels",

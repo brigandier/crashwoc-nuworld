@@ -1,25 +1,9 @@
-#include "platform/subtitles.h"
-#include "platform/text3d.h"
+#include "port/subtitles.h"
+#include "port/text3d.h"
 
 #include <SDL3/SDL.h>
 
-typedef struct NwSubtitleCue {
-    uint32_t start, end; /* milliseconds in the voice sample, not display frames */
-    const char *text;
-} NwSubtitleCue;
-
-typedef struct NwSubtitleTrack {
-    const char *voice;
-    int language;
-    uint32_t duration;
-    const NwSubtitleCue *cues;
-    size_t count;
-} NwSubtitleTrack;
-
 #include "subtitles.inc"
-
-enum { NW_SUBTITLES_ON = 1, NW_SUBTITLES_TITLE = 2 };
-static SDL_AtomicInt nw_subtitles_flags;
 
 const char *nw_subtitles_at(const char *voice, int language, uint32_t ms)
 {
@@ -43,17 +27,6 @@ const char *nw_subtitles_at(const char *voice, int language, uint32_t ms)
         break;
     }
     return NULL;
-}
-
-void nw_subtitles_enable(bool enabled, bool title)
-{
-    SDL_SetAtomicInt(&nw_subtitles_flags, (enabled ? NW_SUBTITLES_ON : 0) | (title ? NW_SUBTITLES_TITLE : 0));
-}
-
-bool nw_subtitles_enabled(bool title)
-{
-    int required = title ? NW_SUBTITLES_ON | NW_SUBTITLES_TITLE : NW_SUBTITLES_ON;
-    return (SDL_GetAtomicInt(&nw_subtitles_flags) & required) == required;
 }
 
 static float nw_subtitles_width(const char *text, size_t n)
