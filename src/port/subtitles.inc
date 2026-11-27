@@ -56,8 +56,8 @@ static const NwSubtitleCue nw_subtitle_en_cor17[] = {
 };
 
 static const NwSubtitleCue nw_subtitle_en_cor18[] = {
-    { 0, 3020, "Cortex: The world is finally ours!" },
-    { 3120, 6025, "Cortex: HA, HA, HA!" },
+    { 0, 2980, "Cortex: The world is finally ours!" },
+    { 2980, 6025, "Cortex: HA, HA, HA!" },
 };
 
 static const NwSubtitleCue nw_subtitle_en_cor19[] = {
@@ -85,8 +85,8 @@ static const NwSubtitleCue nw_subtitle_en_cor46[] = {
 };
 
 static const NwSubtitleCue nw_subtitle_en_cor47[] = {
-    { 0, 5600, "Cortex: Uh... ah... I'm working on it, Uka Uka! Listen, Crash. You may have outsmarted Rok-Ko," },
-    { 5600, 9340, "Cortex: but there are three more Elemental masks where he came from." },
+    { 0, 6000, "Cortex: Uh... ah... I'm working on it, Uka Uka! Listen, Crash. You may have outsmarted Rok-Ko," },
+    { 6000, 9340, "Cortex: but there are three more Elemental masks where he came from." },
     { 9340, 13470, "Cortex: And just as luck would have it, they are all significantly more powerful." },
     { 13470, 20000, "Cortex: HA! I have no doubt that the Water Elemental, Wa-Wa, will make sure you never see the light of day!" },
 };
@@ -99,7 +99,7 @@ static const NwSubtitleCue nw_subtitle_en_cor49[] = {
 static const NwSubtitleCue nw_subtitle_en_cor50[] = {
     { 0, 3280, "Cortex: You are making a mockery of me in front of my minions!" },
     { 3280, 9100, "Cortex: Not only have you defeated the Elemental masks, but you are still collecting those worthless crystals!" },
-    { 9100, 14020, "Cortex: Well, you've gotten this far, and this is as far as you're gonna get!" },
+    { 9100, 13700, "Cortex: Well, you've gotten this far, and this is as far as you're gonna get!" },
     { 14020, 17140, "Cortex: Py-Ro, the Fire Elemental, will see to that." },
 };
 
@@ -126,12 +126,12 @@ static const NwSubtitleCue nw_subtitle_en_cor56[] = {
 
 static const NwSubtitleCue nw_subtitle_en_cor9[] = {
     { 0, 4560, "Cortex: Get ready to face my wrath, Crash Bandicoot!" },
-    { 4660, 8431, "Cortex: MUAHAHAHAHA!" },
+    { 4780, 8431, "Cortex: MUAHAHAHAHA!" },
 };
 
 static const NwSubtitleCue nw_subtitle_en_crn01[] = {
     { 0, 3500, "Crunch: This is the creature who keeps sabotaging your master plan?" },
-    { 3500, 5800, "Crunch: HAH! You gotta be kidding!" },
+    { 3660, 5800, "Crunch: HAH! You gotta be kidding!" },
     { 5800, 8350, "Crunch: I'll exterminate this field rat in no time!" },
 };
 
@@ -180,8 +180,8 @@ static const NwSubtitleCue nw_subtitle_en_crn21[] = {
 static const NwSubtitleCue nw_subtitle_en_erth01[] = {
     { 0, 2000, "Rok-Ko: What are you looking at, fuzzhead?" },
     { 2000, 4000, "Rok-Ko: I'm Rok-Ko, the Earth Elemental." },
-    { 4000, 11040, "Rok-Ko: Uka Uka and Doctor Cortex woke me from my captive slumber, and now I'm free to pulverize whatever gets in my way!" },
-    { 11040, 14000, "Rok-Ko: Ho-ho, don't even think about collecting those crystals, runt." },
+    { 4000, 10820, "Rok-Ko: Uka Uka and Doctor Cortex woke me from my captive slumber, and now I'm free to pulverize whatever gets in my way!" },
+    { 11180, 14000, "Rok-Ko: Ho-ho, don't even think about collecting those crystals, runt." },
     { 14000, 17200, "Rok-Ko: 'Cause if you do, I'm gonna bury you alive!" },
 };
 
@@ -225,8 +225,8 @@ static const NwSubtitleCue nw_subtitle_en_intro1[] = {
     { 25552, 27500, "Cortex: That wretched bandicoot is to blame!" },
     { 29000, 32800, "Uka Uka: I will not let anything stand in the way of evil," },
     { 32800, 36000, "Uka Uka: especially not a brainless orange marsupial!" },
-    { 36000, 39000, "Uka Uka: Crash must be ELIMINATED!" },
-    { 39000, 47380, "N. Gin: Uh... Uka Uka? Need I remind you that Crash always finds a way to defeat us?" },
+    { 36000, 39600, "Uka Uka: Crash must be ELIMINATED!" },
+    { 39600, 47380, "N. Gin: Uh... Uka Uka? Need I remind you that Crash always finds a way to defeat us?" },
     { 47380, 49800, "N. Gin: Maybe he's just too good for us!" },
     { 49800, 51000, "Uka Uka: ENOUGH EXCUSES!" },
     { 51000, 55900, "Uka Uka: You five idiots need to come up with one good plan," },
@@ -235,27 +235,27 @@ static const NwSubtitleCue nw_subtitle_en_intro1[] = {
     { 62000, 65500, "N. Tropy: There must be something we can come up with." },
     { 65500, 73000, "N. Tropy: Say, Doctor, haven't you been tinkering with some kind of new secret weapon in your laboratory?" },
     { 73000, 75000, "Cortex: I don't know what you're talking about, N. Tropy." },
-    { 75000, 82000, "N. Gin: Doctor Cortex! I think he's referring to this super-secret weapon you've been laboring over day and night" },
-    { 82000, 85000, "N. Gin: since the last time Crash defeated you!" },
-    { 85000, 88600, "Uka Uka: ENOUGH BICKERING! Do we have a plan?" },
+    { 75000, 82620, "N. Gin: Doctor Cortex! I think he's referring to this super-secret weapon you've been laboring over day and night" },
+    { 82620, 85520, "N. Gin: since the last time Crash defeated you!" },
+    { 85520, 88600, "Uka Uka: ENOUGH BICKERING! Do we have a plan?" },
     { 88600, 97000, "Cortex: Well... In my scientific endeavors, I've been able to create a genetically advanced superweapon of unbelievable strength." },
     { 97000, 102000, "Cortex: But the power source... is the final missing crucial element." },
-    { 103000, 106500, "Uka Uka: Hm... Element... Elements...!" },
+    { 102180, 106500, "Uka Uka: Hm... Element... Elements...!" },
     { 106500, 110000, "Uka Uka: YES! The Elementals!" },
     { 110000, 114000, "Cortex: ...Right! The Elementals, that's it!" },
     { 114000, 120000, "Cortex: If released, their destructive energy could create enough power to bring my secret weapon to life." },
     { 120000, 125000, "Cortex: We'd have a weapon capable of crushing mountains, demolishing entire cities!" },
     { 125000, 129000, "Uka Uka: And wiping Crash Bandicoot off the face of the Earth forever!" },
-    { 129000, 134000, "Cortex: Get ready to face my wrath, Crash Bandicoot!" },
-    { 134100, 138049, "Cortex: MUAHAHAHAHA!" },
+    { 129000, 133660, "Cortex: Get ready to face my wrath, Crash Bandicoot!" },
+    { 133660, 137700, "Cortex: MUAHAHAHAHA!" },
 };
 
 static const NwSubtitleCue nw_subtitle_en_intro2[] = {
-    { 5700, 6700, "Coco: Go, Crash!" },
+    { 5700, 7200, "Coco: Go, Crash!" },
     { 7980, 10580, "Coco: Yeah, Crash! You're doing great!" },
     { 20340, 21580, "Aku Aku: ...What's happening?" },
     { 23660, 25940, "Aku Aku: No! It cannot be!" },
-    { 27700, 28540, "Aku Aku: Oh, no!" },
+    { 27700, 29200, "Aku Aku: Oh, no!" },
     { 32720, 34460, "Coco: What's going on?!" },
     { 34460, 36440, "Coco: Oh, no...! Crash, look out!" },
     { 46060, 47480, "Aku Aku: Is everyone all right?" },
@@ -268,13 +268,13 @@ static const NwSubtitleCue nw_subtitle_en_intro2[] = {
     { 73600, 77600, "Uka Uka: No schemes. Just some old familiar faces dropping by for a visit." },
     { 81800, 84580, "Aku Aku: No! Not the Elementals!" },
     { 84580, 87720, "Aku Aku: Uka Uka, why did you release them?" },
-    { 87720, 90000, "Aku Aku: Don't you know what happened the last time they were free?!" },
-    { 90000, 97080, "Uka Uka: So, they were responsible for a few earthquakes, floods and that little ice age a couple of centuries back?" },
+    { 87720, 90600, "Aku Aku: Don't you know what happened the last time they were free?!" },
+    { 90600, 97080, "Uka Uka: So, they were responsible for a few earthquakes, floods and that little ice age a couple of centuries back?" },
     { 97080, 99160, "Uka Uka: You worry too much, brother." },
     { 99160, 102560, "Aku Aku: You cannot restrain them, Uka Uka!" },
     { 102560, 105040, "Aku Aku: They are far too dangerous!" },
     { 105040, 107720, "Aku Aku: This could spell disaster for us all!" },
-    { 108800, 111520, "Py-Ro: Ha, ha, ha! On the contrary, Aku Aku!" },
+    { 107720, 111520, "Py-Ro: Ha, ha, ha! On the contrary, Aku Aku!" },
     { 111520, 116440, "Py-Ro: It spells disaster for YOU and that precious planet you care so much about!" },
     { 116440, 117760, "Py-Ro: DESTROY HIM!" },
     { 122800, 124960, "Aku Aku: You won't get away with this!" },
@@ -290,7 +290,7 @@ static const NwSubtitleCue nw_subtitle_en_intro2[] = {
     { 180720, 182880, "Aku Aku: Well done, Coco!" },
     { 182880, 186360, "Aku Aku: This gives us the ideal opportunity to test it." },
     { 186360, 187320, "Aku Aku: We must hurry." },
-    { 217980, 221320, "Coco: Okay! All systems are ready and operational." },
+    { 217940, 221320, "Coco: Okay! All systems are ready and operational." },
     { 221320, 224880, "Aku Aku: It's time we evened up the odds in our favor." },
 };
 
@@ -309,8 +309,8 @@ static const NwSubtitleCue nw_subtitle_en_outro1[] = {
 
 static const NwSubtitleCue nw_subtitle_en_outro2[] = {
     { 0, 2980, "Cortex: CAN'T YOU EVER LET ME WIN?!" },
-    { 2980, 5820, "Cortex: WHAT DO YOU WANT FROM ME, YOU CRETIN?!" },
-    { 5820, 8060, "Cortex: No, Uka Uka...! I can explain!" },
+    { 2980, 5300, "Cortex: WHAT DO YOU WANT FROM ME, YOU CRETIN?!" },
+    { 5920, 8060, "Cortex: No, Uka Uka...! I can explain!" },
     { 8060, 10100, "Uka Uka: IT'S TOO LATE FOR THAT NOW!" },
     { 13600, 17020, "Cortex: Uh... I don't think you should have done that." },
     { 19100, 22860, "Crunch: Oh, no... Where am I...?" },
@@ -326,7 +326,7 @@ static const NwSubtitleCue nw_subtitle_en_outro2[] = {
     { 47000, 50500, "Uka Uka: If you hadn't ducked out of the way, none of this would have happened." },
     { 50500, 52220, "Crunch: This doesn't look good...!" },
     { 52220, 54700, "Coco: Hey! Any of you guys need a ride?" },
-    { 59140, 65840, "Crunch: Crash, Coco, Aku Aku... I'm grateful to all of you." },
+    { 61740, 65840, "Crunch: Crash, Coco, Aku Aku... I'm grateful to all of you." },
     { 65840, 69440, "Crunch: If it weren't for you, I'd still be under the control of Doctor Cortex." },
     { 69440, 72040, "Crunch: Thank you for believing in me, guys..." },
     { 72040, 74080, "Coco: You're welcome, Crunch!" },
@@ -348,7 +348,7 @@ static const NwSubtitleCue nw_subtitle_en_uka17[] = {
 
 static const NwSubtitleCue nw_subtitle_en_uka18[] = {
     { 0, 4700, "Uka Uka: CORTEX! WHY IS THAT MINDLESS MARSUPIAL STILL COLLECTING THOSE CRYSTALS?!" },
-    { 4700, 7000, "Uka Uka: HE'S DEFEATED ROK-KO AND WA-WA!" },
+    { 4700, 6860, "Uka Uka: HE'S DEFEATED ROK-KO AND WA-WA!" },
     { 7000, 10800, "Uka Uka: I'M BEGINNING TO QUESTION THE VALUE OF YOUR SUPERWEAPON!" },
 };
 
@@ -431,11 +431,11 @@ static const NwSubtitleCue nw_subtitle_fr_cor17[] = {
 
 static const NwSubtitleCue nw_subtitle_fr_cor18[] = {
     { 0, 2000, "Cortex : Le monde est enfin à nous !" },
-    { 2100, 6019, "Cortex : HA, HA, HA !" },
+    { 2100, 5750, "Cortex : HA, HA, HA !" },
 };
 
 static const NwSubtitleCue nw_subtitle_fr_cor19[] = {
-    { 0, 4720, "Cortex : Oh ! Le héros malgré lui abandonne." },
+    { 100, 4720, "Cortex : Oh ! Le héros malgré lui abandonne." },
     { 5600, 6600, "Cortex : Pas étonnant !" },
 };
 
@@ -459,8 +459,8 @@ static const NwSubtitleCue nw_subtitle_fr_cor46[] = {
 };
 
 static const NwSubtitleCue nw_subtitle_fr_cor47[] = {
-    { 0, 3600, "Cortex : Oh, eh, eh, j'y travaille, Uka Uka !" },
-    { 3600, 7920, "Cortex : Écoute, Crash, tu as peut-être été plus malin que Rok-Ko, mais il reste trois autres masques." },
+    { 110, 3600, "Cortex : Oh, eh, eh, j'y travaille, Uka Uka !" },
+    { 3820, 7920, "Cortex : Écoute, Crash, tu as peut-être été plus malin que Rok-Ko, mais il reste trois autres masques." },
     { 7920, 11320, "Cortex : Et, bien entendu, ils sont tous bien plus puissants que le premier." },
     { 12040, 20482, "Cortex : Ha ! Tu ne ressortiras jamais vivant des profondeurs abyssales dans lesquelles Wa-Wa, le masque de l'eau, va te plonger !" },
 };
@@ -501,7 +501,7 @@ static const NwSubtitleCue nw_subtitle_fr_cor56[] = {
 
 static const NwSubtitleCue nw_subtitle_fr_cor9[] = {
     { 0, 4480, "Cortex : Prépare-toi à affronter ma vengeance, Crash Bandicoot !" },
-    { 4580, 8560, "Cortex : MOUAHAHAHA !" },
+    { 4700, 8180, "Cortex : MOUAHAHAHA !" },
 };
 
 static const NwSubtitleCue nw_subtitle_fr_crn01[] = {
@@ -556,15 +556,15 @@ static const NwSubtitleCue nw_subtitle_fr_crn21[] = {
 static const NwSubtitleCue nw_subtitle_fr_erth01[] = {
     { 0, 2000, "Rok-Ko : Qu'est-ce que tu regardes, tête de poils ?" },
     { 2300, 4300, "Rok-Ko : Je suis Rok-Ko, l'élément Terre." },
-    { 4600, 7500, "Rok-Ko : Uka Uka et le docteur Cortex m'ont sorti de mon sommeil." },
+    { 4670, 7500, "Rok-Ko : Uka Uka et le docteur Cortex m'ont sorti de mon sommeil." },
     { 7700, 11100, "Rok-Ko : Et maintenant, je suis libre de pulvériser tout ce qui se trouvera sur mon chemin !" },
-    { 11400, 14600, "Rok-Ko : Ho, ho, ho ! N'essaie même pas de récupérer les cristaux, pauvre nabot !" },
+    { 11510, 14600, "Rok-Ko : Ho, ho, ho ! N'essaie même pas de récupérer les cristaux, pauvre nabot !" },
     { 15000, 16600, "Rok-Ko : Ou je t'enterre vif !" },
 };
 
 static const NwSubtitleCue nw_subtitle_fr_erth02[] = {
     { 0, 2000, "Rok-Ko : Tu me cherches, le bandicoot, hein ?! Hein ?!" },
-    { 2000, 3930, "Rok-Ko : Pff ! MAUVIETTE !" },
+    { 2380, 3930, "Rok-Ko : Pff ! MAUVIETTE !" },
 };
 
 static const NwSubtitleCue nw_subtitle_fr_erth05[] = {
@@ -583,7 +583,7 @@ static const NwSubtitleCue nw_subtitle_fr_fire02[] = {
 };
 
 static const NwSubtitleCue nw_subtitle_fr_fire05[] = {
-    { 0, 5720, "Py-Ro : Hum... J'adore les bandicoots, ah, bien cuits !" },
+    { 110, 5520, "Py-Ro : Hum... J'adore les bandicoots, ah, bien cuits !" },
 };
 
 static const NwSubtitleCue nw_subtitle_fr_fire06[] = {
@@ -595,19 +595,19 @@ static const NwSubtitleCue nw_subtitle_fr_fire07[] = {
 };
 
 static const NwSubtitleCue nw_subtitle_fr_intro1[] = {
-    { 10000, 14000, "Uka Uka : IMBÉCILES ! IDIOTS ! ABRUTIS !" },
-    { 14000, 17000, "Uka Uka : VOUS ÊTES VRAIMENT DES INCAPABLES !" },
-    { 17000, 22500, "Uka Uka : D'après mes sources, tes statistiques de propagation du mal sont lamentables !" },
-    { 22500, 27500, "Cortex : Uka Uka ! Ce n'est pas notre faute ! C'est celle de ce maudit bandicoot !" },
+    { 10380, 14380, "Uka Uka : IMBÉCILES ! IDIOTS ! ABRUTIS !" },
+    { 14440, 17090, "Uka Uka : VOUS ÊTES VRAIMENT DES INCAPABLES !" },
+    { 17220, 22500, "Uka Uka : D'après mes sources, tes statistiques de propagation du mal sont lamentables !" },
+    { 22690, 27500, "Cortex : Uka Uka ! Ce n'est pas notre faute ! C'est celle de ce maudit bandicoot !" },
     { 28000, 33000, "Uka Uka : Je ne laisserai rien ni personne contrarier la volonté du mal !" },
     { 33000, 36500, "Uka Uka : Surtout pas un marsupial orange sans cervelle !" },
     { 36500, 39500, "Uka Uka : Crash doit être ÉLIMINÉ !" },
-    { 40500, 47000, "N. Gin : Uka Uka, est-il nécessaire de vous rappeler que Crash trouve toujours un moyen de faire échouer nos plans ?" },
+    { 40580, 47000, "N. Gin : Uka Uka, est-il nécessaire de vous rappeler que Crash trouve toujours un moyen de faire échouer nos plans ?" },
     { 47000, 49000, "N. Gin : Il est peut-être trop fort pour nous !" },
     { 49000, 55500, "Uka Uka : ASSEZ D'EXCUSES ! Revenez tous les cinq avec un bon plan, bande de minables !" },
-    { 55500, 58000, "Uka Uka : SINON !" },
-    { 58000, 62000, "Cortex : Comment puis-je me fourrer dans de telles situations... ?" },
-    { 62000, 65500, "N. Tropy : Il doit bien y avoir une solution !" },
+    { 55500, 56740, "Uka Uka : SINON !" },
+    { 58120, 60680, "Cortex : Comment puis-je me fourrer dans de telles situations... ?" },
+    { 62220, 65500, "N. Tropy : Il doit bien y avoir une solution !" },
     { 65500, 72500, "N. Tropy : Docteur, n'êtes-vous pas en train de mettre au point une nouvelle arme secrète dans votre laboratoire ?" },
     { 72500, 75000, "Cortex : Je ne vois pas de quoi tu parles, N. Tropy !" },
     { 75000, 80000, "N. Gin : Docteur Cortex ! Je crois qu'il fait référence à l'arme super secrète" },
@@ -617,13 +617,13 @@ static const NwSubtitleCue nw_subtitle_fr_intro1[] = {
     { 92320, 97500, "Cortex : une super arme génétiquement améliorée d'une puissance incroyable." },
     { 97500, 101000, "Cortex : Il ne me manque plus qu'une source d'énergie suffisante." },
     { 103000, 106500, "Uka Uka : Un élément... Les éléments... !" },
-    { 106500, 109500, "Uka Uka : OUI ! Les masques des éléments !" },
-    { 109500, 115000, "Cortex : Oui, les masques des éléments ! C'est ça !" },
+    { 106500, 109660, "Uka Uka : OUI ! Les masques des éléments !" },
+    { 110000, 115000, "Cortex : Oui, les masques des éléments ! C'est ça !" },
     { 115000, 119500, "Cortex : Si je libère leur énergie destructrice, j'aurai assez de puissance pour mon arme secrète." },
     { 119500, 125000, "Cortex : Je pourrai aplatir les montagnes et démolir des villes entières !" },
     { 125000, 129000, "Uka Uka : Et Crash Bandicoot disparaîtra à jamais de la surface de la Terre !" },
-    { 129000, 134000, "Cortex : Prépare-toi à affronter ma vengeance, Crash Bandicoot !" },
-    { 134100, 138049, "Cortex : MOUAHAHAHA !" },
+    { 129000, 133540, "Cortex : Prépare-toi à affronter ma vengeance, Crash Bandicoot !" },
+    { 133540, 136940, "Cortex : MOUAHAHAHA !" },
 };
 
 static const NwSubtitleCue nw_subtitle_fr_intro2[] = {
@@ -631,32 +631,32 @@ static const NwSubtitleCue nw_subtitle_fr_intro2[] = {
     { 7580, 10600, "Coco : Génial ! Tu te débrouilles très bien, Crash !" },
     { 20080, 23380, "Aku Aku : Que se passe-t-il ?" },
     { 23380, 27460, "Aku Aku : Non, c'est impossible !" },
-    { 27460, 31780, "Aku Aku : Oh, non !" },
-    { 31780, 34040, "Coco : Que se passe-t-il ?!" },
+    { 27460, 29180, "Aku Aku : Oh, non !" },
+    { 32400, 34040, "Coco : Que se passe-t-il ?!" },
     { 34040, 38340, "Coco : Oh, non... ! Crash, attention !" },
     { 45980, 47380, "Aku Aku : Rien de cassé ?" },
     { 47380, 51720, "Aku Aku : On dirait qu'Uka Uka, mon jumeau maléfique, nous prépare encore un sale tour." },
     { 51720, 54620, "Aku Aku : Je dois découvrir ce qu'il manigance." },
     { 54620, 56420, "Aku Aku : À plus tard." },
     { 63700, 66500, "Uka Uka : Ah, bonjour, mon misérable jumeau." },
-    { 66500, 68700, "Aku Aku : Je t'écoute, Uka Uka." },
+    { 66500, 68350, "Aku Aku : Je t'écoute, Uka Uka." },
     { 68700, 73600, "Aku Aku : Quel plan diabolique as-tu encore imaginé avec le docteur Cortex ?" },
     { 73600, 77780, "Uka Uka : Pas de problème, juste quelques vieilles connaissances en visite." },
-    { 81880, 84720, "Aku Aku : Non, pas les masques des éléments !" },
-    { 84720, 87720, "Aku Aku : Uka Uka, qu'est-ce qui t'a pris de les libérer ?" },
+    { 81880, 84400, "Aku Aku : Non, pas les masques des éléments !" },
+    { 84640, 87720, "Aku Aku : Uka Uka, qu'est-ce qui t'a pris de les libérer ?" },
     { 87720, 90560, "Aku Aku : Tu as déjà oublié ce qui s'est passé la dernière fois ?!" },
     { 90560, 93480, "Uka Uka : Ils sont donc responsables de quelques raz-de-marée, tremblements de" },
     { 93480, 96860, "Uka Uka : terre et de la petite ère glaciaire qui a sévi il y a plusieurs siècles." },
     { 96860, 99000, "Uka Uka : Te fais pas trop de soucis, frérot." },
     { 99000, 102800, "Aku Aku : Tu ne peux pas les contrôler, Uka Uka !" },
-    { 102800, 107600, "Aku Aku : Ils sont bien trop dangereux, nous pourrions tous périr !" },
-    { 107600, 114680, "Py-Ro : Ha, ha, ha ! Au contraire, Aku Aku ! C'est le début de la fin pour VOUS et votre précieuse" },
+    { 102800, 107400, "Aku Aku : Ils sont bien trop dangereux, nous pourrions tous périr !" },
+    { 107620, 114680, "Py-Ro : Ha, ha, ha ! Au contraire, Aku Aku ! C'est le début de la fin pour VOUS et votre précieuse" },
     { 114680, 117520, "Py-Ro : petite planète ! DÉTRUISEZ-LE !" },
     { 122760, 124720, "Aku Aku : Tu ne t'en tireras pas comme ça !" },
     { 124720, 128760, "Uka Uka : HA, HA, HA ! PERSONNE NE POURRA NOUS ARRÊTER !" },
     { 135600, 139880, "Aku Aku : Crash, Coco, c'est exactement ce que je craignais." },
     { 139880, 147760, "Aku Aku : Uka Uka et le docteur Cortex ont libéré un groupe de masques destructeurs appelés masques des éléments." },
-    { 147760, 155680, "Aku Aku : Nous devons les arrêter avant qu'ils ne détruisent la Terre et ses habitants." },
+    { 147760, 153140, "Aku Aku : Nous devons les arrêter avant qu'ils ne détruisent la Terre et ses habitants." },
     { 155680, 162920, "Aku Aku : Le seul moyen d'arrêter les masques des éléments est de les emprisonner en utilisant les cristaux antiques." },
     { 162920, 169480, "Aku Aku : Pour renvoyer un masque des éléments dans son état d'hibernation, il faut récupérer cinq cristaux." },
     { 169480, 171360, "Aku Aku : Ne perdons pas de temps." },
@@ -697,14 +697,14 @@ static const NwSubtitleCue nw_subtitle_fr_outro2[] = {
     { 28420, 30620, "Crunch : Où est ce pitoyable dégénéré ?" },
     { 31120, 32920, "Aku Aku : Nous avons trop de choses à faire, Crunch." },
     { 33020, 37120, "Ordinateur : ALERTE, SURCHARGE ÉLECTRIQUE DANS LA STATION SPATIALE INFERNALE." },
-    { 37220, 38620, "Ordinateur : SAUVE QUI PEUT !" },
+    { 37120, 38620, "Ordinateur : SAUVE QUI PEUT !" },
     { 38720, 41820, "Cortex : L'arc électrique a dû provoquer une petite réaction en chaîne !" },
     { 41920, 45020, "Cortex : Il serait plus sage de se diriger vers les nacelles d'évacuation... !" },
     { 45120, 46520, "Uka Uka : C'EST TA FAUTE !" },
     { 46820, 50320, "Uka Uka : Si tu ne t'étais pas écarté du chemin, tout cela ne serait pas arrivé." },
     { 50420, 52120, "Crunch : Ça ne me dit rien qui vaille... !" },
     { 52320, 54520, "Coco : Hé ! Je vous dépose quelque part ?" },
-    { 59420, 63540, "Crunch : Crash, Coco, Aku Aku..." },
+    { 61590, 63540, "Crunch : Crash, Coco, Aku Aku..." },
     { 63720, 65920, "Crunch : Je vous suis à tous très reconnaissant." },
     { 66200, 70020, "Crunch : Si vous n'aviez pas été là, le docteur Cortex me contrôlerait toujours." },
     { 70320, 72240, "Crunch : Merci à tous d'avoir cru en moi..." },
@@ -730,7 +730,7 @@ static const NwSubtitleCue nw_subtitle_fr_uka18[] = {
 };
 
 static const NwSubtitleCue nw_subtitle_fr_wa01[] = {
-    { 0, 5800, "Wa-Wa : Crash Bandicoot ! Tu as du culot de pénétrer dans mon domaine sans y avoir été invité !" },
+    { 130, 5800, "Wa-Wa : Crash Bandicoot ! Tu as du culot de pénétrer dans mon domaine sans y avoir été invité !" },
     { 6800, 10800, "Wa-Wa : NE ME RÉPONDS PAS ! JE VAIS T'APPRENDRE LA POLITESSE !" },
 };
 
@@ -804,7 +804,7 @@ static const NwSubtitleCue nw_subtitle_de_cor17[] = {
 
 static const NwSubtitleCue nw_subtitle_de_cor18[] = {
     { 0, 2760, "Cortex: Endlich gehört die Welt uns!" },
-    { 2860, 6025, "Cortex: HA, HA, HA!" },
+    { 2860, 5770, "Cortex: HA, HA, HA!" },
 };
 
 static const NwSubtitleCue nw_subtitle_de_cor19[] = {
@@ -847,8 +847,8 @@ static const NwSubtitleCue nw_subtitle_de_cor49[] = {
 static const NwSubtitleCue nw_subtitle_de_cor50[] = {
     { 0, 4390, "Cortex: Du machst mich vor meinen Anhängern lächerlich! Du hast nicht nur die" },
     { 4390, 9500, "Cortex: Elementalmasken besiegt, sondern sammelst immer noch diese wertlosen Kristalle!" },
-    { 9500, 14500, "Cortex: Na, du bist so weit gekommen. Aber nun ist Schluss!" },
-    { 14500, 17500, "Cortex: Py-Ro, das Feuerelemental, wird dafür sorgen." },
+    { 9500, 14180, "Cortex: Na, du bist so weit gekommen. Aber nun ist Schluss!" },
+    { 14600, 17500, "Cortex: Py-Ro, das Feuerelemental, wird dafür sorgen." },
 };
 
 static const NwSubtitleCue nw_subtitle_de_cor51[] = {
@@ -873,7 +873,7 @@ static const NwSubtitleCue nw_subtitle_de_cor56[] = {
 
 static const NwSubtitleCue nw_subtitle_de_cor9[] = {
     { 0, 4940, "Cortex: Mach dich auf meinen Zorn gefasst, Crash Bandicoot!" },
-    { 4940, 7940, "Cortex: HA, HA, HA, HA!" },
+    { 4940, 7840, "Cortex: HA, HA, HA, HA!" },
 };
 
 static const NwSubtitleCue nw_subtitle_de_crn01[] = {
@@ -946,8 +946,8 @@ static const NwSubtitleCue nw_subtitle_de_erth07[] = {
 };
 
 static const NwSubtitleCue nw_subtitle_de_fire02[] = {
-    { 0, 4800, "Py-Ro: Ich weiß, dass meine Brüder mit dir Schwierigkeiten hatten, mein kleiner oranger Freund." },
-    { 4800, 7280, "Py-Ro: Aber ich bin nicht sicher, warum." },
+    { 0, 4480, "Py-Ro: Ich weiß, dass meine Brüder mit dir Schwierigkeiten hatten, mein kleiner oranger Freund." },
+    { 4860, 7280, "Py-Ro: Aber ich bin nicht sicher, warum." },
     { 8640, 11000, "Py-Ro: Hm, wird es warm hier?" },
     { 11000, 13800, "Py-Ro: Ist das Tragen dieses Pelzes sicher?!" },
     { 13800, 16400, "Py-Ro: ER SIEHT AUS, ALS KANN ER BRENNEN!" },
@@ -966,69 +966,69 @@ static const NwSubtitleCue nw_subtitle_de_fire07[] = {
 };
 
 static const NwSubtitleCue nw_subtitle_de_intro1[] = {
-    { 10000, 14000, "Uka Uka: DUMMKÖPFE! IDIOTEN! TROTTEL!" },
-    { 14000, 17100, "Uka Uka: KÖNNT IHR GAR NICHTS RICHTIG MACHEN?!" },
+    { 10380, 14380, "Uka Uka: DUMMKÖPFE! IDIOTEN! TROTTEL!" },
+    { 14440, 17100, "Uka Uka: KÖNNT IHR GAR NICHTS RICHTIG MACHEN?!" },
     { 17100, 22600, "Uka Uka: Wenn man dies sieht, ist euer Ruf für die Verbreitung des Bösen wirklich erbärmlich!" },
     { 22600, 28900, "Cortex: Uka Uka! Das ist nicht unser Fehler, sondern der jenes elenden Bandicoots!" },
     { 29000, 32700, "Uka Uka: Ich lasse dem Bösen nichts im Wege stehen!" },
-    { 32700, 36400, "Uka Uka: Am wenigsten ein hirnloses, oranges Beuteltier!" },
-    { 36400, 39400, "Uka Uka: Crash muss BESEITIGT werden!" },
+    { 32700, 36020, "Uka Uka: Am wenigsten ein hirnloses, oranges Beuteltier!" },
+    { 36660, 39400, "Uka Uka: Crash muss BESEITIGT werden!" },
     { 39400, 46400, "N. Gin: Uka Uka, muss ich dich daran erinnern, dass uns Crash immer wieder besiegt?" },
     { 46400, 48900, "N. Gin: Vielleicht ist er einfach zu gut für uns!" },
     { 48900, 51500, "Uka Uka: GENUG DER ENTSCHULDIGUNGEN!" },
     { 51500, 55500, "Uka Uka: Ihr fünf Idioten müsst einen guten Plan vorschlagen," },
-    { 55500, 57900, "Uka Uka: SONST...!" },
-    { 57900, 61900, "Cortex: Warum komme ich bloß in so eine Situation...?" },
-    { 61900, 65900, "N. Tropy: Da muss es doch eine Lösung geben!" },
-    { 65900, 71900, "N. Tropy: Doktor, haben Sie etwa in Ihrem Labor an einer neuen Geheimwaffe gebastelt?" },
+    { 55500, 56720, "Uka Uka: SONST...!" },
+    { 58120, 60660, "Cortex: Warum komm ich bloß in eine solche Situation...?" },
+    { 62220, 65040, "N. Tropy: Da muss es doch eine Lösung geben!" },
+    { 65640, 71900, "N. Tropy: Doktor, haben Sie etwa in Ihrem Labor an einer neuen Geheimwaffe gebastelt?" },
     { 71900, 74900, "Cortex: Ich weiß nicht, wovon du sprichst, N. Tropy." },
     { 74900, 80600, "N. Gin: Dr. Cortex! Ich glaube, er bezieht sich auf die supergeheime Waffe," },
     { 80600, 84900, "N. Gin: an der Sie seit der letzten Niederlage durch Crash Tag und Nacht gearbeitet haben!" },
-    { 84900, 87900, "Uka Uka: GENUG DES GEZÄNKS! Haben wir einen Plan?" },
-    { 87900, 92400, "Cortex: Bei meinen wissenschaftlichen Bemühungen ist mir die Erfindung" },
+    { 84900, 88340, "Uka Uka: GENUG DES GEZÄNKS! Haben wir einen Plan?" },
+    { 88440, 92400, "Cortex: Bei meinen wissenschaftlichen Bemühungen ist mir die Erfindung" },
     { 92400, 96900, "Cortex: einer genetisch fortgeschrittenen und extrem starken Superwaffe gelungen." },
     { 96900, 101900, "Cortex: Aber es fehlt dazu noch die entscheidende Stromquelle." },
-    { 103000, 106000, "Uka Uka: Element... Elemente...!" },
-    { 106000, 108900, "Uka Uka: JA! Die Elementalen!" },
-    { 108900, 113900, "Cortex: Richtig! Die Elementalen, das ist die Lösung!" },
+    { 102120, 106000, "Uka Uka: Hm... Element... Elemente...!" },
+    { 106800, 109660, "Uka Uka: JA! Die Elementalen!" },
+    { 109900, 113900, "Cortex: Richtig! Die Elementalen, das ist die Lösung!" },
     { 113900, 119900, "Cortex: Die Freisetzung ihrer zerstörerischen Energien könnte ausreichen, um meine Geheimwaffe funktionstüchtig zu machen." },
     { 119900, 124900, "Cortex: Wir hätten dann eine Waffe, die Berge zerdrücken und ganze Städte vernichten könnte!" },
-    { 124900, 127900, "Uka Uka: Und Crash Bandicoot für immer von der Erdoberfläche tilgen würde!" },
-    { 127900, 133500, "Cortex: Mach dich auf meinen Zorn gefasst, Crash Bandicoot!" },
-    { 133600, 138049, "Cortex: MUAHAHAHAHA!" },
+    { 124900, 128880, "Uka Uka: Und Crash Bandicoot für immer von der Erdoberfläche tilgen würde!" },
+    { 128880, 133500, "Cortex: Mach dich auf meinen Zorn gefasst, Crash Bandicoot!" },
+    { 133600, 136600, "Cortex: MUAHAHAHAHA!" },
 };
 
 static const NwSubtitleCue nw_subtitle_de_intro2[] = {
     { 5500, 10000, "Coco: Los, Crash! Ja, Crash, das machst du sehr gut!" },
     { 20000, 26000, "Aku Aku: Was ist los? Nein, das darf nicht sein!" },
-    { 27000, 29000, "Aku Aku: Oh, nein!" },
-    { 32000, 37000, "Coco: Was ist da los?! Oh, nein...! Crash, pass auf!" },
-    { 46000, 47000, "Aku Aku: Sind alle wohlauf?" },
-    { 47000, 51000, "Aku Aku: Scheinbar macht mein böser Zwillingsbruder Uka Uka wieder seine hinterhältigen Mätzchen." },
+    { 27580, 29000, "Aku Aku: Oh, nein!" },
+    { 32260, 37000, "Coco: Was ist da los?! Oh, nein...! Crash, pass auf!" },
+    { 46000, 47220, "Aku Aku: Sind alle wohlauf?" },
+    { 47360, 51000, "Aku Aku: Scheinbar macht mein böser Zwillingsbruder Uka Uka wieder seine hinterhältigen Mätzchen." },
     { 51000, 55000, "Aku Aku: Ich muss herausfinden, was er vorhat. Ich treffe mich später wieder mit euch." },
-    { 57000, 66500, "Uka Uka: Ah, hallo, mein schwacher Bruder." },
-    { 66500, 73000, "Aku Aku: Ich höre dir zu, Uka Uka. Welche teuflischen Pläne hast du diesmal mit Doktor Cortex ausgeheckt?" },
-    { 73000, 77000, "Uka Uka: Keine Pläne, nur einige vertraute Gesichter, die zu Besuch kommen." },
-    { 81000, 86600, "Aku Aku: Nein, nicht die Elementale! Uka Uka, warum hast du sie freigesetzt?" },
+    { 63640, 66500, "Uka Uka: Ah, hallo, mein schwacher Bruder." },
+    { 66500, 73560, "Aku Aku: Ich höre dir zu, Uka Uka. Welche teuflischen Pläne hast du diesmal mit Doktor Cortex ausgeheckt?" },
+    { 73620, 77000, "Uka Uka: Keine Pläne, nur einige vertraute Gesichter, die zu Besuch kommen." },
+    { 81760, 86600, "Aku Aku: Nein, nicht die Elementale! Uka Uka, warum hast du sie freigesetzt?" },
     { 86600, 90000, "Aku Aku: Hast du vergessen, was passiert ist, als sie zum letzten Mal frei waren?!" },
     { 90000, 96760, "Uka Uka: Dann waren sie halt vor zwei Jahrhunderten für einige Erdbeben, Sintfluten und eine kleine Eiszeit verantwortlich." },
     { 96760, 99000, "Uka Uka: Du machst dir zu viele Sorgen, Bruder." },
-    { 99000, 107000, "Aku Aku: Du kannst sie nicht bändigen, Uka Uka! Sie sind viel zu gefährlich! Das könnte uns allen zum Verhängnis werden!" },
-    { 107000, 112940, "Py-Ro: Ha, ha, ha! Im Gegenteil, Aku Aku! Das ist eine Katastrophe für DICH und den kostbaren" },
-    { 112940, 117000, "Py-Ro: Planeten, an dem dir so viel liegt! ZERSTÖRT IHN!" },
-    { 122000, 125500, "Aku Aku: Du kommst nicht ungeschoren davon!" },
-    { 125500, 128000, "Uka Uka: HA, HA, HA! WER KANN UNS SCHON AUFHALTEN?!" },
-    { 135000, 141120, "Aku Aku: Crash, Coco, es ist genauso, wie ich befürchtet habe. Uka Uka und Doktor" },
-    { 141120, 146000, "Aku Aku: Cortex haben eine Gruppe von zerstörerischen Masken freigesetzt." },
-    { 146000, 154000, "Aku Aku: Sie werden die Elementalen genannt. Wir müssen sie aufhalten, bevor sie die Erde und alle ihre Bewohner vernichten." },
-    { 155000, 160420, "Aku Aku: Du kannst die zerstörerischen Elementalen nur aufhalten, wenn du sie" },
-    { 160420, 166100, "Aku Aku: ins Gefängnis steckst. Dazu brauchst du aber die alten Kristalle. Für" },
-    { 166100, 171000, "Aku Aku: jedes Elemental sind fünf Kristalle nötig, damit es wieder in einem Winterschlaf gefangen wird. Wir müssen schnell handeln." },
+    { 99000, 107560, "Aku Aku: Du kannst sie nicht bändigen, Uka Uka! Sie sind viel zu gefährlich! Das könnte uns allen zum Verhängnis werden!" },
+    { 107640, 112940, "Py-Ro: Ha, ha, ha! Im Gegenteil, Aku Aku! Das ist eine Katastrophe für DICH und den kostbaren" },
+    { 112940, 117500, "Py-Ro: Planeten, an dem dir so viel liegt! ZERSTÖRT IHN!" },
+    { 122700, 124680, "Aku Aku: Du kommst nicht ungeschoren davon!" },
+    { 124740, 128000, "Uka Uka: HA, HA, HA! WER KANN UNS SCHON AUFHALTEN?!" },
+    { 135580, 141120, "Aku Aku: Crash, Coco, es ist genauso, wie ich befürchtet habe. Uka Uka und Doktor" },
+    { 141120, 145620, "Aku Aku: Cortex haben eine Gruppe von zerstörerischen Masken freigesetzt." },
+    { 146460, 153180, "Aku Aku: Sie werden die Elementalen genannt. Wir müssen sie aufhalten, bevor sie die Erde und alle ihre Bewohner vernichten." },
+    { 155000, 160940, "Aku Aku: Du kannst die zerstörerischen Elementalen nur aufhalten, wenn du sie ins Gefängnis steckst." },
+    { 161400, 163700, "Aku Aku: Dazu brauchst du aber die alten Kristalle." },
+    { 163780, 171000, "Aku Aku: Für jedes Elemental sind fünf Kristalle nötig, damit es wieder in einem Winterschlaf gefangen wird. Wir müssen schnell handeln." },
     { 171000, 175000, "Aku Aku: Coco, in welchem Zustand befindet sich deine neue Pfortenkammer?" },
     { 175000, 180000, "Coco: Es ist fast fertig. Nur noch ein paar kleine Änderungen, dann ist es einsatzbereit!" },
     { 180000, 187000, "Aku Aku: Gut gemacht, Coco! Dies ist die ideale Gelegenheit, sie zu testen. Wir müssen uns beeilen." },
-    { 217000, 221000, "Coco: Okay! Alle Systeme sind bereit und funktionsfähig." },
-    { 221000, 225000, "Aku Aku: Wird langsam Zeit, dass wir das Blatt zu unseren Gunsten wenden." },
+    { 217900, 220920, "Coco: Okay! Alle Systeme sind bereit und funktionsfähig." },
+    { 221280, 225000, "Aku Aku: Wird langsam Zeit, dass wir das Blatt zu unseren Gunsten wenden." },
 };
 
 static const NwSubtitleCue nw_subtitle_de_logos[] = {
@@ -1054,7 +1054,7 @@ static const NwSubtitleCue nw_subtitle_de_outro2[] = {
     { 22960, 24080, "Crunch: Halt mal..." },
     { 24920, 27720, "Crunch: Der lästige Wissenschaftler kann mich nicht mehr kontrollieren!" },
     { 28540, 30880, "Crunch: Wo ist der erbärmliche Geiferpinsel?" },
-    { 30880, 32880, "Aku Aku: Wir haben jetzt keine Zeit dazu, Crunch." },
+    { 31120, 32880, "Aku Aku: Wir haben jetzt keine Zeit dazu, Crunch." },
     { 32880, 38540, "Computer: ACHTUNG, KRITISCHE STROMÜBERLASTUNG IN DER BÖSEN RAUMSTATION! RENNT UM EUER LEBEN!" },
     { 38540, 42280, "Cortex: Dein Energiestrahl hat anscheinend eine leichte Kettenreaktion ausgelöst!" },
     { 42280, 45080, "Cortex: Wir gehen wohl besser zu den Fluchtkapseln...!" },
@@ -1062,7 +1062,7 @@ static const NwSubtitleCue nw_subtitle_de_outro2[] = {
     { 47080, 50360, "Uka Uka: Wenn du den Kopf nicht eingezogen hättest, wäre das nicht passiert." },
     { 50360, 52200, "Crunch: Das sieht nicht gut aus...!" },
     { 52200, 54700, "Coco: Hey! Möchte einer von euch mitfahren?" },
-    { 59540, 63840, "Crunch: Crash, Coco, Aku Aku..." },
+    { 61700, 63840, "Crunch: Crash, Coco, Aku Aku..." },
     { 63840, 65560, "Crunch: Ich bin euch allen dankbar." },
     { 65560, 69000, "Crunch: Ohne euch wäre ich immer noch in der Hand von Doktor Cortex." },
     { 69220, 71800, "Crunch: Danke, dass ihr an mich geglaubt habt..." },
@@ -1160,12 +1160,12 @@ static const NwSubtitleCue nw_subtitle_it_cor17[] = {
 
 static const NwSubtitleCue nw_subtitle_it_cor18[] = {
     { 0, 2940, "Cortex: Il mondo è nostro, finalmente!" },
-    { 3040, 6025, "Cortex: HA, HA, HA!" },
+    { 3040, 4770, "Cortex: HA, HA, HA!" },
 };
 
 static const NwSubtitleCue nw_subtitle_it_cor19[] = {
-    { 0, 5000, "Cortex: Guarda, guarda, l'eroe pigro e riluttante si arrende." },
-    { 5000, 7000, "Cortex: Chi l'avrebbe mai detto?" },
+    { 0, 5240, "Cortex: Guarda, guarda, l'eroe pigro e riluttante si arrende." },
+    { 5800, 7000, "Cortex: Chi l'avrebbe mai detto?" },
 };
 
 static const NwSubtitleCue nw_subtitle_it_cor44[] = {
@@ -1192,8 +1192,8 @@ static const NwSubtitleCue nw_subtitle_it_cor46[] = {
 static const NwSubtitleCue nw_subtitle_it_cor47[] = {
     { 0, 3620, "Cortex: Ci sto lavorando su, Uka Uka!" },
     { 3620, 8660, "Cortex: Ascolta, Crash, anche se hai sconfitto Rok-Ko, ci sono altre tre maschere elementali che" },
-    { 8660, 13700, "Cortex: ti aspettano e, guarda caso, tutte molto più potenti di lui." },
-    { 13700, 19460, "Cortex: Sono sicuro che Wa-Wa, l'Elementale dell'Acqua, farà in modo che tu non veda mai più la luce del giorno!" },
+    { 8660, 13200, "Cortex: ti aspettano e, guarda caso, tutte molto più potenti di lui." },
+    { 14240, 19460, "Cortex: Sono sicuro che Wa-Wa, l'Elementale dell'Acqua, farà in modo che tu non veda mai più la luce del giorno!" },
 };
 
 static const NwSubtitleCue nw_subtitle_it_cor49[] = {
@@ -1232,7 +1232,7 @@ static const NwSubtitleCue nw_subtitle_it_cor56[] = {
 
 static const NwSubtitleCue nw_subtitle_it_cor9[] = {
     { 0, 4640, "Cortex: Preparati ad affrontare la mia ira, Crash Bandicoot!" },
-    { 4740, 8560, "Cortex: MUAHAHAHAHA!" },
+    { 4740, 7910, "Cortex: MUAHAHAHAHA!" },
 };
 
 static const NwSubtitleCue nw_subtitle_it_crn01[] = {
@@ -1246,8 +1246,8 @@ static const NwSubtitleCue nw_subtitle_it_crn02[] = {
 };
 
 static const NwSubtitleCue nw_subtitle_it_crn06[] = {
-    { 0, 5120, "Crunch: Sì, io e Wa-Wa ti annienteremo!" },
-    { 5120, 9120, "Crunch: Oh, ti ridurrò in brandelli!" },
+    { 0, 4180, "Crunch: Sì, io e Wa-Wa ti annienteremo!" },
+    { 5360, 9120, "Crunch: Oh, ti ridurrò in brandelli!" },
 };
 
 static const NwSubtitleCue nw_subtitle_it_crn07[] = {
@@ -1285,8 +1285,8 @@ static const NwSubtitleCue nw_subtitle_it_crn21[] = {
 static const NwSubtitleCue nw_subtitle_it_erth01[] = {
     { 0, 4600, "Rok-Ko: Cosa stai guardando, testa pelosa? Io sono Rok-Ko, l'Elementale della Terra." },
     { 4600, 8300, "Rok-Ko: Uka Uka e il dottor Cortex mi hanno risvegliato dal sonno che mi imprigionava," },
-    { 8300, 12100, "Rok-Ko: ed ora sono libero di polverizzare qualunque ostacolo intralci il mio cammino!" },
-    { 12100, 17100, "Rok-Ko: Oh, oh! Non azzardarti a raccogliere quei cristalli, moscerino, perché, se ci provi, io ti seppellisco vivo!" },
+    { 8300, 12010, "Rok-Ko: ed ora sono libero di polverizzare qualunque ostacolo intralci il mio cammino!" },
+    { 12150, 17100, "Rok-Ko: Oh, oh! Non azzardarti a raccogliere quei cristalli, moscerino, perché, se ci provi, io ti seppellisco vivo!" },
 };
 
 static const NwSubtitleCue nw_subtitle_it_erth02[] = {
@@ -1310,7 +1310,7 @@ static const NwSubtitleCue nw_subtitle_it_fire02[] = {
 };
 
 static const NwSubtitleCue nw_subtitle_it_fire05[] = {
-    { 0, 5300, "Py-Ro: Mmh, ho proprio voglia di un bel fritto misto di bandicoot!" },
+    { 0, 5610, "Py-Ro: Mmh, ho proprio voglia di un bel fritto misto di bandicoot!" },
 };
 
 static const NwSubtitleCue nw_subtitle_it_fire06[] = {
@@ -1318,14 +1318,14 @@ static const NwSubtitleCue nw_subtitle_it_fire06[] = {
 };
 
 static const NwSubtitleCue nw_subtitle_it_fire07[] = {
-    { 0, 7000, "Py-Ro: Ah, l'eroe vittorioso, Crash, ridotto ad un cumulo di ceneri fumanti!" },
+    { 720, 7000, "Py-Ro: Ah, l'eroe vittorioso, Crash, ridotto ad un cumulo di ceneri fumanti!" },
 };
 
 static const NwSubtitleCue nw_subtitle_it_intro1[] = {
-    { 10000, 14000, "Uka Uka: DEFICIENTI! STUPIDI! INCAPACI!" },
+    { 10380, 14000, "Uka Uka: DEFICIENTI! STUPIDI! INCAPACI!" },
     { 14000, 17000, "Uka Uka: POSSIBILE CHE NON NE FACCIATE MAI UNA GIUSTA?!" },
-    { 17000, 22000, "Uka Uka: A quanto vedo, il tuo curriculum di criminale è patetico!" },
-    { 22000, 28500, "Cortex: Uka Uka! Non è colpa nostra! È tutta colpa di quel disgraziato di bandicoot!" },
+    { 17000, 22460, "Uka Uka: A quanto vedo, il tuo curriculum di criminale è patetico!" },
+    { 22580, 28500, "Cortex: Uka Uka! Non è colpa nostra! È tutta colpa di quel disgraziato di bandicoot!" },
     { 29000, 32500, "Uka Uka: Non permetterò a nessuno di ostacolare il cammino del male!" },
     { 32500, 36500, "Uka Uka: E meno che mai a uno stupido marsupiale arancione!" },
     { 36500, 39500, "Uka Uka: Crash deve essere ELIMINATO!" },
@@ -1334,60 +1334,61 @@ static const NwSubtitleCue nw_subtitle_it_intro1[] = {
     { 49000, 51500, "Uka Uka: BASTA CON LE SCUSE!" },
     { 51500, 55000, "Uka Uka: Voi cinque idioti farete meglio a escogitare un buon piano," },
     { 55000, 58000, "Uka Uka: ALTRIMENTI...!" },
-    { 58000, 61500, "Cortex: Perché mi caccio sempre in queste situazioni...?" },
-    { 61500, 64500, "N. Tropy: Deve pur esserci qualcosa che possiamo fare." },
+    { 58000, 60660, "Cortex: Perché mi caccio sempre in queste situazioni...?" },
+    { 61780, 64500, "N. Tropy: Deve pur esserci qualcosa che possiamo fare." },
     { 64500, 72500, "N. Tropy: Di' un po', dottore, sbaglio o stavi trafficando con una nuova arma segreta nel tuo laboratorio?" },
-    { 72500, 74500, "Cortex: Non so di cosa parli, N. Tropy!" },
-    { 74500, 79000, "N. Gin: Dottor Cortex! Penso che si riferisca all'arma super segreta" },
+    { 72500, 74860, "Cortex: Non so di cosa parli, N. Tropy!" },
+    { 74880, 79000, "N. Gin: Dottor Cortex! Penso che si riferisca all'arma super segreta" },
     { 79000, 85000, "N. Gin: alla quale hai lavorato giorno e notte da quando Crash ti ha sconfitto!" },
     { 85000, 88000, "Uka Uka: BASTA CON QUESTE DISCUSSIONI! Abbiamo un piano?" },
     { 88000, 97000, "Cortex: Grazie ai miei sforzi, sono riuscito a creare una superarma geneticamente avanzata di incredibile potenza." },
     { 97000, 101500, "Cortex: Ma mi manca un elemento essenziale, una fonte di energia." },
-    { 102000, 106500, "Uka Uka: Elemento... Elementi...!" },
+    { 102000, 106500, "Uka Uka: Mmh... Elemento... Elementi...!" },
     { 106500, 110000, "Uka Uka: SÌ! Gli Elementali!" },
     { 110000, 115000, "Cortex: Giusto! Gli Elementali! Proprio quello che ci vuole!" },
     { 115000, 121000, "Cortex: Scatenando la loro energia distruttrice, si creerebbe sufficiente energia per alimentare la mia arma segreta!" },
-    { 121000, 125000, "Cortex: Avremo un'arma in grado di distruggere montagne e demolire intere città!" },
-    { 125000, 129000, "Uka Uka: E cancellare per sempre Crash Bandicoot dalla faccia della Terra!" },
-    { 129000, 134000, "Cortex: Preparati ad affrontare la mia ira, Crash Bandicoot!" },
-    { 134100, 138049, "Cortex: MUAHAHAHAHA!" },
+    { 121000, 125140, "Cortex: Avremo un'arma in grado di distruggere montagne e demolire intere città!" },
+    { 125340, 129000, "Uka Uka: E cancellare per sempre Crash Bandicoot dalla faccia della Terra!" },
+    { 129000, 133410, "Cortex: Preparati ad affrontare la mia ira, Crash Bandicoot!" },
+    { 133410, 136600, "Cortex: MUAHAHAHAHA!" },
 };
 
 static const NwSubtitleCue nw_subtitle_it_intro2[] = {
     { 5500, 11000, "Coco: Vai, Crash! Sì, Crash, stai andando alla grande!" },
-    { 20000, 22000, "Aku Aku: Cosa succede?" },
-    { 23000, 26000, "Aku Aku: No, non può essere!" },
+    { 20000, 21440, "Aku Aku: Cosa succede?" },
+    { 23480, 26000, "Aku Aku: No, non può essere!" },
     { 27000, 29000, "Aku Aku: Oh, no!" },
-    { 31000, 33000, "Coco: Cosa sta succedendo?!" },
+    { 32140, 33540, "Coco: Cosa sta succedendo?!" },
     { 34000, 37000, "Coco: Oh, no...! Crash, sta' attento!" },
     { 46000, 47500, "Aku Aku: State tutti bene?" },
-    { 47500, 52300, "Aku Aku: A quanto pare, il mio malvagio gemello Uka Uka si è rimesso a combinare guai." },
-    { 52300, 54300, "Aku Aku: Devo scoprire cosa sta progettando." },
+    { 47500, 51900, "Aku Aku: A quanto pare, il mio malvagio gemello Uka Uka si è rimesso a combinare guai." },
+    { 52000, 54300, "Aku Aku: Devo scoprire cosa sta progettando." },
     { 54300, 56000, "Aku Aku: Ci vediamo più tardi." },
-    { 61000, 66000, "Uka Uka: Ah, salve, mio fragile fratellino!" },
-    { 67000, 69320, "Aku Aku: Sei riuscito a catturare la mia attenzione, Uka Uka. Che razza di" },
+    { 63580, 66000, "Uka Uka: Ah, salve, mio fragile fratellino!" },
+    { 66440, 69320, "Aku Aku: Sei riuscito a catturare la mia attenzione, Uka Uka. Che razza di" },
     { 69320, 73000, "Aku Aku: piano diabolico state architettando tu e il dottor Cortex questa volta?" },
     { 74000, 77000, "Uka Uka: Nessun piano, è solo una piccola riunione tra vecchi amici." },
     { 82000, 86000, "Aku Aku: No, gli Elementali, no! Perché li hai liberati, Uka Uka?" },
     { 87000, 90000, "Aku Aku: Non ti ricordi cosa è successo l'ultima volta?!" },
     { 91000, 93700, "Uka Uka: Quisquilie, qualche terremoto, un po' di inondazioni, qualche piccola," },
-    { 93700, 98000, "Uka Uka: graziosa era glaciale un paio di secoli fa. Ti preoccupi troppo, fratellino." },
+    { 93700, 99000, "Uka Uka: graziosa era glaciale un paio di secoli fa. Ti preoccupi troppo, fratellino." },
     { 99000, 104000, "Aku Aku: Non sei in grado di controllarli, Uka Uka! Sono troppo pericolosi!" },
     { 104000, 107000, "Aku Aku: Potrebbe significare la rovina per noi tutti!" },
-    { 108000, 117000, "Py-Ro: Al contrario, Aku Aku! Questa sarà la rovina per TE e quel prezioso pianetuccolo che ti sta tanto a cuore! DISTRUGGETELO!" },
-    { 122000, 125500, "Aku Aku: Non la farai franca!" },
-    { 125500, 128000, "Uka Uka: AH, AH, AH, AH, AH! CHI CI FERMERÀ?!" },
+    { 107840, 108380, "Py-Ro: Ah, ah, ah!" },
+    { 108520, 117820, "Py-Ro: Al contrario, Aku Aku! Questa sarà la rovina per TE e quel prezioso pianetuccolo che ti sta tanto a cuore! DISTRUGGETELO!" },
+    { 122000, 124560, "Aku Aku: Non la farai franca!" },
+    { 124750, 128000, "Uka Uka: AH, AH, AH, AH, AH! CHI CI FERMERÀ?!" },
     { 135000, 141160, "Aku Aku: Crash, Coco, è proprio come temevo. Uka Uka e il dottor Cortex hanno liberato" },
     { 141160, 147000, "Aku Aku: un gruppo di maschere chiamate Elementali, dotate di un tremendo potere di distruzione." },
     { 149000, 153000, "Aku Aku: Dobbiamo fermarli prima che distruggano la Terra e tutti i suoi abitanti." },
     { 155000, 159470, "Aku Aku: L'unico modo per porre freno alla furia devastatrice degli Elementali è" },
     { 159470, 167000, "Aku Aku: imprigionarli utilizzando gli antichi cristalli. Servono cinque cristalli per ibernare ciascun Elementale." },
     { 169000, 175000, "Aku Aku: Dobbiamo sbrigarci. Coco, a che punto è il tuo nuovo portale di teletrasporto?" },
-    { 176000, 180000, "Coco: È quasi finito! Qualche piccolo ritocco qua e là e saremo pronti a partire!" },
+    { 175520, 180000, "Coco: È quasi finito! Qualche piccolo ritocco qua e là e saremo pronti a partire!" },
     { 181000, 186000, "Aku Aku: Ben fatto, Coco! Questa è l'occasione ideale per vedere se funziona." },
     { 186000, 187000, "Aku Aku: Dobbiamo sbrigarci." },
-    { 217000, 220000, "Coco: OK! Tutti i sistemi sono pronti e operativi." },
-    { 221000, 224000, "Aku Aku: È arrivato il momento di pareggiare i conti." },
+    { 217860, 220940, "Coco: OK! Tutti i sistemi sono pronti e operativi." },
+    { 221360, 225140, "Aku Aku: È arrivato il momento di pareggiare i conti." },
 };
 
 static const NwSubtitleCue nw_subtitle_it_logos[] = {
@@ -1408,7 +1409,7 @@ static const NwSubtitleCue nw_subtitle_it_outro2[] = {
     { 5420, 7920, "Cortex: No, Uka Uka...! Posso spiegare!" },
     { 7920, 10420, "Uka Uka: ADESSO È TROPPO TARDI!" },
     { 13920, 16920, "Cortex: Non penso che sia stata una buona idea..." },
-    { 20420, 22920, "Crunch: No... Dove... Dove mi trovo...?" },
+    { 19160, 22920, "Crunch: No... Dove... Dove mi trovo...?" },
     { 22920, 25420, "Crunch: Eh... Aspetta un momento..." },
     { 25420, 28420, "Crunch: Quel rompiscatole di uno scienziato non mi controlla più!" },
     { 28420, 30840, "Crunch: Dov'è quella patetica nullità?" },
@@ -1421,7 +1422,7 @@ static const NwSubtitleCue nw_subtitle_it_outro2[] = {
     { 46540, 50040, "Uka Uka: Se non ti fossi scansato, tutto questo non sarebbe mai successo." },
     { 50040, 52040, "Crunch: Questa faccenda non mi piace...!" },
     { 52040, 54540, "Coco: Ehi, ragazzi! Vi serve un passaggio?" },
-    { 58420, 65300, "Crunch: Crash, Coco, Aku Aku, vi sono grato." },
+    { 61680, 65300, "Crunch: Crash, Coco, Aku Aku, vi sono grato." },
     { 65300, 70320, "Crunch: Se non fosse stato per voi, sarei ancora sotto il controllo del dottor Cortex." },
     { 70320, 72680, "Crunch: Grazie per aver creduto in me, ragazzi..." },
     { 72680, 73980, "Coco: Non c'è di che, Crunch!" },
@@ -1460,7 +1461,7 @@ static const NwSubtitleCue nw_subtitle_it_wa04[] = {
 
 static const NwSubtitleCue nw_subtitle_it_wa08[] = {
     { 0, 1280, "Wa-Wa: AAAAAH!" },
-    { 1280, 3960, "Wa-Wa: VIENI QUI, PICCOLA SPUGNA ARANCIONE!" },
+    { 1420, 3960, "Wa-Wa: VIENI QUI, PICCOLA SPUGNA ARANCIONE!" },
 };
 
 static const NwSubtitleCue nw_subtitle_es_air01[] = {
@@ -1522,7 +1523,7 @@ static const NwSubtitleCue nw_subtitle_es_cor17[] = {
 
 static const NwSubtitleCue nw_subtitle_es_cor18[] = {
     { 0, 2400, "Cortex: ¡Por fin, el mundo es nuestro!" },
-    { 2500, 6025, "Cortex: ¡JA, JA, JA!" },
+    { 2860, 6025, "Cortex: ¡JA, JA, JA!" },
 };
 
 static const NwSubtitleCue nw_subtitle_es_cor19[] = {
@@ -1536,8 +1537,8 @@ static const NwSubtitleCue nw_subtitle_es_cor44[] = {
 static const NwSubtitleCue nw_subtitle_es_cor45[] = {
     { 0, 5000, "Cortex: ¡Crash Bandicoot, mi vieja pesadilla! ¿Cómo demonios estás?" },
     { 5000, 7000, "Cortex: ¿Sigues reuniendo cristales, eh?" },
-    { 7000, 10000, "Cortex: Es difícil abandonar las viejas costumbres, ¿verdad?" },
-    { 10000, 14000, "Cortex: Yo he dedicado mi tiempo a algo mucho más intrigante." },
+    { 7000, 10380, "Cortex: Es difícil abandonar las viejas costumbres, ¿verdad?" },
+    { 10660, 14000, "Cortex: Yo he dedicado mi tiempo a algo mucho más intrigante." },
     { 14000, 17000, "Cortex: Te presento a Crunch, mi última creación." },
 };
 
@@ -1552,8 +1553,8 @@ static const NwSubtitleCue nw_subtitle_es_cor46[] = {
 };
 
 static const NwSubtitleCue nw_subtitle_es_cor47[] = {
-    { 0, 7800, "Cortex: Ah... ah... ¡Estoy trabajando en ello, Uka Uka! Escucha, Crash. Quizás hayas vencido a Rok-Ko," },
-    { 7800, 12000, "Cortex: pero hay otras tres máscaras Elementales en su lugar de procedencia que son mucho más" },
+    { 0, 7480, "Cortex: Ah... ah... ¡Estoy trabajando en ello, Uka Uka! Escucha, Crash. Quizás hayas vencido a Rok-Ko," },
+    { 7680, 12000, "Cortex: pero hay otras tres máscaras Elementales en su lugar de procedencia que son mucho más" },
     { 12000, 20400, "Cortex: poderosas. ¡JA! ¡Estoy seguro de que Wa-Wa, el Elemental del Agua, te va a hacer picadillo para que no vuelvas a molestar!" },
 };
 
@@ -1564,8 +1565,8 @@ static const NwSubtitleCue nw_subtitle_es_cor49[] = {
 
 static const NwSubtitleCue nw_subtitle_es_cor50[] = {
     { 0, 3380, "Cortex: ¡Me estás dejando en ridículo delante de mis subalternos!" },
-    { 3380, 9460, "Cortex: ¡Has derrotado a las máscaras Elementales y sigues recogiendo esos inútiles cristales!" },
-    { 9460, 13920, "Cortex: Bueno, hasta aquí has llegado, ¡pero se acabó!" },
+    { 3380, 8620, "Cortex: ¡Has derrotado a las máscaras Elementales y sigues recogiendo esos inútiles cristales!" },
+    { 9640, 13920, "Cortex: Bueno, hasta aquí has llegado, ¡pero se acabó!" },
     { 13920, 17189, "Cortex: Py-Ro, el Elemental del Fuego, se encargará de eso." },
 };
 
@@ -1593,7 +1594,7 @@ static const NwSubtitleCue nw_subtitle_es_cor56[] = {
 
 static const NwSubtitleCue nw_subtitle_es_cor9[] = {
     { 0, 5000, "Cortex: ¡Prepárate para mi venganza, Crash Bandicoot!" },
-    { 5100, 8560, "Cortex: ¡MUAJAJAJAJA!" },
+    { 5060, 8560, "Cortex: ¡MUAJAJAJAJA!" },
 };
 
 static const NwSubtitleCue nw_subtitle_es_crn01[] = {
@@ -1608,7 +1609,7 @@ static const NwSubtitleCue nw_subtitle_es_crn02[] = {
 
 static const NwSubtitleCue nw_subtitle_es_crn06[] = {
     { 0, 5680, "Crunch: ¡Sí! ¡Mi líquido amigo y yo te vamos a machacar!" },
-    { 5680, 10160, "Crunch: ¡Uh! ¡Te voy a machacar en pedazos!" },
+    { 5740, 10160, "Crunch: ¡Uh! ¡Te voy a machacar en pedazos!" },
 };
 
 static const NwSubtitleCue nw_subtitle_es_crn07[] = {
@@ -1617,8 +1618,8 @@ static const NwSubtitleCue nw_subtitle_es_crn07[] = {
 
 static const NwSubtitleCue nw_subtitle_es_crn08[] = {
     { 0, 3140, "Crunch: ¡No necesito la ayuda de otra máscara!" },
-    { 3140, 6320, "Crunch: ¡Podría deshacerme de Crash con el brazo de metal atado a...!" },
-    { 6320, 6820, "Crunch: ¡AH!" },
+    { 3140, 6360, "Crunch: ¡Podría deshacerme de Crash con el brazo de metal atado a...!" },
+    { 6410, 6740, "Crunch: ¡AH!" },
 };
 
 static const NwSubtitleCue nw_subtitle_es_crn09[] = {
@@ -1646,7 +1647,7 @@ static const NwSubtitleCue nw_subtitle_es_crn21[] = {
 
 static const NwSubtitleCue nw_subtitle_es_erth01[] = {
     { 0, 4200, "Rok-Ko: ¿Qué miras, cabeza de chorlito? Soy Rok-Ko, el Elemental de la Tierra." },
-    { 4200, 11100, "Rok-Ko: Uka Uka y el doctor Cortex me despertaron de mi letargo, ¡y ahora soy libre para destruir todo lo que se cruce en mi camino!" },
+    { 4350, 11100, "Rok-Ko: Uka Uka y el doctor Cortex me despertaron de mi letargo, ¡y ahora soy libre para destruir todo lo que se cruce en mi camino!" },
     { 11100, 16800, "Rok-Ko: Ni se te ocurra pensar que vas a coger esos cristales, enano, porque, si lo haces, ¡te enterraré vivo!" },
 };
 
@@ -1695,28 +1696,28 @@ static const NwSubtitleCue nw_subtitle_es_intro1[] = {
     { 58480, 62340, "Cortex: ¿Cómo me meto en estos líos...?" },
     { 62340, 66200, "N. Tropy: Habrá algo que podamos hacer." },
     { 66200, 73060, "N. Tropy: Doctor, ¿no has estado trabajando en una nueva arma secreta en el laboratorio?" },
-    { 73060, 75200, "Cortex: No sé de qué me hablas, N. Tropy." },
-    { 75200, 79920, "N. Gin: ¡Doctor Cortex! ¡Creo que se refiere al arma supersecreta" },
+    { 73060, 74860, "Cortex: No sé de qué me hablas, N. Tropy." },
+    { 74980, 79920, "N. Gin: ¡Doctor Cortex! ¡Creo que se refiere al arma supersecreta" },
     { 79920, 85200, "N. Gin: en la que has estado trabajando día y noche desde la última vez que Crash te derrotó!" },
     { 85200, 88200, "Uka Uka: ¡BASTA DE DISCUSIONES! ¿Tenemos algún plan?" },
     { 88200, 92700, "Cortex: Bueno, tras muchos esfuerzos científicos he conseguido crear" },
-    { 92700, 97200, "Cortex: una superarma genéticamente avanzada de una potencia incalculable." },
-    { 97200, 102800, "Cortex: Pero le falta un elemento indispensable, una fuente de energía." },
+    { 92700, 97780, "Cortex: una superarma genéticamente avanzada de una potencia incalculable." },
+    { 97800, 102800, "Cortex: Pero le falta un elemento indispensable, una fuente de energía." },
     { 102800, 106200, "Uka Uka: Elemento... ¡Elementos...!" },
     { 106200, 109200, "Uka Uka: ¡SÍ! ¡Los Elementales!" },
     { 109200, 112200, "Cortex: ¡Los Elementales! ¡Eso es!" },
     { 112200, 119900, "Cortex: Si los liberamos, su fuerza destructora puede crear energía suficiente para hacer funcionar mi arma secreta." },
     { 119900, 125420, "Cortex: ¡Tendríamos un arma capaz de destruir montañas y hundir ciudades enteras!" },
     { 125420, 129200, "Uka Uka: ¡Y eliminar a Crash Bandicoot de la Tierra para siempre!" },
-    { 129200, 134000, "Cortex: ¡Prepárate para mi venganza, Crash Bandicoot!" },
-    { 134100, 138049, "Cortex: ¡MUAJAJAJAJA!" },
+    { 129200, 133820, "Cortex: ¡Prepárate para mi venganza, Crash Bandicoot!" },
+    { 133820, 137240, "Cortex: ¡MUAJAJAJAJA!" },
 };
 
 static const NwSubtitleCue nw_subtitle_es_intro2[] = {
     { 5500, 10560, "Coco: ¡Vamos, Crash! ¡Guau! ¡Vas muy bien, Crash!" },
-    { 20400, 21600, "Aku Aku: ¿Qué ocurre?" },
+    { 20400, 21300, "Aku Aku: ¿Qué ocurre?" },
     { 23740, 26400, "Aku Aku: ¡No! ¡No puede ser!" },
-    { 28000, 29600, "Aku Aku: ¡Oh, no!" },
+    { 27640, 29200, "Aku Aku: ¡Oh, no!" },
     { 32480, 37600, "Coco: ¡¿Qué pasa?! ¡Oh, no...! ¡Cuidado, Crash!" },
     { 46000, 47200, "Aku Aku: ¿Estáis todos bien?" },
     { 47200, 51180, "Aku Aku: Parece que mi hermano gemelo, el malvado Uka Uka, vuelve a hacer de las suyas." },
@@ -1727,14 +1728,15 @@ static const NwSubtitleCue nw_subtitle_es_intro2[] = {
     { 69100, 72800, "Aku Aku: ¿Qué malévolo plan os traéis esta vez entre manos tú y el doctor Cortex?" },
     { 72800, 74800, "Uka Uka: Plan ninguno." },
     { 74800, 77900, "Uka Uka: Solo unos viejos amigos de visita." },
-    { 80800, 86000, "Aku Aku: ¡Los Elementales! ¿Por qué los has soltado, Uka Uka?" },
+    { 81800, 86000, "Aku Aku: ¡Los Elementales! ¿Por qué los has soltado, Uka Uka?" },
     { 86000, 90000, "Aku Aku: ¡¿No recuerdas lo que ocurrió la última vez que estuvieron libres?!" },
     { 90000, 96000, "Uka Uka: Solo tienen la culpa de algunos terremotos y esa pequeña era glacial que hubo hace un par de siglos." },
     { 96000, 98000, "Uka Uka: Te preocupas demasiado, hermanito." },
     { 98000, 101000, "Aku Aku: ¡No los puedes controlar, Uka Uka!" },
     { 101000, 103000, "Aku Aku: ¡Son demasiado peligrosos!" },
-    { 103000, 107000, "Aku Aku: ¡Esto puede resultar desastroso para todos!" },
-    { 107000, 116000, "Py-Ro: ¡Al revés, Aku Aku! ¡Causará desastres para TI y para ese maravilloso planeta al que tanto quieres!" },
+    { 103000, 107300, "Aku Aku: ¡Esto puede resultar desastroso para todos!" },
+    { 107660, 108760, "Py-Ro: ¡Ja, ja, ja!" },
+    { 108820, 116000, "Py-Ro: ¡Al revés, Aku Aku! ¡Causará desastres para TI y para ese maravilloso planeta al que tanto quieres!" },
     { 116000, 117000, "Py-Ro: ¡A POR ÉL!" },
     { 122000, 124000, "Aku Aku: ¡No te saldrás con la tuya!" },
     { 126000, 128000, "Uka Uka: ¡¿QUIÉN NOS VA A DETENER?!" },
@@ -1767,8 +1769,8 @@ static const NwSubtitleCue nw_subtitle_es_outro1[] = {
 
 static const NwSubtitleCue nw_subtitle_es_outro2[] = {
     { 0, 3000, "Cortex: ¡¿ES QUE NO PUEDO GANAR NUNCA?!" },
-    { 3000, 5000, "Cortex: ¡¿QUÉ QUIERES DE MÍ, CRETINO?!" },
-    { 5000, 8000, "Cortex: ¡No, Uka Uka...! ¡Puedo explicarlo!" },
+    { 3000, 5340, "Cortex: ¡¿QUÉ QUIERES DE MÍ, CRETINO?!" },
+    { 5740, 8000, "Cortex: ¡No, Uka Uka...! ¡Puedo explicarlo!" },
     { 8000, 10000, "Uka Uka: ¡ES DEMASIADO TARDE PARA ESO!" },
     { 15000, 17000, "Cortex: Creo que no deberías haber hecho eso." },
     { 19000, 23000, "Crunch: Oh, no... ¿Dónde estoy...?" },
@@ -1784,7 +1786,7 @@ static const NwSubtitleCue nw_subtitle_es_outro2[] = {
     { 47000, 50000, "Uka Uka: Si no hubieras escurrido el bulto, nada de esto hubiera pasado." },
     { 50000, 52000, "Crunch: ¡Esto no tiene buena pinta...!" },
     { 52000, 55000, "Coco: ¿Alguien necesita que lo lleven?" },
-    { 59000, 65480, "Crunch: Crash, Coco, Aku Aku, gracias a todos." },
+    { 61680, 65480, "Crunch: Crash, Coco, Aku Aku, gracias a todos." },
     { 65480, 69600, "Crunch: Si no fuera por vosotros, todavía estaría en manos del doctor Cortex." },
     { 69600, 72420, "Crunch: Gracias por creer en mí, chicos..." },
     { 72420, 74500, "Coco: ¡De nada, Crunch!" },
@@ -1803,7 +1805,7 @@ static const NwSubtitleCue nw_subtitle_es_uka17[] = {
 
 static const NwSubtitleCue nw_subtitle_es_uka18[] = {
     { 0, 4760, "Uka Uka: ¡CORTEX! ¡¿POR QUÉ SIGUE REUNIENDO LOS CRISTALES ESE MARSUPIAL SIN CEREBRO?!" },
-    { 4760, 7160, "Uka Uka: ¡HA ACABADO CON ROK-KO Y CON WA-WA!" },
+    { 4760, 6890, "Uka Uka: ¡HA ACABADO CON ROK-KO Y CON WA-WA!" },
     { 7160, 10720, "Uka Uka: ¡ESTOY EMPEZANDO A DUDAR DE LA EFICACIA DE TU SUPERARMA!" },
 };
 
@@ -1883,7 +1885,7 @@ static const NwSubtitleCue nw_subtitle_nl_cor17[] = {
 
 static const NwSubtitleCue nw_subtitle_nl_cor18[] = {
     { 0, 2380, "Cortex: De wereld ligt eindelijk aan onze voeten!" },
-    { 2480, 6025, "Cortex: HA, HA, HA!" },
+    { 2920, 5830, "Cortex: HA, HA, HA!" },
 };
 
 static const NwSubtitleCue nw_subtitle_nl_cor19[] = {
@@ -1905,8 +1907,8 @@ static const NwSubtitleCue nw_subtitle_nl_cor45[] = {
 
 static const NwSubtitleCue nw_subtitle_nl_cor46[] = {
     { 0, 4120, "Cortex: Nou, Crunch, je mag het binnenkort tegen Crash opnemen..." },
-    { 4120, 6500, "Cortex: Is ie niet geweldig?" },
-    { 6500, 8720, "Cortex: Het definitieve bewijs dat ik een wetenschappelijk genie ben." },
+    { 4120, 5560, "Cortex: Is ie niet geweldig?" },
+    { 5580, 8720, "Cortex: Het definitieve bewijs dat ik een wetenschappelijk genie ben." },
     { 8720, 11960, "Cortex: Een echte krijger, in tegenstelling tot jou, Crash." },
     { 11960, 14000, "Cortex: Nou ja, iedereen maakt wel eens een vergissing." },
     { 14000, 15320, "Cortex: Tot gauw." },
@@ -1915,12 +1917,12 @@ static const NwSubtitleCue nw_subtitle_nl_cor46[] = {
 static const NwSubtitleCue nw_subtitle_nl_cor47[] = {
     { 0, 7670, "Cortex: Ik ben ermee bezig, Uka Uka! Luister, Crash. Je hebt Rok-Ko dan wel" },
     { 7670, 14720, "Cortex: overmeesterd, maar er zijn nog drie Elementenmaskers en die zijn allemaal een stuk sterker. Ha!" },
-    { 14720, 20320, "Cortex: Je maakt absoluut geen schijn van kans tegen het Element Water, Wa-Wa!" },
+    { 14720, 20220, "Cortex: Je maakt absoluut geen schijn van kans tegen het Element Water, Wa-Wa!" },
 };
 
 static const NwSubtitleCue nw_subtitle_nl_cor49[] = {
     { 0, 2380, "Cortex: Ach, Crunch, doe niet zo dom." },
-    { 3040, 6080, "Cortex: Hij gaat de Elementenmaskers gebruiken, Uka." },
+    { 3040, 5790, "Cortex: Hij gaat de Elementenmaskers gebruiken, Uka." },
     { 6240, 7629, "Cortex: Maak je maar geen zorgen." },
 };
 
@@ -1953,8 +1955,8 @@ static const NwSubtitleCue nw_subtitle_nl_cor56[] = {
 };
 
 static const NwSubtitleCue nw_subtitle_nl_cor9[] = {
-    { 0, 4760, "Cortex: Zet je maar schrap, Crash Bandicoot!" },
-    { 4860, 8560, "Cortex: MUAHAHAHAHA!" },
+    { 0, 4240, "Cortex: Zet je maar schrap, Crash Bandicoot!" },
+    { 5300, 7890, "Cortex: MUAHAHAHAHA!" },
 };
 
 static const NwSubtitleCue nw_subtitle_nl_crn01[] = {
@@ -1969,7 +1971,7 @@ static const NwSubtitleCue nw_subtitle_nl_crn02[] = {
 
 static const NwSubtitleCue nw_subtitle_nl_crn06[] = {
     { 0, 5420, "Crunch: Ja, die waterfiguur en ik gaan je een kopje kleiner maken!" },
-    { 5420, 10300, "Crunch: Oh, ik ga je helemaal vierendelen!" },
+    { 5420, 10100, "Crunch: Oh, ik ga je helemaal vierendelen!" },
 };
 
 static const NwSubtitleCue nw_subtitle_nl_crn07[] = {
@@ -2007,10 +2009,10 @@ static const NwSubtitleCue nw_subtitle_nl_crn21[] = {
 static const NwSubtitleCue nw_subtitle_nl_erth01[] = {
     { 0, 2000, "Rok-Ko: Wat kijk je naar, bontkop?" },
     { 2000, 4000, "Rok-Ko: Ik ben Rok-Ko, het Aarde-element." },
-    { 4000, 8000, "Rok-Ko: Uka Uka en dokter Cortex hebben me uit mijn gevangenisslaap ontwaakt." },
-    { 8000, 12000, "Rok-Ko: En nu kan ik alles wat me in de weg staat met de grond gelijkmaken!" },
-    { 12000, 14000, "Rok-Ko: Ho, ho, blijf van die kristallen af, rund." },
-    { 14000, 17000, "Rok-Ko: Anders moet ik jou met de grond gelijkmaken!" },
+    { 4000, 7810, "Rok-Ko: Uka Uka en dokter Cortex hebben me uit mijn gevangenisslaap ontwaakt." },
+    { 8000, 11680, "Rok-Ko: En nu kan ik alles wat me in de weg staat met de grond gelijkmaken!" },
+    { 12140, 14000, "Rok-Ko: Ho, ho, blijf van die kristallen af, rund." },
+    { 14000, 16810, "Rok-Ko: Anders moet ik jou met de grond gelijkmaken!" },
 };
 
 static const NwSubtitleCue nw_subtitle_nl_erth02[] = {
@@ -2029,8 +2031,8 @@ static const NwSubtitleCue nw_subtitle_nl_erth07[] = {
 
 static const NwSubtitleCue nw_subtitle_nl_fire02[] = {
     { 0, 5740, "Py-Ro: Ik weet dat je het mijn handlangers wat lastig hebt gemaakt, mijn kleine oranje vriend." },
-    { 5740, 8120, "Py-Ro: Maar ik snap niet zo goed waarom." },
-    { 8120, 11400, "Py-Ro: Hm, waarom wordt het hier zo heet?" },
+    { 5740, 7860, "Py-Ro: Maar ik snap niet zo goed waarom." },
+    { 8540, 11400, "Py-Ro: Hm, waarom wordt het hier zo heet?" },
     { 11400, 13880, "Py-Ro: Is dat bont wel zo verstandig?!" },
     { 13880, 16540, "Py-Ro: HET ZIET ER ZO ONTVLAMBAAR UIT!" },
 };
@@ -2050,18 +2052,18 @@ static const NwSubtitleCue nw_subtitle_nl_fire07[] = {
 static const NwSubtitleCue nw_subtitle_nl_intro1[] = {
     { 10260, 14400, "Uka Uka: IDIOTEN! DOMKOPPEN! STELLETJE NIETSNUTTEN!" },
     { 14400, 17160, "Uka Uka: KUNNEN JULLIE DAN HELEMAAL NIKS GOED DOEN?!" },
-    { 17160, 22200, "Uka Uka: Volgens mij is verspreiding van het kwaad niet jullie sterkste kant!" },
-    { 22200, 26120, "Cortex: Uka Uka! Het is niet onze schuld!" },
+    { 17160, 22460, "Uka Uka: Volgens mij is verspreiding van het kwaad niet jullie sterkste kant!" },
+    { 22660, 26120, "Cortex: Uka Uka! Het is niet onze schuld!" },
     { 26120, 28800, "Cortex: Het is de schuld van die vervelende bandicoot!" },
     { 29000, 33000, "Uka Uka: Ik laat mijn boosaardige plannen door niemand dwarsbomen!" },
     { 33000, 36500, "Uka Uka: En al helemaal niet door zo'n dom oranje buideldier!" },
     { 36500, 39500, "Uka Uka: Crash moet worden UITGESCHAKELD!" },
-    { 40500, 46500, "N. Gin: Uka Uka, ik hoef je er toch niet aan te helpen herinneren dat Crash ons altijd weet te verslaan?" },
+    { 40580, 46500, "N. Gin: Uka Uka, ik hoef je er toch niet aan te helpen herinneren dat Crash ons altijd weet te verslaan?" },
     { 47000, 49500, "N. Gin: Misschien is hij gewoon te goed voor ons!" },
     { 49500, 51000, "Uka Uka: GENOEG SMOESJES!" },
-    { 51000, 55500, "Uka Uka: Kom maar eens met een goed plan op de proppen, anders zwaait er wat!" },
+    { 51000, 55240, "Uka Uka: Kom maar eens met een goed plan op de proppen, anders zwaait er wat!" },
     { 55500, 58000, "Uka Uka: REKEN MAAR!" },
-    { 58000, 61500, "Cortex: Waarom raak ik toch steeds in zulke situaties verzeild...?" },
+    { 58000, 60670, "Cortex: Waarom raak ik toch steeds in zulke situaties verzeild...?" },
     { 62000, 65500, "N. Tropy: We moeten toch wel iets kunnen bedenken." },
     { 65500, 72500, "N. Tropy: Hé dokter, werk jij niet aan een of ander nieuw geheim wapen in je laboratorium?" },
     { 72500, 75000, "Cortex: Ik heb geen idee waar je het over hebt, N. Tropy." },
@@ -2077,25 +2079,25 @@ static const NwSubtitleCue nw_subtitle_nl_intro1[] = {
     { 119000, 125000, "Cortex: Dan zouden we een wapen hebben waarmee we bergen op kunnen blazen en hele steden kunnen vernietigen!" },
     { 125000, 129000, "Uka Uka: En Crash Bandicoot voor eens en altijd uit kunnen schakelen!" },
     { 129000, 134000, "Cortex: Zet je maar schrap, Crash Bandicoot!" },
-    { 134100, 138049, "Cortex: MUAHAHAHAHA!" },
+    { 134100, 136600, "Cortex: MUAHAHAHAHA!" },
 };
 
 static const NwSubtitleCue nw_subtitle_nl_intro2[] = {
-    { 5500, 7000, "Coco: Kom op, Crash! Ja, geweldig, Crash!" },
-    { 16500, 20000, "Aku Aku: Wat gebeurt er nu?" },
-    { 20000, 24000, "Aku Aku: Nee! Dat kan niet waar zijn!" },
-    { 24000, 27000, "Aku Aku: Oh, nee!" },
-    { 27000, 31000, "Aku Aku: Oh, nee!" },
-    { 31000, 34000, "Coco: Wat gebeurt er?!" },
-    { 34000, 38000, "Coco: Oh, nee...! Pas op, Crash!" },
+    { 5500, 10240, "Coco: Kom op, Crash! Ja, geweldig, Crash!" },
+    { 20180, 21300, "Aku Aku: Wat gebeurt er nu?" },
+    { 23520, 24580, "Aku Aku: Nee!" },
+    { 24700, 26040, "Aku Aku: Dat kan niet waar zijn!" },
+    { 27580, 29100, "Aku Aku: Oh, nee!" },
+    { 32400, 34000, "Coco: Wat gebeurt er?!" },
+    { 34000, 37060, "Coco: Oh, nee...! Pas op, Crash!" },
     { 46000, 52000, "Aku Aku: Zijn jullie gewond? Ik ben bang dat mijn kwaadaardige tweelingbroer Uka Uka weer aardig bezig is." },
     { 52000, 56000, "Aku Aku: Ik moet erachter zien te komen wat hij van plan is. Ik zie jullie zo weer." },
-    { 57000, 63000, "Uka Uka: Ah, hallo, mijn kleine broertje." },
-    { 63000, 68820, "Aku Aku: Ik luister, Uka Uka. Hebben jij en dokter Cortex weer een of ander duivels plan" },
-    { 68820, 70000, "Aku Aku: uitgebroed?" },
-    { 70000, 78000, "Uka Uka: Helemaal geen kwade plannen. We komen gewoon even langs." },
-    { 78000, 81800, "Uka Uka: Ha, ha, ha, ha!" },
-    { 81800, 87000, "Aku Aku: Oh, nee, niet de Elementen! Uka, waarom heb je ze losgelaten?" },
+    { 63620, 66400, "Uka Uka: Ah, hallo, mijn kleine broertje." },
+    { 66480, 68500, "Aku Aku: Ik luister, Uka Uka." },
+    { 68680, 73500, "Aku Aku: Hebben jij en dokter Cortex weer een of ander duivelsplan uitgebroed?" },
+    { 73620, 77580, "Uka Uka: Helemaal geen kwade plannen. We komen gewoon even langs." },
+    { 79000, 81700, "Uka Uka: Ha, ha, ha, ha, ha, ha, ha, ha, ha, ha, ha!" },
+    { 81720, 87000, "Aku Aku: Oh, nee, niet de Elementen! Uka, waarom heb je ze losgelaten?" },
     { 87000, 90000, "Aku Aku: Ben je soms vergeten wat er de vorige keer is gebeurd?!" },
     { 90000, 96000, "Uka Uka: Dus daar hadden we een paar eeuwen geleden die aardbevingen, overstromingen en die korte ijstijd aan te danken." },
     { 96000, 99000, "Uka Uka: Je maakt je zorgen om niks, broertje." },
@@ -2103,19 +2105,19 @@ static const NwSubtitleCue nw_subtitle_nl_intro2[] = {
     { 104000, 108000, "Aku Aku: Dit wordt rampzalig voor ons allemaal!" },
     { 108000, 111000, "Py-Ro: Ha, ha, juist niet, Aku Aku!" },
     { 111000, 116000, "Py-Ro: Dit betekent het einde voor JOU en die planeet waar je zo op gesteld bent!" },
-    { 116000, 120000, "Py-Ro: MAAK HEM AF!" },
+    { 116000, 117540, "Py-Ro: MAAK HEM AF!" },
     { 123000, 125500, "Aku Aku: Daar zou je spijt van krijgen!" },
     { 125500, 129000, "Uka Uka: HA, HA, HA, HA! NIEMAND KAN ONS TEGENHOUDEN!" },
-    { 135000, 139000, "Aku Aku: Crash, Coco, ik had gelijk." },
-    { 139000, 147000, "Aku Aku: Uka Uka en dokter Cortex hebben een groep destructieve maskers bevrijd, de zogenaamde Elementen." },
-    { 147000, 155000, "Aku Aku: We moeten ze zien tegen te houden voordat ze alles en iedereen met de grond gelijkmaken." },
-    { 155000, 159520, "Aku Aku: De enige manier om de vernietigende kracht van de Elementen te stoppen" },
+    { 135680, 139300, "Aku Aku: Crash, Coco, ik had gelijk." },
+    { 139880, 147000, "Aku Aku: Uka Uka en dokter Cortex hebben een groep destructieve maskers bevrijd, de zogenaamde Elementen." },
+    { 147000, 154040, "Aku Aku: We moeten ze zien tegen te houden voordat ze alles en iedereen met de grond gelijkmaken." },
+    { 155660, 159520, "Aku Aku: De enige manier om de vernietigende kracht van de Elementen te stoppen" },
     { 159520, 164000, "Aku Aku: is ze door middel van de aloude kristallen gevangen te zetten." },
     { 164000, 171000, "Aku Aku: Met vijf kristallen kan elk Element weer in zijn winterslaap worden gebracht. We moeten snel zijn." },
     { 171000, 175000, "Aku Aku: Coco, wat is de status van de nieuwe portalkamer?" },
     { 175000, 180000, "Coco: Bijna klaar. Hier en daar nog wat kleine veranderingen en dan is het klaar!" },
     { 180000, 187000, "Aku Aku: Goed zo, Coco! Dit is de ideale testmogelijkheid, maar we moeten opschieten." },
-    { 217000, 221000, "Coco: Goed! Alle systemen gereed en in werking." },
+    { 217900, 221000, "Coco: Goed! Alle systemen gereed en in werking." },
     { 221000, 225000, "Aku Aku: Hoogste tijd om een voorsprong te nemen." },
 };
 
@@ -2135,12 +2137,12 @@ static const NwSubtitleCue nw_subtitle_nl_outro1[] = {
 
 static const NwSubtitleCue nw_subtitle_nl_outro2[] = {
     { 0, 2880, "Cortex: WAAROM LAAT JE ME NOU NOOIT WINNEN?!" },
-    { 2880, 5720, "Cortex: WAT WIL JE TOCH VAN ME, IDIOOT?!" },
-    { 5720, 8080, "Cortex: Nee, Uka Uka...! Ik kan alles uitleggen!" },
+    { 2880, 5340, "Cortex: WAT WIL JE TOCH VAN ME, IDIOOT?!" },
+    { 5740, 8080, "Cortex: Nee, Uka Uka...! Ik kan alles uitleggen!" },
     { 8080, 10080, "Uka Uka: DAAR IS HET NU TE LAAT VOOR!" },
     { 14840, 16840, "Cortex: Dat had je beter niet kunnen doen." },
-    { 18960, 21080, "Crunch: Oh, nee..." },
-    { 21080, 22880, "Crunch: Waar ben ik...?" },
+    { 18960, 20740, "Crunch: Oh, nee..." },
+    { 21120, 22180, "Crunch: Waar ben ik...?" },
     { 22880, 24880, "Crunch: Wacht even..." },
     { 24880, 28600, "Crunch: Die vervelende wetenschapper heeft geen macht meer over me!" },
     { 28600, 30600, "Crunch: Waar is die klier?" },
