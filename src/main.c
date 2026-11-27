@@ -17,7 +17,6 @@
 #include "platform/log.h"
 #include "platform/paths.h"
 #include "platform/language.h"
-#include "platform/subtitles.h"
 #include "platform/platform.h"
 #include "platform/prompts.h"
 #include "platform/update.h"
@@ -1080,6 +1079,8 @@ static void nw_boot_request(const NwSettings *s, bool hitboxes, bool boss_pics)
                                      .hub_gem = s->hub_gem,
                                      .first_boss_cut = s->first_boss_cut,
                                      .vehicle_hints = s->vehicle_hints,
+                                     .subtitles = s->subtitles,
+                                     .title_subtitles = s->title_subtitles,
                                      .bug_fixes = s->bug_fixes,
                                      .hitboxes = hitboxes,
                                      .boss_pics = boss_pics });
@@ -1195,7 +1196,6 @@ static int nw_boot(const char *data_dir, int hardware_speed, float aspect, NwPla
     nw_settings_defaults(&settings);
     nw_boot_settings(data_dir, &settings, false);
     nw_language_request(settings.language);
-    nw_subtitles_enable(settings.subtitles, settings.title_subtitles);
     if (hardware_speed >= 0) {
         settings.hardware_speed = hardware_speed;
     }
@@ -1256,6 +1256,8 @@ static int nw_boot(const char *data_dir, int hardware_speed, float aspect, NwPla
                                        .hub_gem = settings.hub_gem,
                                        .first_boss_cut = settings.first_boss_cut,
                                        .vehicle_hints = settings.vehicle_hints,
+                                       .subtitles = settings.subtitles,
+                                       .title_subtitles = settings.title_subtitles,
                                        .bug_fixes = settings.bug_fixes,
                                        .boss_pics = true });
     }
@@ -1364,7 +1366,6 @@ static int nw_boot(const char *data_dir, int hardware_speed, float aspect, NwPla
             running = false;
         }
         NwPresenceSnap snap;
-        nw_subtitles_enable(settings.subtitles, settings.title_subtitles);
         nw_presence_poll(&snap);
         if (snap.valid) {
             nw_settings_level_fog(&settings, snap.cutmovie == 0 ? -1 : snap.level, &fog_kept);
@@ -1395,6 +1396,8 @@ static int nw_boot(const char *data_dir, int hardware_speed, float aspect, NwPla
                  settings.hub_gem != applied.hub_gem ||
                  settings.first_boss_cut != applied.first_boss_cut ||
                  settings.vehicle_hints != applied.vehicle_hints ||
+                 settings.subtitles != applied.subtitles ||
+                 settings.title_subtitles != applied.title_subtitles ||
                  settings.bug_fixes != applied.bug_fixes)) {
                 nw_boot_request(&settings, hitboxes, boss_pics);
                 hitboxes_shown = hitboxes;

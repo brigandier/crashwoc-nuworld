@@ -4,30 +4,20 @@
 #include <SDL3/SDL.h>
 
 #include "audio/spu2.h"
+#include "gameplay/gameplay.h"
 #include "platform/language.h"
-#include "platform/subtitles.h"
+#include "port/subtitles.h"
 
 int RemapAccentedCharacter(char *c);
 
-typedef struct NwSubtitleCue {
-    uint32_t start, end;
-    const char *text;
-} NwSubtitleCue;
-typedef struct NwSubtitleTrack {
-    const char *voice;
-    int language;
-    uint32_t duration;
-    const NwSubtitleCue *cues;
-    size_t count;
-} NwSubtitleTrack;
-#include "platform/subtitles.inc"
+#include "port/subtitles.inc"
 
 static int failures;
 #define CHECK(c) do { if (!(c)) { fprintf(stderr, "%d: %s\n", __LINE__, #c); failures++; } } while (0)
 
 static void catalog(void)
 {
-    CHECK(SDL_arraysize(nw_subtitle_tracks) == 7 * 55);
+    CHECK(SDL_arraysize(nw_subtitle_tracks) == 7 * 54);
     int languages[NW_LANGUAGES] = { 0 };
     for (size_t i = 0; i < SDL_arraysize(nw_subtitle_tracks); i++) {
         const NwSubtitleTrack *track = &nw_subtitle_tracks[i];
@@ -88,7 +78,7 @@ static void catalog(void)
         CHECK(questions == 0 && exclamations == 0);
     }
     for (int i = NW_LANGUAGE_EN; i < NW_LANGUAGES; i++) {
-        CHECK(languages[i] == 55);
+        CHECK(languages[i] == 54);
     }
     CHECK(!nw_subtitles_at(NULL, NW_LANGUAGE_EN, 10000));
     CHECK(!nw_subtitles_at("MUSIC.VAG", NW_LANGUAGE_EN, 10000));
@@ -102,11 +92,14 @@ static void catalog(void)
 
 static void playback(void)
 {
-    nw_subtitles_enable(false, true);
+    nw_profile_apply(&(NwProfile){ .title_subtitles = true });
     CHECK(!nw_subtitles_enabled(false) && !nw_subtitles_enabled(true));
-    nw_subtitles_enable(true, false);
+    nw_profile_request(&(NwProfile){ .subtitles = true });
+    CHECK(!nw_subtitles_enabled(false));
+    nw_gameplay_swap();
     CHECK(nw_subtitles_enabled(false) && !nw_subtitles_enabled(true));
-    nw_subtitles_enable(true, true);
+    nw_profile_request(&(NwProfile){ .subtitles = true, .title_subtitles = true });
+    nw_gameplay_swap();
     CHECK(nw_subtitles_enabled(false) && nw_subtitles_enabled(true));
 
     NwSubtitleLayout layout;

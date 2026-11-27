@@ -186,10 +186,10 @@ add_library(nuworld_port STATIC
   src/platform/clock.c
   src/platform/http.c
   src/platform/language.c
-  src/platform/subtitles.c
   src/platform/update.c
   src/port/stub.c
   src/port/funcmap.c
+  src/port/subtitle_catalog.c
   ${nw_buildid})
 add_dependencies(nuworld_port nuworld_buildid)
 target_include_directories(nuworld_port PUBLIC src)

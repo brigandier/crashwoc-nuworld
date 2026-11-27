@@ -28,7 +28,7 @@ void CloseCreatures(void)
     nw_crunch_close();
     nw_hubgem_close();
     CloseCreatures__retail();
-    /* Movies can update 3D font objects before the next level loads its models. */
+    /* Ending movies can update 3D font objects after the level's models are freed. */
     memset(CRemap, -1, sizeof(CRemap));
 }
 
